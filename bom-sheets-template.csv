@@ -1,0 +1,13 @@
+id,label,sublabel,parent,type,technicians,sc_status,sc_note,test_coverage,validates,cycle_time_hrs,fpy_pct,proc_status,proc_doc_num,chk_status,chk_doc_num,doc_note
+P1,CNC Router X500,PROD-001,,product,"Alice Chen=4,Bob Smith=2",good,Active production run,68,"PCB1,PCB2",120,91.2,has,SOP-001,needs,,Final assembly checklist not yet created
+A1,Frame Assembly,ASSY-001,P1,assembly,"Alice Chen=4,Bob Smith=3,Carol Jones=3",good,,80,"M1,M2,S3",24,97.5,has,SOP-011,has,CHK-011,
+A2,Drive System,ASSY-002,P1,assembly,"Bob Smith=3,Dave Wilson=1",warn,Lead time +2 wks on ballscrews,55,"S1,M3",16,88.0,has,SOP-021,needs,,Rev B drawing pending — checklist on hold
+A3,Control Cabinet,ASSY-003,P1,assembly,"Dave Wilson=1,Eve Brown=1",bad,Primary supplier at financial risk,40,S2,18,82.0,needs,,needs,,No controlled documents found
+M1,Gantry Beam,MCH-001,A1,machined,"Alice Chen=4,Bob Smith=3,Frank Lee=3",good,,85,,6,99.1,has,SOP-031,has,CHK-031,
+M2,Z-Axis Plate,MCH-002,A1,machined,"Alice Chen=4,Bob Smith=3",good,,90,,4,98.8,has,SOP-032,has,CHK-032,
+S1,Linear Rail 20 mm,STK-001,A2,stock,"Bob Smith=4,Carol Jones=3,Frank Lee=3",good,,95,,0.5,99.9,has,SOP-041,has,CHK-041,
+M3,Servo Mount Plate,MCH-003,A2,machined,"Carol Jones=3,Dave Wilson=2",warn,Alt supplier qualified,50,,3,93.2,has,SOP-042,needs,,
+PCB1,Motion Controller,PCB-001,A3,pcb,Eve Brown=1,bad,MCU chip shortage 16-week lead,35,,2,78.5,needs,,needs,,
+PCB2,I/O Breakout,PCB-002,A3,pcb,Eve Brown=2,warn,,45,,1,85.0,needs,,needs,,
+S2,DIN Rail 35 mm,STK-002,A3,stock,"Alice Chen=4,Bob Smith=3,Carol Jones=3",good,,95,,0.2,99.9,has,SOP-051,has,CHK-051,
+S3,Angle Bracket M6,STK-003,A1,stock,"Alice Chen=4,Frank Lee=3",good,,88,,0.1,99.8,has,SOP-052,has,CHK-052,
