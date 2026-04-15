@@ -1,13 +1,27 @@
-id,label,sublabel,parent,type,technicians,sc_status,sc_note,test_coverage,validates,cycle_time_hrs,fpy_pct,proc_status,proc_doc_num,chk_status,chk_doc_num,doc_note
-P1,CNC Router X500,PROD-001,,product,"Alice Chen=4,Bob Smith=2",good,Active production run,68,"PCB1,PCB2",120,91.2,has,SOP-001,needs,,Final assembly checklist not yet created
-A1,Frame Assembly,ASSY-001,P1,assembly,"Alice Chen=4,Bob Smith=3,Carol Jones=3",good,,80,"M1,M2,S3",24,97.5,has,SOP-011,has,CHK-011,
-A2,Drive System,ASSY-002,P1,assembly,"Bob Smith=3,Dave Wilson=1",warn,Lead time +2 wks on ballscrews,55,"S1,M3",16,88.0,has,SOP-021,needs,,Rev B drawing pending — checklist on hold
-A3,Control Cabinet,ASSY-003,P1,assembly,"Dave Wilson=1,Eve Brown=1",bad,Primary supplier at financial risk,40,S2,18,82.0,needs,,needs,,No controlled documents found
-M1,Gantry Beam,MCH-001,A1,machined,"Alice Chen=4,Bob Smith=3,Frank Lee=3",good,,85,,6,99.1,has,SOP-031,has,CHK-031,
-M2,Z-Axis Plate,MCH-002,A1,machined,"Alice Chen=4,Bob Smith=3",good,,90,,4,98.8,has,SOP-032,has,CHK-032,
-S1,Linear Rail 20 mm,STK-001,A2,stock,"Bob Smith=4,Carol Jones=3,Frank Lee=3",good,,95,,0.5,99.9,has,SOP-041,has,CHK-041,
-M3,Servo Mount Plate,MCH-003,A2,machined,"Carol Jones=3,Dave Wilson=2",warn,Alt supplier qualified,50,,3,93.2,has,SOP-042,needs,,
-PCB1,Motion Controller,PCB-001,A3,pcb,Eve Brown=1,bad,MCU chip shortage 16-week lead,35,,2,78.5,needs,,needs,,
-PCB2,I/O Breakout,PCB-002,A3,pcb,Eve Brown=2,warn,,45,,1,85.0,needs,,needs,,
-S2,DIN Rail 35 mm,STK-002,A3,stock,"Alice Chen=4,Bob Smith=3,Carol Jones=3",good,,95,,0.2,99.9,has,SOP-051,has,CHK-051,
-S3,Angle Bracket M6,STK-003,A1,stock,"Alice Chen=4,Frank Lee=3",good,,88,,0.1,99.8,has,SOP-052,has,CHK-052,
+id,label,sublabel,parent,type,technicians,validates,cycle_time_hrs,goal_cycle_time_hrs,fpy_pct,rework_risk,trust_score,suppliers,doc_state,leads_to,linked_to
+SUP_NSK,NSK Bearings,,,supplier,,,,,,,3,,,,
+SUP_THK,THK Co.,,,supplier,,,,,,,2,,,,
+SUP_FAB,Fastenal,,,supplier,,,,,,,2,,,,
+SUP_GEN,Generic Metals Co.,,,supplier,,,,,,,1,,,,
+CJ18,CJ18 Telescope Mount,PROD-001,,product,"Alice Chen=3,Bob Smith=2",,48,42,94.5,0,,,,,
+AZ1,M2 AZ Head,ASSY-001,CJ18,assembly,"Alice Chen=3,Bob Smith=3,Carol Jones=2",,16,14,89.5,1,,,,,
+RL1,M2 RL Arm,ASSY-002,CJ18,assembly,"Bob Smith=3,Dave Wilson=2",,14,12,91.0,1,,,,,
+GAL,Gimbal Assembly,ASSY-003,CJ18,assembly,"Alice Chen=3,Carol Jones=3",,12,10,96.0,0,,,,,
+PL1,Payload Interface,ASSY-004,CJ18,assembly,"Dave Wilson=1,Eve Brown=1",,8,7,85.0,2,,,,,
+M_AZ_FR,AZ Frame,MCH-001,AZ1,machined,"Alice Chen=3,Bob Smith=3,Frank Lee=3",,6,5,99.1,0,,,,,
+M_AZ_BR,AZ Bearing Race,MCH-002,AZ1,machined,"Alice Chen=3,Bob Smith=2",,4,3.5,97.8,0,,,,,
+M_RL_SH,RL Shaft,MCH-003,RL1,machined,"Carol Jones=3,Dave Wilson=2",,5,4,94.2,1,,,,,
+M_GIM_HUB,Gimbal Hub,MCH-004,GAL,machined,"Alice Chen=3,Frank Lee=3",,3,2.5,98.5,0,,,,,
+S_LR,Linear Rail 25 mm,STK-001,RL1,stock,"Bob Smith=3,Carol Jones=3,Frank Lee=3",,0.5,0.5,99.9,0,,"SUP_NSK=5,SUP_THK=4",,,
+S_BRG,Angular Contact Bearing,STK-002,GAL,stock,"Alice Chen=3,Bob Smith=3",,0.3,0.3,99.9,0,,"SUP_NSK=5",,,
+S_HDWR,M6 Fastener Kit,STK-003,AZ1,stock,"Alice Chen=3,Frank Lee=3",,0.1,0.1,99.8,0,,"SUP_FAB=4,SUP_GEN=2",,,
+PCB_MC,Motion Controller,PCB-001,AZ1,pcb,Eve Brown=1,,3,2,78.5,0,,,,,
+PCB_IO,I/O Breakout Board,PCB-002,PL1,pcb,Eve Brown=2,,1.5,1.5,84.0,0,,,,,
+PCB_PWR,Power Distribution,PCB-003,CJ18,pcb,Eve Brown=1,,2,2,80.0,0,,,,,
+DOC_AZ1_P1,AZ Head Assembly SOP,SOP-AZ1-01,AZ1,procedure,,,3,,,,, 3,DOC_AZ1_P2,
+DOC_AZ1_P2,Bearing Preload Check,SOP-AZ1-02,AZ1,procedure,,,2,,,,, 2,DOC_AZ1_T1,
+DOC_AZ1_T1,AZ Axis Runout Test,TP-AZ1-01,AZ1,test procedure,,"AZ1=3,M_AZ_FR=3,M_AZ_BR=2",1,,,,, 3,,
+DOC_AZ1_C1,AZ Head Build Checklist,CHK-AZ1-01,AZ1,checklist,,,0.5,,,,, 3,,DOC_AZ1_P1
+DOC_RL1_P1,RL Arm Assembly SOP,SOP-RL1-01,RL1,procedure,,,4,,,,, 1,DOC_RL1_T1,
+DOC_RL1_T1,RL Axis Load Test,TP-RL1-01,RL1,test procedure,,"RL1=3,M_RL_SH=2",2,,,,, 0,,
+DOC_RL1_S1,Rail Supplier Cert,REF-RL1-01,RL1,supplemental,,,0,,,,, 3,,DOC_RL1_P1
