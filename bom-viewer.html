@@ -1760,7 +1760,8 @@ let buildTimerInterval = null; // setInterval handle for live timer tick (1 s)
 let cycleState = { demand: 0, estHours: 0, useLogged: false };
 
 // Explode view — when true, non-leaf BOM nodes become section containers
-let explodeActive = false;
+let explodeActive      = false;
+let explodedParentIds  = new Set(); // populated by render(), read by applyColors()
 
 // D3 handles
 let svgSel, gSel, zoomBeh;
@@ -2708,8 +2709,9 @@ function render() {
     return `M${x1},${y1} C${x1},${mid} ${x2},${mid} ${x2},${y2}`;
   }
 
-  // IDs of BOM nodes that become section containers
-  const explodedParentIds = !explodeActive
+  // IDs of BOM nodes that become section containers (written to module-level var
+  // so applyColors() can skip re-coloring their invisible node-rects)
+  explodedParentIds = !explodeActive
     ? new Set()
     : isDocExplode  ? new Set(Object.keys(docExplodeLayouts))
     : isPartExplode ? new Set(Object.keys(partExplodeLayouts))
@@ -3441,6 +3443,7 @@ function applyColors() {
   // Simulate view colors are managed entirely by applySimProgress
   if (currentView === 'simulate') {
     gSel.selectAll('.node-g').each(function(d) {
+      if (explodedParentIds.has(d.data.id)) return;
       d3.select(this).select('.node-rect')
         .attr('stroke', d.data.id === selectedId ? '#fff' : 'rgba(255,255,255,.18)')
         .classed('sel', d.data.id === selectedId);
@@ -3452,6 +3455,7 @@ function applyColors() {
   // Builds view colors are managed entirely by applyBuildProgress
   if (currentView === 'builds') {
     gSel.selectAll('.node-g').each(function(d) {
+      if (explodedParentIds.has(d.data.id)) return;
       d3.select(this).select('.node-rect')
         .attr('stroke', d.data.id === selectedId ? '#fff' : 'rgba(255,255,255,.18)')
         .classed('sel', d.data.id === selectedId);
@@ -3463,6 +3467,7 @@ function applyColors() {
   const view = VIEWS[currentView];
 
   gSel.selectAll('.node-g').each(function(d) {
+    if (explodedParentIds.has(d.data.id)) return;
     d3.select(this).select('.node-rect')
       .attr('fill',   view.nodeColor(d))
       .attr('stroke', d.data.id === selectedId ? '#fff' : 'rgba(255,255,255,.18)')
