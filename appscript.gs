@@ -131,7 +131,7 @@ const SHEET_DEFS = {
       1: 'Auto-filled from Doc_Nodes — do not edit',
       4: 'Auto-filled doc number — for reference',
       5: 'Auto-filled doc type — for reference',
-      6: 'Cycle time in hours — editable. Takes priority over Doc_Nodes on export.\nFor docs shared across multiple BOM nodes, use split format: A1=3,A2=4\n(export total = sum; each BOM node gets only its portion via cycle_time_by_bom).',
+      6: 'Cycle time in hours — editable. Takes priority over Doc_Nodes on export.\nFor docs shared across multiple BOM nodes, enter per-BOM split: OA=10,AZ=10,AH=15\nEach BOM node then receives only its portion in the cycle time view.\n(Leave 0 on Cycle_BOM for those nodes so the doc sum drives the display.)',
     },
   },
 
