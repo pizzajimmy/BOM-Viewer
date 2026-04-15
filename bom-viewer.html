@@ -7777,9 +7777,16 @@ document.getElementById('json-import-overlay').addEventListener('click', e => {
 });
 
 document.getElementById('btn-ji-apply').addEventListener('click', () => {
-  const raw   = document.getElementById('ji-input').value.trim();
+  let raw     = document.getElementById('ji-input').value.trim();
   const errEl = document.getElementById('ji-error');
   errEl.style.display = 'none';
+
+  // Google Sheets wraps multiline cell values in double-quotes when copied to
+  // clipboard, with internal double-quotes doubled (CSV escaping).
+  // e.g. "{\n  ""nodes"": [...]}" → strip outer quotes + unescape "" → "
+  if (raw.startsWith('"') && raw.endsWith('"')) {
+    raw = raw.slice(1, -1).replace(/""/g, '"');
+  }
 
   let parsed;
   try { parsed = JSON.parse(raw); }
