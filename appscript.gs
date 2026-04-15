@@ -790,12 +790,26 @@ function buildDashboardJSON(ss) {
   // ── Doc nodes ───────────────────────────────────────────────────
   const docMaster = sheetToObjects(SHEET_NAMES.DOCS);
 
-  const docNodes = docMaster.map(d => {
-    const docId    = String(d.id);
-    const cy       = cycleDocById[docId] ?? {};
+  // Pre-build a map of origId → { bomNodeId → suffixedId } for multi-parent docs.
+  // Used in the post-pass to rewrite leads_to / linked_to references.
+  const docIdMap = {};
+  docMaster.forEach(d => {
+    const origId = String(d.id);
+    const bomIds = String(d.bom_node_id).split(',').map(s => s.trim()).filter(Boolean);
+    if (bomIds.length > 1) {
+      docIdMap[origId] = {};
+      bomIds.forEach(bomId => { docIdMap[origId][bomId] = `${origId}__${bomId}`; });
+    }
+  });
 
-    const scoreMap  = testingScores[docId] ?? {};
-    const noteMap   = testingNotes[docId]  ?? {};
+  const docNodes = docMaster.flatMap(d => {
+    const origId = String(d.id);
+    const bomIds = String(d.bom_node_id).split(',').map(s => s.trim()).filter(Boolean);
+    const multi  = bomIds.length > 1;
+    const cy     = cycleDocById[origId] ?? {};
+
+    const scoreMap  = testingScores[origId] ?? {};
+    const noteMap   = testingNotes[origId]  ?? {};
     const allBomIds = new Set([...Object.keys(scoreMap), ...Object.keys(noteMap)]);
     const validates = [...allBomIds].flatMap(bomId => {
       const score = Number(scoreMap[bomId]) || 0;
@@ -810,21 +824,40 @@ function buildDashboardJSON(ss) {
       : (d.cycle_time_hrs ?? '');
     const { total: ctTotal, byBom: ctByBom } = parseCycleTime(rawCt);
 
-    return {
-      id:             docId,
-      bomNodeId:      String(d.bom_node_id),
-      type:           String(d.type),
-      label:          String(d.label),
-      doc_num:        String(d.doc_num  || ''),
-      score:          Number(d.score)   || 0,
-      order:          Number(d.order)   || 0,
-      leads_to:       d.leads_to  ? String(d.leads_to)  : null,
-      linked_to:      d.linked_to ? String(d.linked_to) : null,
-      cycle_time_hrs: ctTotal,
-      ...(ctByBom ? { cycle_time_by_bom: ctByBom } : {}),
-      validates,
-      technicians:    trainingByDocId[docId] ?? [],
-    };
+    return bomIds.map(bomNodeId => {
+      const nodeId = multi ? `${origId}__${bomNodeId}` : origId;
+      // For multi-parent docs, use the per-BOM split cycle time if available
+      const ct = (multi && ctByBom) ? (ctByBom[bomNodeId] ?? ctTotal) : ctTotal;
+      return {
+        id:             nodeId,
+        bomNodeId,
+        type:           String(d.type),
+        label:          String(d.label),
+        doc_num:        String(d.doc_num  || ''),
+        score:          Number(d.score)   || 0,
+        order:          Number(d.order)   || 0,
+        // leads_to / linked_to resolved in post-pass below
+        leads_to:       d.leads_to  ? String(d.leads_to)  : null,
+        linked_to:      d.linked_to ? String(d.linked_to) : null,
+        cycle_time_hrs: ct,
+        // cycle_time_by_bom only emitted for single-parent docs using split format
+        ...((!multi && ctByBom) ? { cycle_time_by_bom: ctByBom } : {}),
+        validates,
+        technicians:    trainingByDocId[origId] ?? [],
+      };
+    });
+  });
+
+  // Post-pass: rewrite leads_to / linked_to for multi-parent doc references.
+  // If doc A leads_to doc B, and both are expanded for the same bomNodeId,
+  // A__OA should lead_to B__OA rather than the raw B id.
+  docNodes.forEach(dn => {
+    ['leads_to', 'linked_to'].forEach(field => {
+      const raw = dn[field];
+      if (raw && docIdMap[raw]?.[dn.bomNodeId]) {
+        dn[field] = docIdMap[raw][dn.bomNodeId];
+      }
+    });
   });
 
   // ── Suppliers ───────────────────────────────────────────────────
