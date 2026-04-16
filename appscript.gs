@@ -165,12 +165,14 @@ const SHEET_DEFS = {
     darkTheme: false,
     headers: ['doc_id', 'bom_node_id', 'label'],
     autoFill: [
-      { col: 1, formula: `=ARRAYFORMULA(IF(Doc_Nodes!A2:A="","",Doc_Nodes!A2:A))` },
-      { col: 2, formula: `=ARRAYFORMULA(IF(A2:A="","",VLOOKUP(A2:A,Doc_Nodes!A:I,2,FALSE)))` },
-      { col: 3, formula: `=ARRAYFORMULA(IF(A2:A="","",VLOOKUP(A2:A,Doc_Nodes!A:I,4,FALSE)))` },
+      // Only assembly and test docs require technician training records.
+      // Checklists and reference/supplemental docs are excluded.
+      { col: 1, formula: `=IFERROR(FILTER(Doc_Nodes!A2:A,(Doc_Nodes!C2:C="assembly")+(Doc_Nodes!C2:C="test")),"")` },
+      { col: 2, formula: `=ARRAYFORMULA(IF(A2:A="","",VLOOKUP(A2:A,Doc_Nodes!A:J,2,FALSE)))` },
+      { col: 3, formula: `=ARRAYFORMULA(IF(A2:A="","",VLOOKUP(A2:A,Doc_Nodes!A:J,4,FALSE)))` },
     ],
     notes: {
-      1: 'Auto-filled from Doc_Nodes — do not edit\nTechnician columns added automatically via Dashboard → Sync.',
+      1: 'Auto-filled from Doc_Nodes (assembly + test types only) — do not edit\nTechnician columns added automatically via Dashboard → Sync.',
     },
   },
 
@@ -593,8 +595,11 @@ function syncViewSheets() {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
 
   _syncMasterToViews(ss, SHEET_NAMES.BOM,  [SHEET_NAMES.OVERVIEW, SHEET_NAMES.CYCLE_BOM]);
-  _syncMasterToViews(ss, SHEET_NAMES.DOCS, [SHEET_NAMES.CYCLE_DOCS, SHEET_NAMES.TRAINING]);
-  // Testing/Testing_Notes rows are driven by their FILTER formula (test+checklist types only)
+  _syncMasterToViews(ss, SHEET_NAMES.DOCS, [SHEET_NAMES.CYCLE_DOCS]);
+  // Training/Testing/Testing_Notes rows are all driven by FILTER formulas — no row sync needed.
+  // Training:       assembly + test types only
+  // Testing:        test + checklist types only
+  // Testing_Notes:  test + checklist types only
   syncSupplySheet(ss);
   syncTrainingMatrix(ss);
   syncTestingMatrix(ss);
