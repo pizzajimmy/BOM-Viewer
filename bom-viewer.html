@@ -943,6 +943,7 @@
           <select id="df-type">
             <option value="assembly">Assembly</option>
             <option value="test">Test</option>
+            <option value="assembly/test">Assembly / Test</option>
             <option value="checklist">Checklist</option>
             <option value="supplemental">Supplemental</option>
           </select>
@@ -1419,16 +1420,20 @@ const SCORE_COLORS = ['#ef4444', '#94a3b8', '#f59e0b', '#10b981'];
 
 // Doc node type colors and labels
 const DOC_TYPE_COLORS = {
-  assembly:     '#6366f1',
-  test:         '#0ea5e9',
-  checklist:    '#f59e0b',
-  supplemental: '#64748b',
+  assembly:          '#6366f1',
+  test:              '#0ea5e9',
+  'assembly/test':   '#8b5cf6',   // violet — hybrid of assembly indigo + test sky
+  checklist:         '#f59e0b',
+  supplemental:      '#64748b',
+  reference:         '#64748b',
 };
 const DOC_TYPE_LABELS = {
-  assembly:     'ASSY',
-  test:         'TEST',
-  checklist:    'CHK',
-  supplemental: 'SUPP',
+  assembly:          'ASSY',
+  test:              'TEST',
+  'assembly/test':   'A/T',
+  checklist:         'CHK',
+  supplemental:      'SUPP',
+  reference:         'REF',
 };
 // Doc state: 0=not created, 1=major updates required, 2=minor updates required, 3=stable
 const DOC_SCORE_LABELS = [

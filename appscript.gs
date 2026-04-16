@@ -56,7 +56,7 @@ const SHEET_DEFS = {
     notes: {
       1: 'Unique doc ID',
       2: 'BOM node(s) this doc is PART OF — drives tree placement and cycle time.\nComma-separated for docs that span multiple BOMs (e.g. OA,AZ).',
-      3: 'assembly | test | checklist | reference',
+      3: 'assembly | test | assembly/test | checklist | reference\nassembly/test = procedure that includes both assembly steps and an integrated test',
       4: 'Document display name',
       5: 'Document number (e.g. SOP-011)',
       6: 'Readiness score 0–3',
@@ -123,7 +123,7 @@ const SHEET_DEFS = {
     autoFill: [
       // Only assembly and test docs have meaningful cycle times to track.
       // Checklists and reference/supplemental docs are excluded.
-      { col: 1, formula: `=IFERROR(FILTER(Doc_Nodes!A2:A,(Doc_Nodes!C2:C="assembly")+(Doc_Nodes!C2:C="test")),"")` },
+      { col: 1, formula: `=IFERROR(FILTER(Doc_Nodes!A2:A,(Doc_Nodes!C2:C="assembly")+(Doc_Nodes!C2:C="test")+(Doc_Nodes!C2:C="assembly/test")),"")` },
       { col: 2, formula: `=ARRAYFORMULA(IF(A2:A="","",VLOOKUP(A2:A,Doc_Nodes!A:I,2,FALSE)))` },
       { col: 3, formula: `=ARRAYFORMULA(IF(A2:A="","",VLOOKUP(A2:A,Doc_Nodes!A:I,4,FALSE)))` },
       { col: 4, formula: `=ARRAYFORMULA(IF(A2:A="","",VLOOKUP(A2:A,Doc_Nodes!A:I,5,FALSE)))` },
@@ -169,7 +169,7 @@ const SHEET_DEFS = {
     autoFill: [
       // Only assembly and test docs require technician training records.
       // Checklists and reference/supplemental docs are excluded.
-      { col: 1, formula: `=IFERROR(FILTER(Doc_Nodes!A2:A,(Doc_Nodes!C2:C="assembly")+(Doc_Nodes!C2:C="test")),"")` },
+      { col: 1, formula: `=IFERROR(FILTER(Doc_Nodes!A2:A,(Doc_Nodes!C2:C="assembly")+(Doc_Nodes!C2:C="test")+(Doc_Nodes!C2:C="assembly/test")),"")` },
       { col: 2, formula: `=ARRAYFORMULA(IF(A2:A="","",VLOOKUP(A2:A,Doc_Nodes!A:I,2,FALSE)))` },
       { col: 3, formula: `=ARRAYFORMULA(IF(A2:A="","",VLOOKUP(A2:A,Doc_Nodes!A:I,4,FALSE)))` },
     ],
@@ -183,7 +183,7 @@ const SHEET_DEFS = {
     darkTheme: false,
     headers: ['doc_id', 'tests_node_id', 'label', 'type'],
     autoFill: [
-      { col: 1, formula: `=IFERROR(FILTER(Doc_Nodes!A2:A,(Doc_Nodes!C2:C="test")+(Doc_Nodes!C2:C="checklist")),"")` },
+      { col: 1, formula: `=IFERROR(FILTER(Doc_Nodes!A2:A,(Doc_Nodes!C2:C="test")+(Doc_Nodes!C2:C="checklist")+(Doc_Nodes!C2:C="assembly/test")),"")` },
       // col 2: use tests_node_id (Doc_Nodes col 10) if set; fall back to bom_node_id (col 2)
       { col: 2, formula: `=ARRAYFORMULA(IF(A2:A="","",IF(IFERROR(VLOOKUP(A2:A,Doc_Nodes!A:I,9,FALSE),"")<>"",IFERROR(VLOOKUP(A2:A,Doc_Nodes!A:I,9,FALSE),""),IFERROR(VLOOKUP(A2:A,Doc_Nodes!A:I,2,FALSE),""))))` },
       { col: 3, formula: `=ARRAYFORMULA(IF(A2:A="","",VLOOKUP(A2:A,Doc_Nodes!A:I,4,FALSE)))` },
@@ -201,7 +201,7 @@ const SHEET_DEFS = {
     darkTheme: false,
     headers: ['doc_id', 'tests_node_id', 'label', 'type'],
     autoFill: [
-      { col: 1, formula: `=IFERROR(FILTER(Doc_Nodes!A2:A,(Doc_Nodes!C2:C="test")+(Doc_Nodes!C2:C="checklist")),"")` },
+      { col: 1, formula: `=IFERROR(FILTER(Doc_Nodes!A2:A,(Doc_Nodes!C2:C="test")+(Doc_Nodes!C2:C="checklist")+(Doc_Nodes!C2:C="assembly/test")),"")` },
       // col 2: use tests_node_id (Doc_Nodes col 10) if set; fall back to bom_node_id (col 2)
       { col: 2, formula: `=ARRAYFORMULA(IF(A2:A="","",IF(IFERROR(VLOOKUP(A2:A,Doc_Nodes!A:I,9,FALSE),"")<>"",IFERROR(VLOOKUP(A2:A,Doc_Nodes!A:I,9,FALSE),""),IFERROR(VLOOKUP(A2:A,Doc_Nodes!A:I,2,FALSE),""))))` },
       { col: 3, formula: `=ARRAYFORMULA(IF(A2:A="","",VLOOKUP(A2:A,Doc_Nodes!A:I,4,FALSE)))` },
@@ -403,7 +403,7 @@ function applyValidations(sh, headers) {
         .setAllowInvalid(false).build();
     } else if (h === 'type' && sh.getName() === SHEET_NAMES.DOCS) {
       rule = SpreadsheetApp.newDataValidation()
-        .requireValueInList(['assembly','test','checklist','reference'], true)
+        .requireValueInList(['assembly','test','assembly/test','checklist','reference'], true)
         .setAllowInvalid(false).build();
     } else if (h === 'score') {
       rule = SpreadsheetApp.newDataValidation()
