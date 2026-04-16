@@ -52,7 +52,7 @@ const SHEET_DEFS = {
   [SHEET_NAMES.DOCS]: {
     tab: { color: '#7c3aed' },
     darkTheme: false,
-    headers: ['id', 'bom_node_id', 'type', 'label', 'doc_num', 'score', 'order', 'leads_to', 'linked_to', 'tests_node_id'],
+    headers: ['id', 'bom_node_id', 'type', 'label', 'doc_num', 'score', 'leads_to', 'linked_to', 'tests_node_id'],
     notes: {
       1: 'Unique doc ID',
       2: 'BOM node(s) this doc is PART OF — drives tree placement and cycle time.\nComma-separated for docs that span multiple BOMs (e.g. OA,AZ).',
@@ -60,10 +60,9 @@ const SHEET_DEFS = {
       4: 'Document display name',
       5: 'Document number (e.g. SOP-011)',
       6: 'Readiness score 0–3',
-      7: 'Sort order within the same bom_node_id',
-      8: 'ID of the doc this one leads TO (next step above in flow)',
-      9: 'ID of a doc this one is side-linked to (dashed branch)',
-      10: 'BOM node(s) this doc VALIDATES — comma-separated (e.g. MOTOR,GEARBOX).\nControls which Testing matrix columns are active (white) for this doc.\nLeave blank to default to bom_node_id.\nDoes NOT affect cycle time or tree placement.',
+      7: 'ID of the doc this one leads TO (next step in the flow)',
+      8: 'ID of a doc this one is side-linked to (dashed branch)',
+      9: 'BOM node(s) this doc VALIDATES — comma-separated (e.g. MOTOR,GEARBOX).\nControls which Testing matrix columns are active (white) for this doc.\nLeave blank to default to bom_node_id.\nDoes NOT affect cycle time or tree placement.',
     },
   },
 
@@ -168,8 +167,8 @@ const SHEET_DEFS = {
       // Only assembly and test docs require technician training records.
       // Checklists and reference/supplemental docs are excluded.
       { col: 1, formula: `=IFERROR(FILTER(Doc_Nodes!A2:A,(Doc_Nodes!C2:C="assembly")+(Doc_Nodes!C2:C="test")),"")` },
-      { col: 2, formula: `=ARRAYFORMULA(IF(A2:A="","",VLOOKUP(A2:A,Doc_Nodes!A:J,2,FALSE)))` },
-      { col: 3, formula: `=ARRAYFORMULA(IF(A2:A="","",VLOOKUP(A2:A,Doc_Nodes!A:J,4,FALSE)))` },
+      { col: 2, formula: `=ARRAYFORMULA(IF(A2:A="","",VLOOKUP(A2:A,Doc_Nodes!A:I,2,FALSE)))` },
+      { col: 3, formula: `=ARRAYFORMULA(IF(A2:A="","",VLOOKUP(A2:A,Doc_Nodes!A:I,4,FALSE)))` },
     ],
     notes: {
       1: 'Auto-filled from Doc_Nodes (assembly + test types only) — do not edit\nTechnician columns added automatically via Dashboard → Sync.',
@@ -183,9 +182,9 @@ const SHEET_DEFS = {
     autoFill: [
       { col: 1, formula: `=IFERROR(FILTER(Doc_Nodes!A2:A,(Doc_Nodes!C2:C="test")+(Doc_Nodes!C2:C="checklist")),"")` },
       // col 2: use tests_node_id (Doc_Nodes col 10) if set; fall back to bom_node_id (col 2)
-      { col: 2, formula: `=ARRAYFORMULA(IF(A2:A="","",IF(IFERROR(VLOOKUP(A2:A,Doc_Nodes!A:J,10,FALSE),"")<>"",IFERROR(VLOOKUP(A2:A,Doc_Nodes!A:J,10,FALSE),""),IFERROR(VLOOKUP(A2:A,Doc_Nodes!A:J,2,FALSE),""))))` },
-      { col: 3, formula: `=ARRAYFORMULA(IF(A2:A="","",VLOOKUP(A2:A,Doc_Nodes!A:J,4,FALSE)))` },
-      { col: 4, formula: `=ARRAYFORMULA(IF(A2:A="","",VLOOKUP(A2:A,Doc_Nodes!A:J,3,FALSE)))` },
+      { col: 2, formula: `=ARRAYFORMULA(IF(A2:A="","",IF(IFERROR(VLOOKUP(A2:A,Doc_Nodes!A:I,9,FALSE),"")<>"",IFERROR(VLOOKUP(A2:A,Doc_Nodes!A:I,9,FALSE),""),IFERROR(VLOOKUP(A2:A,Doc_Nodes!A:I,2,FALSE),""))))` },
+      { col: 3, formula: `=ARRAYFORMULA(IF(A2:A="","",VLOOKUP(A2:A,Doc_Nodes!A:I,4,FALSE)))` },
+      { col: 4, formula: `=ARRAYFORMULA(IF(A2:A="","",VLOOKUP(A2:A,Doc_Nodes!A:I,3,FALSE)))` },
     ],
     notes: {
       1: 'Auto-filled from Doc_Nodes (test + checklist types only) — do not edit',
@@ -201,9 +200,9 @@ const SHEET_DEFS = {
     autoFill: [
       { col: 1, formula: `=IFERROR(FILTER(Doc_Nodes!A2:A,(Doc_Nodes!C2:C="test")+(Doc_Nodes!C2:C="checklist")),"")` },
       // col 2: use tests_node_id (Doc_Nodes col 10) if set; fall back to bom_node_id (col 2)
-      { col: 2, formula: `=ARRAYFORMULA(IF(A2:A="","",IF(IFERROR(VLOOKUP(A2:A,Doc_Nodes!A:J,10,FALSE),"")<>"",IFERROR(VLOOKUP(A2:A,Doc_Nodes!A:J,10,FALSE),""),IFERROR(VLOOKUP(A2:A,Doc_Nodes!A:J,2,FALSE),""))))` },
-      { col: 3, formula: `=ARRAYFORMULA(IF(A2:A="","",VLOOKUP(A2:A,Doc_Nodes!A:J,4,FALSE)))` },
-      { col: 4, formula: `=ARRAYFORMULA(IF(A2:A="","",VLOOKUP(A2:A,Doc_Nodes!A:J,3,FALSE)))` },
+      { col: 2, formula: `=ARRAYFORMULA(IF(A2:A="","",IF(IFERROR(VLOOKUP(A2:A,Doc_Nodes!A:I,9,FALSE),"")<>"",IFERROR(VLOOKUP(A2:A,Doc_Nodes!A:I,9,FALSE),""),IFERROR(VLOOKUP(A2:A,Doc_Nodes!A:I,2,FALSE),""))))` },
+      { col: 3, formula: `=ARRAYFORMULA(IF(A2:A="","",VLOOKUP(A2:A,Doc_Nodes!A:I,4,FALSE)))` },
+      { col: 4, formula: `=ARRAYFORMULA(IF(A2:A="","",VLOOKUP(A2:A,Doc_Nodes!A:I,3,FALSE)))` },
     ],
     notes: {
       1: 'Auto-filled from Doc_Nodes (test + checklist types only) — do not edit',
@@ -326,7 +325,7 @@ function applySheetDef(ss, sh, def) {
 
   // Column widths
   def.headers.forEach((h, i) => {
-    const w = ['id','doc_id','parent','type','order','score',
+    const w = ['id','doc_id','parent','type','score',
                'cycle_time_hrs','goal_cycle_time_hrs','trust_score',
                'quality_1','quality_2','quality_3'].includes(h) ? 90
             : h === 'json_output'    ? 600
@@ -849,7 +848,6 @@ function buildDashboardJSON(ss) {
         label:          String(d.label),
         doc_num:        String(d.doc_num  || ''),
         score:          Number(d.score)   || 0,
-        order:          Number(d.order)   || 0,
         // leads_to / linked_to resolved in post-pass below
         leads_to:       d.leads_to  ? String(d.leads_to)  : null,
         linked_to:      d.linked_to ? String(d.linked_to) : null,

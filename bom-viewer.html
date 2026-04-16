@@ -2626,7 +2626,6 @@ function render() {
       rows.push({ doc: d, indent: 0, hasLeadsUp });
       lastMainDoc = d;
       (byParent[d.id] || [])
-        .sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
         .forEach(ld => rows.push({ doc: ld, indent: 1, hasLeadsUp: false }));
     });
     return rows.length ? rows : null;
@@ -5470,14 +5469,27 @@ function renderTrainingDocFlow() {
   const Y_HANG      = DFH + 60;
   const CHILD_X_GAP = DFW + 14;
 
-  const mainSeq = myDocs.filter(d => !d.linked_to)
-    .sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+  // Build main sequence by walking leads_to chains (same algorithm as buildDocRows).
+  // Entry points are docs that no other doc in this BOM points to via leads_to.
+  const _mainDocs       = myDocs.filter(d => !d.linked_to);
+  const _leadsToTargets = new Set(_mainDocs.map(d => d.leads_to).filter(Boolean));
+  const _starters       = _mainDocs.filter(d => !_leadsToTargets.has(d.id));
+  const mainSeq = [], _msVisited = new Set();
+  const _followChain = doc => {
+    let cur = doc;
+    while (cur && !_msVisited.has(cur.id)) {
+      _msVisited.add(cur.id); mainSeq.push(cur);
+      cur = _mainDocs.find(d => d.id === cur.leads_to) ?? null;
+    }
+  };
+  _starters.forEach(_followChain);
+  // Stitch in any docs unreachable from a starter (disconnected chains)
+  _mainDocs.filter(d => !_msVisited.has(d.id)).forEach(d => { _msVisited.add(d.id); mainSeq.push(d); });
+
   const byParent = {};
   myDocs.filter(d => d.linked_to).forEach(d => {
     (byParent[d.linked_to] = byParent[d.linked_to] || []).push(d);
   });
-  for (const k of Object.keys(byParent))
-    byParent[k].sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
 
   const pos = {};
   mainSeq.forEach((d, i) => { pos[d.id] = { x: i * X_GAP, y: 0 }; });
@@ -6048,8 +6060,7 @@ function showDocNodeModal(id) {
 
   // Populate leads_to and linked_to selects with all doc nodes for this BOM (excluding self)
   const otherDocs = docNodes
-    .filter(d => d.bomNodeId === bomId && d.id !== id)
-    .sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+    .filter(d => d.bomNodeId === bomId && d.id !== id);
 
   const leadsSel = document.getElementById('df-leads_to');
   leadsSel.innerHTML = '<option value="">— None —</option>';
@@ -6133,14 +6144,11 @@ function saveDocNodeModal() {
   if (editDocId) {
     const i = docNodes.findIndex(d => d.id === editDocId);
     if (i >= 0) {
-      data.order = docNodes[i].order ?? 0;
       docNodes[i] = { ...docNodes[i], ...data };
     }
     toast('Document updated', 'success');
   } else {
-    // Auto-assign order among siblings (same parent context)
-    const siblings = docNodes.filter(d => d.bomNodeId === bomId && d.linked_to === linkedTo);
-    data.order = siblings.length;
+    // Position in chain is determined by leads_to relationships, not an explicit order field
     docNodes.push({ id: 'dn_' + Date.now(), ...data });
     toast('Document added', 'success');
   }
