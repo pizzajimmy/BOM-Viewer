@@ -319,6 +319,13 @@ function applySheetDef(ss, sh, def) {
   sh.setRowHeight(1, 32);
   sh.setFrozenRows(1);
 
+  // Clear any header cells left over from a previously wider schema
+  // (e.g. after a column is removed, the old header text would otherwise linger)
+  const lastCol = sh.getLastColumn();
+  if (lastCol > numCols) {
+    sh.getRange(1, numCols + 1, 1, lastCol - numCols).clearContent();
+  }
+
   if (def.notes) {
     Object.entries(def.notes).forEach(([col, note]) => {
       sh.getRange(1, Number(col)).setNote(note);
