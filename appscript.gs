@@ -119,7 +119,7 @@ const SHEET_DEFS = {
   [SHEET_NAMES.CYCLE_DOCS]: {
     tab: { color: '#0d9488' },
     darkTheme: false,
-    headers: ['doc_id', 'bom_node_id', 'label', 'doc_num', 'type', 'cycle_time_hrs'],
+    headers: ['doc_id', 'bom_node_id', 'label', 'doc_num', 'type', 'cycle_time_hrs', 'goal_cycle_time_hrs'],
     autoFill: [
       // Only assembly and test docs have meaningful cycle times to track.
       // Checklists and reference/supplemental docs are excluded.
@@ -134,6 +134,7 @@ const SHEET_DEFS = {
       4: 'Auto-filled doc number — for reference',
       5: 'Auto-filled doc type — for reference',
       6: 'Cycle time in hours — editable. Takes priority over Doc_Nodes on export.\nFor docs shared across multiple BOM nodes, enter per-BOM split: OA=10,AZ=10,AH=15\nEach BOM node then receives only its portion in the cycle time view.\n(Leave 0 on Cycle_BOM for those nodes so the doc sum drives the display.)',
+      7: 'Target / goal cycle time in hours for this document.\nShown as the blue Goal tab on doc nodes in cycle time explode view.',
     },
   },
 
@@ -860,7 +861,8 @@ function buildDashboardJSON(ss) {
         // leads_to / linked_to resolved in post-pass below
         leads_to:       d.leads_to  ? String(d.leads_to)  : null,
         linked_to:      d.linked_to ? String(d.linked_to) : null,
-        cycle_time_hrs: ct,
+        cycle_time_hrs:      ct,
+        goal_cycle_time_hrs: Number(cy.goal_cycle_time_hrs) || 0,
         // cycle_time_by_bom only emitted for single-parent docs using split format
         ...((!multi && ctByBom) ? { cycle_time_by_bom: ctByBom } : {}),
         validates,

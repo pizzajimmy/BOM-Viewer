@@ -2047,7 +2047,7 @@ function collapsedAvgColor(nodeId) {
     }
     case 'cycle': {
       const tot  = allNodes.reduce((s,n) => s + effectiveCycleTime(n), 0);
-      const goal = allNodes.reduce((s,n) => s + (n.goal_cycle_time_hrs ?? 0), 0);
+      const goal = allNodes.reduce((s,n) => s + effectiveGoalCycleTime(n), 0);
       return cycleOvershootColor(tot, goal);
     }
     case 'testing': {
@@ -2634,7 +2634,9 @@ function render() {
   // Helper: total section height — docs view uses taller mini-node cards
   function sectionH(rows) {
     if (!rows?.length) return NH + 2*XS_PAD;
-    const rH = currentView === 'docs' ? MN_H   : XS_ROW;
+    const rH = currentView === 'docs'  ? MN_H
+             : currentView === 'cycle' ? XS_ROW + 18   // +18 for goal/actual badge strip
+             : XS_ROW;
     const rG = currentView === 'docs' ? MN_GAP : XS_GAP;
     return XS_LBL + XS_PAD + rows.length*(rH + rG) - rG + XS_PAD;
   }
@@ -2914,10 +2916,15 @@ function render() {
                   .attr('stroke-width', 1).attr('stroke-dasharray', '3,2');
               }
 
+              const isCycleRow  = currentView === 'cycle';
+              const docActual   = isCycleRow ? (d.cycle_time_hrs      || 0) : 0;
+              const docGoal     = isCycleRow ? (d.goal_cycle_time_hrs || 0) : 0;
+              const rowFillCol  = isCycleRow ? cycleOvershootColor(docActual, docGoal) : docCol;
+
               sg.append('rect')
                 .attr('x', rowX).attr('y', rowY)
                 .attr('width', rowW).attr('height', XS_ROW).attr('rx', 5)
-                .attr('fill', docCol + '22').attr('stroke', docCol).attr('stroke-width', 1);
+                .attr('fill', rowFillCol + '22').attr('stroke', rowFillCol).attr('stroke-width', 1);
 
               sg.append('circle')
                 .attr('cx', rowX + 8).attr('cy', rowY + XS_ROW/2)
@@ -2930,12 +2937,46 @@ function render() {
                 .attr('fill', '#cbd5e1').attr('pointer-events', 'none')
                 .text(trunc(d.label, maxCh));
 
-              sg.append('circle')
-                .attr('cx', rowX + rowW - 8).attr('cy', rowY + XS_ROW/2)
-                .attr('r', 4).attr('fill', docCol);
+              // Right-side indicator: score dot in other views, cycle badge in cycle view
+              if (isCycleRow) {
+                // nothing on right — badges appear below the row
+              } else {
+                sg.append('circle')
+                  .attr('cx', rowX + rowW - 8).attr('cy', rowY + XS_ROW/2)
+                  .attr('r', 4).attr('fill', docCol);
+              }
+
+              // ── Cycle view: goal / actual badge tabs below the row ──────────
+              if (isCycleRow && (docGoal > 0 || docActual > 0)) {
+                const badgeY = rowY + XS_ROW + 2;
+                if (docGoal > 0) {
+                  sg.append('rect')
+                    .attr('x', rowX).attr('y', badgeY)
+                    .attr('width', 76).attr('height', 14).attr('rx', 3)
+                    .attr('fill', '#1e3a5f').attr('opacity', .9);
+                  sg.append('text')
+                    .attr('x', rowX + 38).attr('y', badgeY + 7)
+                    .attr('text-anchor', 'middle').attr('dominant-baseline', 'middle')
+                    .attr('font-size', 8).attr('fill', '#93c5fd').attr('pointer-events', 'none')
+                    .text(`Goal: ${docGoal.toFixed(1)}h`);
+                }
+                if (docActual > 0) {
+                  const acol = cycleOvershootColor(docActual, docGoal);
+                  sg.append('rect')
+                    .attr('x', rowX + 80).attr('y', badgeY)
+                    .attr('width', 76).attr('height', 14).attr('rx', 3)
+                    .attr('fill', acol + '33').attr('stroke', acol).attr('stroke-width', 0.8)
+                    .attr('opacity', .9);
+                  sg.append('text')
+                    .attr('x', rowX + 118).attr('y', badgeY + 7)
+                    .attr('text-anchor', 'middle').attr('dominant-baseline', 'middle')
+                    .attr('font-size', 8).attr('fill', '#f1f5f9').attr('pointer-events', 'none')
+                    .text(`Act: ${docActual.toFixed(1)}h`);
+                }
+              }
 
               if (!indent) lastMainY = rowY;
-              rowY += XS_ROW + XS_GAP;
+              rowY += (isCycleRow ? XS_ROW + 18 : XS_ROW) + XS_GAP;
             }
           });
         });
@@ -3366,8 +3407,17 @@ function render() {
     const cycBadgeG = gSel.append('g').attr('class', 'cycle-badges');
     allNodes.forEach(n => {
       if (n.data.id === '__root__') return;
-      const actual = effectiveCycleTime(n.data);
-      const goal   = n.data.goal_cycle_time_hrs || 0;
+      let actual, goal;
+      if (collapsedIds.has(n.data.id)) {
+        // Collapsed: show sum across the entire subtree (node + all descendants)
+        const subtreeIds = [n.data.id, ...getDescendantIds(n.data.id)];
+        const subtree    = nodes.filter(x => subtreeIds.includes(x.id));
+        actual = subtree.reduce((s, x) => s + effectiveCycleTime(x), 0);
+        goal   = subtree.reduce((s, x) => s + effectiveGoalCycleTime(x), 0);
+      } else {
+        actual = effectiveCycleTime(n.data);
+        goal   = effectiveGoalCycleTime(n.data);
+      }
       if (!actual && !goal) return;
 
       const bx = n.x - NW/2;
@@ -6799,6 +6849,15 @@ function effectiveCycleTime(nd) {
   const ds = docCycleSum(nd.id);
   if (ds > 0) return ds;
   return 0;
+}
+
+// Effective goal cycle time for a BOM node.
+// Priority: (1) explicit goal_cycle_time_hrs on node > (2) sum of doc node goal_cycle_time_hrs.
+function effectiveGoalCycleTime(nd) {
+  if (nd.goal_cycle_time_hrs > 0) return nd.goal_cycle_time_hrs;
+  return docNodes
+    .filter(d => d.bomNodeId === nd.id)
+    .reduce((s, d) => s + (d.goal_cycle_time_hrs || 0), 0);
 }
 
 // Cycle overshoot color gradient.
