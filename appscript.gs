@@ -134,7 +134,7 @@ const SHEET_DEFS = {
       4: 'Auto-filled doc number — for reference',
       5: 'Auto-filled doc type — for reference',
       6: 'Cycle time in hours — editable. Takes priority over Doc_Nodes on export.\nFor docs shared across multiple BOM nodes, enter per-BOM split: OA=10,AZ=10,AH=15\nEach BOM node then receives only its portion in the cycle time view.\n(Leave 0 on Cycle_BOM for those nodes so the doc sum drives the display.)',
-      7: 'Target / goal cycle time in hours for this document.\nShown as the blue Goal tab on doc nodes in cycle time explode view.',
+      7: 'Target / goal cycle time in hours for this document.\nSupports the same per-BOM split format as cycle_time_hrs: OA=10,AZ=10,AH=15\nEach BOM node receives only its portion in the cycle time explode view.',
     },
   },
 
@@ -413,8 +413,8 @@ function applyValidations(sh, headers) {
       rule = SpreadsheetApp.newDataValidation()
         .requireNumberBetween(1, 5).setAllowInvalid(false).build();
     } else if (['cycle_time_hrs','goal_cycle_time_hrs'].includes(h)) {
-      if (h === 'cycle_time_hrs' && sh.getName() === SHEET_NAMES.CYCLE_DOCS) {
-        // No validation — column accepts plain numbers and "A1=3,A2=4" split format
+      if (sh.getName() === SHEET_NAMES.CYCLE_DOCS) {
+        // No validation — both columns accept plain numbers and "OA=10,AZ=10" split format
         sh.getRange(2, col, maxDataRow, 1).clearDataValidations();
         return;
       }
@@ -843,10 +843,15 @@ function buildDashboardJSON(ss) {
       : (d.cycle_time_hrs ?? '');
     const { total: ctTotal, byBom: ctByBom } = parseCycleTime(rawCt);
 
+    // Goal cycle time: same split format as actual (OA=10,AZ=10)
+    const rawGt = String(cy.goal_cycle_time_hrs ?? '').trim();
+    const { total: gtTotal, byBom: gtByBom } = parseCycleTime(rawGt);
+
     return bomIds.map(bomNodeId => {
       const nodeId = multi ? `${origId}__${bomNodeId}` : origId;
       // For multi-parent docs, use the per-BOM split cycle time if available
       const ct = (multi && ctByBom) ? (ctByBom[bomNodeId] ?? ctTotal) : ctTotal;
+      const gt = (multi && gtByBom) ? (gtByBom[bomNodeId] ?? gtTotal) : gtTotal;
       return {
         id:             nodeId,
         bomNodeId,
@@ -862,7 +867,7 @@ function buildDashboardJSON(ss) {
         leads_to:       d.leads_to  ? String(d.leads_to)  : null,
         linked_to:      d.linked_to ? String(d.linked_to) : null,
         cycle_time_hrs:      ct,
-        goal_cycle_time_hrs: Number(cy.goal_cycle_time_hrs) || 0,
+        goal_cycle_time_hrs: gt,
         // cycle_time_by_bom only emitted for single-parent docs using split format
         ...((!multi && ctByBom) ? { cycle_time_by_bom: ctByBom } : {}),
         validates,
