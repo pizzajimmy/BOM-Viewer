@@ -52,10 +52,10 @@ const SHEET_DEFS = {
   [SHEET_NAMES.DOCS]: {
     tab: { color: '#7c3aed' },
     darkTheme: false,
-    headers: ['id', 'bom_node_id', 'type', 'label', 'doc_num', 'score', 'order', 'leads_to', 'linked_to'],
+    headers: ['id', 'bom_node_id', 'type', 'label', 'doc_num', 'score', 'order', 'leads_to', 'linked_to', 'tests_node_id'],
     notes: {
       1: 'Unique doc ID',
-      2: 'ID of the BOM node this doc belongs to',
+      2: 'BOM node(s) this doc is PART OF — drives tree placement and cycle time.\nComma-separated for docs that span multiple BOMs (e.g. OA,AZ).',
       3: 'assembly | test | checklist | reference',
       4: 'Document display name',
       5: 'Document number (e.g. SOP-011)',
@@ -63,6 +63,7 @@ const SHEET_DEFS = {
       7: 'Sort order within the same bom_node_id',
       8: 'ID of the doc this one leads TO (next step above in flow)',
       9: 'ID of a doc this one is side-linked to (dashed branch)',
+      10: 'BOM node(s) this doc VALIDATES — comma-separated (e.g. MOTOR,GEARBOX).\nControls which Testing matrix columns are active (white) for this doc.\nLeave blank to default to bom_node_id.\nDoes NOT affect cycle time or tree placement.',
     },
   },
 
@@ -176,15 +177,17 @@ const SHEET_DEFS = {
   [SHEET_NAMES.TESTING]: {
     tab: { color: '#059669' },
     darkTheme: false,
-    headers: ['doc_id', 'bom_node_id', 'label', 'type'],
+    headers: ['doc_id', 'tests_node_id', 'label', 'type'],
     autoFill: [
       { col: 1, formula: `=IFERROR(FILTER(Doc_Nodes!A2:A,(Doc_Nodes!C2:C="test")+(Doc_Nodes!C2:C="checklist")),"")` },
-      { col: 2, formula: `=ARRAYFORMULA(IF(A2:A="","",VLOOKUP(A2:A,Doc_Nodes!A:I,2,FALSE)))` },
-      { col: 3, formula: `=ARRAYFORMULA(IF(A2:A="","",VLOOKUP(A2:A,Doc_Nodes!A:I,4,FALSE)))` },
-      { col: 4, formula: `=ARRAYFORMULA(IF(A2:A="","",VLOOKUP(A2:A,Doc_Nodes!A:I,3,FALSE)))` },
+      // col 2: use tests_node_id (Doc_Nodes col 10) if set; fall back to bom_node_id (col 2)
+      { col: 2, formula: `=ARRAYFORMULA(IF(A2:A="","",IF(IFERROR(VLOOKUP(A2:A,Doc_Nodes!A:J,10,FALSE),"")<>"",IFERROR(VLOOKUP(A2:A,Doc_Nodes!A:J,10,FALSE),""),IFERROR(VLOOKUP(A2:A,Doc_Nodes!A:J,2,FALSE),""))))` },
+      { col: 3, formula: `=ARRAYFORMULA(IF(A2:A="","",VLOOKUP(A2:A,Doc_Nodes!A:J,4,FALSE)))` },
+      { col: 4, formula: `=ARRAYFORMULA(IF(A2:A="","",VLOOKUP(A2:A,Doc_Nodes!A:J,3,FALSE)))` },
     ],
     notes: {
       1: 'Auto-filled from Doc_Nodes (test + checklist types only) — do not edit',
+      2: 'Auto-filled: shows tests_node_id from Doc_Nodes (which BOM nodes this doc validates).\nFalls back to bom_node_id if tests_node_id is blank.\nMatrix columns turn white for matching BOM node IDs.',
       4: 'Auto-filled type — always test or checklist',
     },
   },
@@ -192,15 +195,17 @@ const SHEET_DEFS = {
   [SHEET_NAMES.TESTING_NOTES]: {
     tab: { color: '#059669' },
     darkTheme: false,
-    headers: ['doc_id', 'bom_node_id', 'label', 'type'],
+    headers: ['doc_id', 'tests_node_id', 'label', 'type'],
     autoFill: [
       { col: 1, formula: `=IFERROR(FILTER(Doc_Nodes!A2:A,(Doc_Nodes!C2:C="test")+(Doc_Nodes!C2:C="checklist")),"")` },
-      { col: 2, formula: `=ARRAYFORMULA(IF(A2:A="","",VLOOKUP(A2:A,Doc_Nodes!A:I,2,FALSE)))` },
-      { col: 3, formula: `=ARRAYFORMULA(IF(A2:A="","",VLOOKUP(A2:A,Doc_Nodes!A:I,4,FALSE)))` },
-      { col: 4, formula: `=ARRAYFORMULA(IF(A2:A="","",VLOOKUP(A2:A,Doc_Nodes!A:I,3,FALSE)))` },
+      // col 2: use tests_node_id (Doc_Nodes col 10) if set; fall back to bom_node_id (col 2)
+      { col: 2, formula: `=ARRAYFORMULA(IF(A2:A="","",IF(IFERROR(VLOOKUP(A2:A,Doc_Nodes!A:J,10,FALSE),"")<>"",IFERROR(VLOOKUP(A2:A,Doc_Nodes!A:J,10,FALSE),""),IFERROR(VLOOKUP(A2:A,Doc_Nodes!A:J,2,FALSE),""))))` },
+      { col: 3, formula: `=ARRAYFORMULA(IF(A2:A="","",VLOOKUP(A2:A,Doc_Nodes!A:J,4,FALSE)))` },
+      { col: 4, formula: `=ARRAYFORMULA(IF(A2:A="","",VLOOKUP(A2:A,Doc_Nodes!A:J,3,FALSE)))` },
     ],
     notes: {
       1: 'Auto-filled from Doc_Nodes (test + checklist types only) — do not edit',
+      2: 'Auto-filled: shows tests_node_id from Doc_Nodes (which BOM nodes this doc validates).\nFalls back to bom_node_id if tests_node_id is blank.',
       4: 'Auto-filled type — for reference only',
     },
   },
@@ -831,6 +836,10 @@ function buildDashboardJSON(ss) {
       return {
         id:             nodeId,
         bomNodeId,
+        // tests_node_id: which BOM nodes this doc validates (may differ from bomNodeId
+        // for test/checklist docs that validate sub-assemblies of their parent BOM).
+        // Empty string means "same as bom_node_id" (single-parent, self-validates).
+        tests_node_id:  String(d.tests_node_id || '').trim(),
         type:           String(d.type),
         label:          String(d.label),
         doc_num:        String(d.doc_num  || ''),
