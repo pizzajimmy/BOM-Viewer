@@ -121,14 +121,16 @@ const SHEET_DEFS = {
     darkTheme: false,
     headers: ['doc_id', 'bom_node_id', 'label', 'doc_num', 'type', 'cycle_time_hrs'],
     autoFill: [
-      { col: 1, formula: `=ARRAYFORMULA(IF(Doc_Nodes!A2:A="","",Doc_Nodes!A2:A))` },
+      // Only assembly and test docs have meaningful cycle times to track.
+      // Checklists and reference/supplemental docs are excluded.
+      { col: 1, formula: `=IFERROR(FILTER(Doc_Nodes!A2:A,(Doc_Nodes!C2:C="assembly")+(Doc_Nodes!C2:C="test")),"")` },
       { col: 2, formula: `=ARRAYFORMULA(IF(A2:A="","",VLOOKUP(A2:A,Doc_Nodes!A:I,2,FALSE)))` },
       { col: 3, formula: `=ARRAYFORMULA(IF(A2:A="","",VLOOKUP(A2:A,Doc_Nodes!A:I,4,FALSE)))` },
       { col: 4, formula: `=ARRAYFORMULA(IF(A2:A="","",VLOOKUP(A2:A,Doc_Nodes!A:I,5,FALSE)))` },
       { col: 5, formula: `=ARRAYFORMULA(IF(A2:A="","",VLOOKUP(A2:A,Doc_Nodes!A:I,3,FALSE)))` },
     ],
     notes: {
-      1: 'Auto-filled from Doc_Nodes — do not edit',
+      1: 'Auto-filled from Doc_Nodes (assembly + test types only) — do not edit',
       4: 'Auto-filled doc number — for reference',
       5: 'Auto-filled doc type — for reference',
       6: 'Cycle time in hours — editable. Takes priority over Doc_Nodes on export.\nFor docs shared across multiple BOM nodes, enter per-BOM split: OA=10,AZ=10,AH=15\nEach BOM node then receives only its portion in the cycle time view.\n(Leave 0 on Cycle_BOM for those nodes so the doc sum drives the display.)',
@@ -593,9 +595,9 @@ function syncTestingMatrix(ss) {
 function syncViewSheets() {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
 
-  _syncMasterToViews(ss, SHEET_NAMES.BOM,  [SHEET_NAMES.OVERVIEW, SHEET_NAMES.CYCLE_BOM]);
-  _syncMasterToViews(ss, SHEET_NAMES.DOCS, [SHEET_NAMES.CYCLE_DOCS]);
-  // Training/Testing/Testing_Notes rows are all driven by FILTER formulas — no row sync needed.
+  _syncMasterToViews(ss, SHEET_NAMES.BOM, [SHEET_NAMES.OVERVIEW, SHEET_NAMES.CYCLE_BOM]);
+  // All doc-based sheets are driven by FILTER formulas — no row sync needed:
+  // Cycle_Docs:     assembly + test types only
   // Training:       assembly + test types only
   // Testing:        test + checklist types only
   // Testing_Notes:  test + checklist types only
