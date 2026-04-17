@@ -299,12 +299,39 @@ function setupDashboardSheets() {
 
 
 // ── Apply a sheet definition ────────────────────────────────────────
+// Safe to run on sheets that already have data: user-editable column
+// data is saved by header name before the schema is applied, then
+// written back to the correct new column positions.  This means adding,
+// removing, or reordering schema columns never corrupts existing data.
 function applySheetDef(ss, sh, def) {
   const numCols    = def.headers.length;
-  const darkTheme  = def.darkTheme !== false; // default true if omitted
-  const baseBg     = darkTheme ? LOCKED_BG   : null;   // null = sheet default (white)
+  const darkTheme  = def.darkTheme !== false;
+  const baseBg     = darkTheme ? LOCKED_BG   : null;
   const altBg      = darkTheme ? HDR_BG      : '#f1f5f9';
   const dataFgCol  = darkTheme ? '#e2e8f0'   : '#1e293b';
+
+  // ── Save existing user data keyed by column header name ──────────
+  // Auto-fill columns are excluded — their formulas are always rewritten.
+  // This makes the function idempotent even after schema changes.
+  const autoFillColNums = new Set((def.autoFill || []).map(af => af.col));
+  const savedByHeader   = {};   // { headerName → [rowValue, ...] }
+
+  const existingLastRow = sh.getLastRow();
+  const existingLastCol = sh.getLastColumn();
+
+  if (existingLastRow > 1 && existingLastCol > 0) {
+    const existingHeaders = sh.getRange(1, 1, 1, existingLastCol)
+      .getValues()[0].map(h => String(h).trim());
+    const allData = sh.getRange(2, 1, existingLastRow - 1, existingLastCol).getValues();
+
+    existingHeaders.forEach((h, colIdx) => {
+      if (!h) return;
+      // Skip if this header maps to an auto-fill column in the new schema
+      const newPos = def.headers.indexOf(h) + 1;
+      if (newPos > 0 && autoFillColNums.has(newPos)) return;
+      savedByHeader[h] = allData.map(row => row[colIdx]);
+    });
+  }
 
   if (def.tab?.color) sh.setTabColor(def.tab.color);
 
@@ -321,7 +348,6 @@ function applySheetDef(ss, sh, def) {
   sh.setFrozenRows(1);
 
   // Clear any header cells left over from a previously wider schema
-  // (e.g. after a column is removed, the old header text would otherwise linger)
   const lastCol = sh.getLastColumn();
   if (lastCol > numCols) {
     sh.getRange(1, numCols + 1, 1, lastCol - numCols).clearContent();
@@ -349,17 +375,31 @@ function applySheetDef(ss, sh, def) {
     const dataRange = sh.getRange(2, 1, sh.getMaxRows() - 1, numCols);
     if (baseBg) dataRange.setBackground(baseBg);
     else        dataRange.setBackground(null);
-    dataRange
-      .setFontColor(dataFgCol)
-      .setFontFamily(DATA_FONT)
-      .setFontSize(9)
-      .setVerticalAlignment('middle');
+    dataRange.setFontColor(dataFgCol).setFontFamily(DATA_FONT).setFontSize(9).setVerticalAlignment('middle');
   }
   sh.setRowHeightsForced(2, Math.max(sh.getMaxRows() - 1, 1), 26);
 
+  // ── Restore user data to correct column positions ─────────────────
+  // Clear writable columns first (avoids stale values from old column
+  // positions), then write each header's saved data to its new column.
+  const numDataRows = Math.max(existingLastRow - 1, 0);
+  if (numDataRows > 0 && Object.keys(savedByHeader).length) {
+    const blank = Array.from({ length: numDataRows }, () => ['']);
+    def.headers.forEach((h, i) => {
+      const col = i + 1;
+      if (autoFillColNums.has(col)) return;
+      // Clear the column before writing (removes stale data from old positions)
+      sh.getRange(2, col, numDataRows, 1).setValues(blank);
+      const saved = savedByHeader[h];
+      if (!saved?.length) return;
+      const rows = Math.min(saved.length, numDataRows);
+      sh.getRange(2, col, rows, 1).setValues(saved.slice(0, rows).map(v => [v]));
+    });
+  }
+
   // Auto-fill formulas + lock styling
-  const lockedBg     = darkTheme ? LOCKED_BG      : LOCKED_LIGHT_BG;
-  const lockedFgCol  = darkTheme ? '#94a3b8'       : '#64748b';
+  const lockedBg    = darkTheme ? LOCKED_BG : LOCKED_LIGHT_BG;
+  const lockedFgCol = darkTheme ? '#94a3b8'  : '#64748b';
   if (def.autoFill?.length) {
     def.autoFill.forEach(af => {
       const cell = sh.getRange(2, af.col);
@@ -456,6 +496,10 @@ function applySupplierDropdowns(ss) {
 // ═══════════════════════════════════════════════════════════════════
 //  TRAINING MATRIX
 // ═══════════════════════════════════════════════════════════════════
+// Full keyed rebuild: saves existing scores by [docId][initials],
+// deletes all technician columns, re-adds from current Technicians
+// sheet in order, then writes saved scores back.  Removed technicians
+// lose their column; renamed ones effectively start fresh.
 function syncTrainingMatrix(ss) {
   ss = ss || SpreadsheetApp.getActiveSpreadsheet();
   const techSh  = ss.getSheetByName(SHEET_NAMES.TECHNICIANS);
@@ -466,34 +510,53 @@ function syncTrainingMatrix(ss) {
     ? techSh.getRange(2, 2, techSh.getLastRow() - 1, 1).getValues().flat()
         .map(v => String(v).trim()).filter(Boolean)
     : [];
-  if (!techData.length) return;
 
-  const headerRow     = trainSh.getRange(1, 1, 1, trainSh.getLastColumn()).getValues()[0];
-  const existingTechs = headerRow.slice(TRAINING_BASE_COLS).map(h => String(h).trim());
+  const matrixStart = TRAINING_BASE_COLS + 1;
 
-  // ── Pass 1: add any missing technician columns ────────────────
-  techData.forEach(initials => {
-    if (existingTechs.includes(initials)) return;
-    const newCol = trainSh.getLastColumn() + 1;
-    if (newCol > trainSh.getMaxColumns()) trainSh.insertColumnsAfter(trainSh.getMaxColumns(), 1);
+  // ── Save existing scores keyed by [docId][initials] ──────────────
+  const saved = {};   // { docId: { initials: score } }
+  const curLastCol = trainSh.getLastColumn();
+  if (curLastCol > TRAINING_BASE_COLS && trainSh.getLastRow() > 1) {
+    const numDataRows   = trainSh.getLastRow() - 1;
+    const existingTechs = trainSh.getRange(1, matrixStart, 1, curLastCol - TRAINING_BASE_COLS)
+      .getValues()[0].map(h => String(h).trim());
+    const docIds    = trainSh.getRange(2, 1, numDataRows, 1).getValues().flat().map(v => String(v).trim());
+    const matrixVals = trainSh.getRange(2, matrixStart, numDataRows, existingTechs.length).getValues();
 
-    trainSh.getRange(1, newCol)
+    docIds.forEach((docId, ri) => {
+      if (!docId) return;
+      existingTechs.forEach((initials, ci) => {
+        if (!initials) return;
+        const val = matrixVals[ri][ci];
+        if (val !== '' && val !== null && val !== undefined) {
+          if (!saved[docId]) saved[docId] = {};
+          saved[docId][initials] = val;
+        }
+      });
+    });
+  }
+
+  // ── Delete all existing technician columns ────────────────────────
+  const oldMatrixCols = trainSh.getLastColumn() - TRAINING_BASE_COLS;
+  if (oldMatrixCols > 0) trainSh.deleteColumns(matrixStart, oldMatrixCols);
+
+  if (!techData.length) { trainSh.setFrozenColumns(TRAINING_BASE_COLS); return; }
+
+  // ── Add current technician columns in order ───────────────────────
+  trainSh.insertColumnsAfter(TRAINING_BASE_COLS, techData.length);
+  const maxRows = Math.max(trainSh.getMaxRows() - 1, 1);
+
+  techData.forEach((initials, i) => {
+    const col = matrixStart + i;
+    trainSh.getRange(1, col)
       .setValue(initials)
       .setBackground(TECH_HDR_BG).setFontColor(TECH_HDR_FG)
       .setFontFamily(HDR_FONT).setFontWeight('bold')
       .setFontSize(10).setHorizontalAlignment('center').setVerticalAlignment('middle')
       .setNote(`Training score for ${initials}\nEnter 0–3:\n  blank = not assigned\n  1 = awareness\n  2 = supervised\n  3 = qualified`);
+    trainSh.setColumnWidth(col, TECH_COL_W);
 
-    trainSh.setColumnWidth(newCol, TECH_COL_W);
-    existingTechs.push(initials);
-  });
-
-  // ── Re-format ALL technician data columns (overwrites old dark styling) ──
-  const maxRows = Math.max(trainSh.getMaxRows() - 1, 1);
-  existingTechs.forEach((initials, i) => {
-    if (!initials) return;
-    const colIdx = TRAINING_BASE_COLS + 1 + i;
-    trainSh.getRange(2, colIdx, maxRows, 1)
+    trainSh.getRange(2, col, maxRows, 1)
       .setBackground(null).setFontColor('#1e293b')
       .setHorizontalAlignment('center').setFontFamily(DATA_FONT).setFontSize(10)
       .setDataValidation(
@@ -503,6 +566,20 @@ function syncTrainingMatrix(ss) {
       );
   });
 
+  // ── Restore saved scores ──────────────────────────────────────────
+  if (trainSh.getLastRow() > 1) {
+    const numDataRows = trainSh.getLastRow() - 1;
+    const currentDocIds = trainSh.getRange(2, 1, numDataRows, 1).getValues().flat().map(v => String(v).trim());
+    techData.forEach((initials, i) => {
+      const col = matrixStart + i;
+      const colVals = currentDocIds.map(docId => {
+        const val = saved[docId]?.[initials];
+        return [val !== undefined ? val : ''];
+      });
+      trainSh.getRange(2, col, numDataRows, 1).setValues(colVals);
+    });
+  }
+
   trainSh.setFrozenColumns(TRAINING_BASE_COLS);
 }
 
@@ -510,6 +587,9 @@ function syncTrainingMatrix(ss) {
 // ═══════════════════════════════════════════════════════════════════
 //  TESTING MATRIX (validates scores + notes)
 // ═══════════════════════════════════════════════════════════════════
+// Full keyed rebuild: saves existing data by [docId][bomId], deletes
+// all BOM columns, re-adds from current BOM_Nodes in order, writes
+// data back.  Removed/renamed BOM nodes lose their column cleanly.
 function syncTestingMatrix(ss) {
   ss = ss || SpreadsheetApp.getActiveSpreadsheet();
   const bomSh = ss.getSheetByName(SHEET_NAMES.BOM);
@@ -524,17 +604,43 @@ function syncTestingMatrix(ss) {
     const sh = ss.getSheetByName(shName);
     if (!sh) return;
 
-    const isNotes      = shName === SHEET_NAMES.TESTING_NOTES;
-    const headerRow    = sh.getRange(1, 1, 1, sh.getLastColumn()).getValues()[0];
-    const existingCols = headerRow.slice(TESTING_BASE_COLS).map(h => String(h).trim());
+    const isNotes    = shName === SHEET_NAMES.TESTING_NOTES;
+    const matrixStart = TESTING_BASE_COLS + 1;
 
-    // ── Pass 1: add any missing BOM node columns (headers + validation only) ──
-    bomNodes.forEach(({ id, name }) => {
-      if (existingCols.includes(id)) return;
-      const newCol = sh.getLastColumn() + 1;
-      if (newCol > sh.getMaxColumns()) sh.insertColumnsAfter(sh.getMaxColumns(), 1);
+    // ── Save existing matrix data keyed by [docId][bomId] ────────
+    const saved = {};   // { docId: { bomId: value } }
+    const curLastCol = sh.getLastColumn();
+    if (curLastCol > TESTING_BASE_COLS && sh.getLastRow() > 1) {
+      const numDataRows   = sh.getLastRow() - 1;
+      const existingBomCols = sh.getRange(1, matrixStart, 1, curLastCol - TESTING_BASE_COLS)
+        .getValues()[0].map(h => String(h).trim());
+      const docIds     = sh.getRange(2, 1, numDataRows, 1).getValues().flat().map(v => String(v).trim());
+      const matrixVals = sh.getRange(2, matrixStart, numDataRows, existingBomCols.length).getValues();
 
-      sh.getRange(1, newCol)
+      docIds.forEach((docId, ri) => {
+        if (!docId) return;
+        existingBomCols.forEach((bomId, ci) => {
+          if (!bomId) return;
+          const val = matrixVals[ri]?.[ci];
+          if (val !== '' && val !== null && val !== undefined) {
+            if (!saved[docId]) saved[docId] = {};
+            saved[docId][bomId] = val;
+          }
+        });
+      });
+    }
+
+    // ── Delete all existing BOM columns then add current ones ─────
+    const oldMatrixCols = sh.getLastColumn() - TESTING_BASE_COLS;
+    if (oldMatrixCols > 0) sh.deleteColumns(matrixStart, oldMatrixCols);
+    sh.insertColumnsAfter(TESTING_BASE_COLS, bomNodes.length);
+
+    const maxDataRows = Math.max(sh.getMaxRows() - 1, 1);
+
+    // ── Write new BOM column headers + formatting ─────────────────
+    bomNodes.forEach(({ id, name }, idx) => {
+      const col = matrixStart + idx;
+      sh.getRange(1, col)
         .setValue(id)
         .setBackground(isNotes ? '#dbeafe' : '#ede9fe')
         .setFontColor(isNotes ? '#1e40af' : '#4c1d95')
@@ -543,47 +649,46 @@ function syncTestingMatrix(ss) {
         .setNote(`BOM node: ${name} (${id})\n${isNotes
           ? 'Optional note for this validates edge.\nLeave blank if none.'
           : 'Validation score 0–3:\n  blank = not validated\n  1 = partial\n  2 = functional\n  3 = fully validated'}`);
+      sh.setColumnWidth(col, isNotes ? 160 : TECH_COL_W);
 
-      sh.setColumnWidth(newCol, isNotes ? 160 : TECH_COL_W);
-      if (!isNotes) {
-        sh.getRange(2, newCol, Math.max(sh.getMaxRows() - 1, 1), 1)
+      const dataRange = sh.getRange(2, col, maxDataRows, 1);
+      dataRange.setBackground('#e2e8f0').setFontColor('#1e293b');
+      if (isNotes) {
+        dataRange.setFontFamily(HDR_FONT).setFontSize(9).setWrap(true).setVerticalAlignment('top');
+      } else {
+        dataRange.setHorizontalAlignment('center').setFontFamily(DATA_FONT).setFontSize(10)
           .setDataValidation(
             SpreadsheetApp.newDataValidation()
               .requireNumberBetween(0, 3).setAllowInvalid(true)
               .setHelpText('0 = not validated, 1 = partial, 2 = functional, 3 = fully validated').build()
           );
       }
-      existingCols.push(id);
     });
 
-    // ── Re-format ALL matrix data columns (overwrites any old dark styling) ──
-    // Grey base; conditional rules in Pass 2 override to white for active cells.
-    const maxDataRows = Math.max(sh.getMaxRows() - 1, 1);
-    existingCols.forEach((bomId, i) => {
-      if (!bomId) return;
-      const colIdx  = TESTING_BASE_COLS + 1 + i;
-      const dataRange = sh.getRange(2, colIdx, maxDataRows, 1);
-      dataRange.setBackground('#e2e8f0').setFontColor('#1e293b');
-      if (isNotes) {
-        dataRange.setFontFamily(HDR_FONT).setFontSize(9).setWrap(true).setVerticalAlignment('top');
-      } else {
-        dataRange.setHorizontalAlignment('center').setFontFamily(DATA_FONT).setFontSize(10);
-      }
-    });
+    // ── Restore saved data into correct new columns ───────────────
+    if (sh.getLastRow() > 1) {
+      const numDataRows2 = sh.getLastRow() - 1;
+      const currentDocIds = sh.getRange(2, 1, numDataRows2, 1).getValues().flat().map(v => String(v).trim());
+      bomNodes.forEach(({ id: bomId }, idx) => {
+        const col = matrixStart + idx;
+        const colVals = currentDocIds.map(docId => {
+          const val = saved[docId]?.[bomId];
+          return [val !== undefined ? val : ''];
+        });
+        sh.getRange(2, col, numDataRows2, 1).setValues(colVals);
+      });
+    }
 
-    // ── Pass 2: rebuild all conditional format rules ──────────────
-    // White match rules come first so they beat the alternating-row rule.
-    // A cell turns white when its row's bom_node_id contains this column's ID
-    // (bom_node_id may be comma-separated, e.g. "A1,A2").
-    const matchRules = existingCols.map((bomId, i) => {
-      if (!bomId) return null;
-      const colIdx = TESTING_BASE_COLS + 1 + i;
+    // ── Rebuild conditional format rules ──────────────────────────
+    // White match rules first so they beat the alternating-row rule.
+    const matchRules = bomNodes.map(({ id: bomId }, idx) => {
+      const colIdx = matrixStart + idx;
       return SpreadsheetApp.newConditionalFormatRule()
         .whenFormulaSatisfied(`=ISNUMBER(SEARCH(","&"${bomId}"&",",","&TRIM($B2)&","))`)
         .setBackground('#ffffff')
         .setRanges([sh.getRange(2, colIdx, maxDataRows, 1)])
         .build();
-    }).filter(Boolean);
+    });
 
     const altRule = SpreadsheetApp.newConditionalFormatRule()
       .whenFormulaSatisfied('=AND(ROW()>1,MOD(ROW(),2)=0,A2<>"")')
