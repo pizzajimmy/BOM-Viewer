@@ -42,7 +42,7 @@ const SHEET_DEFS = {
     headers: ['id', 'parent', 'type', 'name', 'sublabel'],
     notes: {
       1: 'Unique node ID (e.g. P1, A1, M1)',
-      2: 'Parent node ID — leave blank for root',
+      2: 'Parent node ID — leave blank for root.\nFor nodes that appear under multiple parents, enter all parent IDs comma-separated (e.g. P1,P2).\nThe dashboard will create one tree instance per parent.',
       3: 'product | assembly | machined | stock | pcb',
       4: 'Human-readable display name',
       5: 'Part / SKU number shown under the name',
@@ -60,8 +60,8 @@ const SHEET_DEFS = {
       4: 'Document display name',
       5: 'Document number (e.g. SOP-011)',
       6: 'Readiness score 0–3',
-      7: 'ID of the doc this one leads TO (next step in the flow)',
-      8: 'ID of a doc this one is side-linked to (dashed branch)',
+      7: 'ID of the doc this one leads TO (next step in the flow).\nFor docs shared across multiple BOMs, use split format: OA=DOCX,AZ=DOCY\n(one target per BOM, comma-separated).',
+      8: 'ID of a doc this one is side-linked to (dashed branch).\nFor docs shared across multiple BOMs, use split format: OA=DOCX,AZ=DOCY\n(one target per BOM, comma-separated).',
       9: 'BOM node(s) this doc VALIDATES — comma-separated (e.g. MOTOR,GEARBOX).\nControls which Testing matrix columns are active (white) for this doc.\nLeave blank to default to bom_node_id.\nDoes NOT affect cycle time or tree placement.',
     },
   },
@@ -69,10 +69,10 @@ const SHEET_DEFS = {
   [SHEET_NAMES.TECHNICIANS]: {
     tab: { color: '#d97706' },
     darkTheme: false,
-    headers: ['id', 'initials'],
+    headers: ['id', 'name'],
     notes: {
-      1: 'Technician ID (e.g. T1, T2) — used internally',
-      2: 'Short initials shown as column header in Training matrix (e.g. AC, BS)\nRun Dashboard → Sync after adding a new technician.',
+      1: 'Technician ID / initials used everywhere operationally (e.g. AC, BS)\nShown in the Training matrix column headers and used by live queue URLs.',
+      2: 'Display name used in the dashboard UI (e.g. Alice, Ben)\nRun Dashboard → Sync after adding a new technician.',
     },
   },
 
@@ -184,15 +184,15 @@ const SHEET_DEFS = {
     headers: ['doc_id', 'tests_node_id', 'label', 'type'],
     autoFill: [
       { col: 1, formula: `=IFERROR(FILTER(Doc_Nodes!A2:A,(Doc_Nodes!C2:C="test")+(Doc_Nodes!C2:C="checklist")+(Doc_Nodes!C2:C="assembly/test")),"")` },
-      // col 2: use tests_node_id (Doc_Nodes col 10) if set; fall back to bom_node_id (col 2)
+      // col 2: use tests_node_id (Doc_Nodes col 9) if set; fall back to bom_node_id (col 2)
       { col: 2, formula: `=ARRAYFORMULA(IF(A2:A="","",IF(IFERROR(VLOOKUP(A2:A,Doc_Nodes!A:I,9,FALSE),"")<>"",IFERROR(VLOOKUP(A2:A,Doc_Nodes!A:I,9,FALSE),""),IFERROR(VLOOKUP(A2:A,Doc_Nodes!A:I,2,FALSE),""))))` },
       { col: 3, formula: `=ARRAYFORMULA(IF(A2:A="","",VLOOKUP(A2:A,Doc_Nodes!A:I,4,FALSE)))` },
       { col: 4, formula: `=ARRAYFORMULA(IF(A2:A="","",VLOOKUP(A2:A,Doc_Nodes!A:I,3,FALSE)))` },
     ],
     notes: {
-      1: 'Auto-filled from Doc_Nodes (test + checklist types only) — do not edit',
+      1: 'Auto-filled from Doc_Nodes (test + checklist + assembly/test types) — do not edit',
       2: 'Auto-filled: shows tests_node_id from Doc_Nodes (which BOM nodes this doc validates).\nFalls back to bom_node_id if tests_node_id is blank.\nMatrix columns turn white for matching BOM node IDs.',
-      4: 'Auto-filled type — always test or checklist',
+      4: 'Auto-filled type — for reference only',
     },
   },
 
@@ -202,13 +202,13 @@ const SHEET_DEFS = {
     headers: ['doc_id', 'tests_node_id', 'label', 'type'],
     autoFill: [
       { col: 1, formula: `=IFERROR(FILTER(Doc_Nodes!A2:A,(Doc_Nodes!C2:C="test")+(Doc_Nodes!C2:C="checklist")+(Doc_Nodes!C2:C="assembly/test")),"")` },
-      // col 2: use tests_node_id (Doc_Nodes col 10) if set; fall back to bom_node_id (col 2)
+      // col 2: use tests_node_id (Doc_Nodes col 9) if set; fall back to bom_node_id (col 2)
       { col: 2, formula: `=ARRAYFORMULA(IF(A2:A="","",IF(IFERROR(VLOOKUP(A2:A,Doc_Nodes!A:I,9,FALSE),"")<>"",IFERROR(VLOOKUP(A2:A,Doc_Nodes!A:I,9,FALSE),""),IFERROR(VLOOKUP(A2:A,Doc_Nodes!A:I,2,FALSE),""))))` },
       { col: 3, formula: `=ARRAYFORMULA(IF(A2:A="","",VLOOKUP(A2:A,Doc_Nodes!A:I,4,FALSE)))` },
       { col: 4, formula: `=ARRAYFORMULA(IF(A2:A="","",VLOOKUP(A2:A,Doc_Nodes!A:I,3,FALSE)))` },
     ],
     notes: {
-      1: 'Auto-filled from Doc_Nodes (test + checklist types only) — do not edit',
+      1: 'Auto-filled from Doc_Nodes (test + checklist + assembly/test types) — do not edit',
       2: 'Auto-filled: shows tests_node_id from Doc_Nodes (which BOM nodes this doc validates).\nFalls back to bom_node_id if tests_node_id is blank.',
       4: 'Auto-filled type — for reference only',
     },
@@ -218,7 +218,7 @@ const SHEET_DEFS = {
     tab: { color: '#64748b' },
     darkTheme: false,
     headers: ['json_output'],
-    notes: { 1: 'Auto-generated by Dashboard → Export JSON. Copy cell A2 and paste into the dashboard Import dialog.' },
+    notes: { 1: 'Auto-generated by Dashboard → Export JSON.\nThe export is split across multiple rows (one per data section).\nSelect all filled cells in column A below this header, copy, then paste into the dashboard Import dialog.' },
   },
 };
 
@@ -292,7 +292,7 @@ function setupDashboardSheets() {
   ss.setActiveSheet(ss.getSheetByName(SHEET_NAMES.BOM));
   ui.alert(
     '✅ Setup complete',
-    'Next steps:\n1. Add BOM nodes to "BOM_Nodes"\n2. Add docs to "Doc_Nodes"\n3. Add suppliers to "Suppliers"\n4. Add technician initials to "Technicians"\n5. Run Dashboard → Sync\n6. Fill in view columns, then Export JSON',
+    'Next steps:\n1. Add BOM nodes to "BOM_Nodes"\n2. Add docs to "Doc_Nodes"\n3. Add suppliers to "Suppliers"\n4. Add technician IDs + names to "Technicians"\n5. Run Dashboard → Sync\n6. Fill in view columns, then Export JSON',
     ui.ButtonSet.OK
   );
 }
@@ -507,7 +507,7 @@ function syncTrainingMatrix(ss) {
   if (!techSh || !trainSh) return;
 
   const techData = techSh.getLastRow() > 1
-    ? techSh.getRange(2, 2, techSh.getLastRow() - 1, 1).getValues().flat()
+    ? techSh.getRange(2, 1, techSh.getLastRow() - 1, 1).getValues().flat()
         .map(v => String(v).trim()).filter(Boolean)
     : [];
 
@@ -634,6 +634,7 @@ function syncTestingMatrix(ss) {
     const oldMatrixCols = sh.getLastColumn() - TESTING_BASE_COLS;
     if (oldMatrixCols > 0) sh.deleteColumns(matrixStart, oldMatrixCols);
     sh.insertColumnsAfter(TESTING_BASE_COLS, bomNodes.length);
+    SpreadsheetApp.flush();
 
     const maxDataRows = Math.max(sh.getMaxRows() - 1, 1);
 
@@ -667,6 +668,7 @@ function syncTestingMatrix(ss) {
 
     // ── Restore saved data into correct new columns ───────────────
     if (sh.getLastRow() > 1) {
+      SpreadsheetApp.flush();
       const numDataRows2 = sh.getLastRow() - 1;
       const currentDocIds = sh.getRange(2, 1, numDataRows2, 1).getValues().flat().map(v => String(v).trim());
       bomNodes.forEach(({ id: bomId }, idx) => {
@@ -705,8 +707,34 @@ function syncTestingMatrix(ss) {
 // ═══════════════════════════════════════════════════════════════════
 //  SYNC
 // ═══════════════════════════════════════════════════════════════════
+
+// Re-applies any missing autoFill formula cells across all sheet defs.
+// Called during every sync so that accidentally-deleted formulas are
+// restored without requiring a full "Setup Sheets" run.
+function reapplyAutoFills(ss) {
+  ss = ss || SpreadsheetApp.getActiveSpreadsheet();
+  Object.entries(SHEET_DEFS).forEach(([shName, def]) => {
+    if (!def.autoFill?.length) return;
+    const sh = ss.getSheetByName(shName);
+    if (!sh) return;
+    def.autoFill.forEach(af => {
+      const cell = sh.getRange(2, af.col);
+      if (!cell.getFormula()) {
+        cell.setFormula(af.formula);
+      }
+    });
+  });
+}
+
 function syncViewSheets() {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
+
+  // Restore any missing auto-fill anchors before any keyed matrix rebuild.
+  // Training/Testing snapshot existing values by the auto-filled ID columns;
+  // if those formulas were accidentally deleted, a sync would otherwise read
+  // blank row keys and then write back an empty matrix.
+  reapplyAutoFills(ss);
+  SpreadsheetApp.flush();
 
   _syncMasterToViews(ss, SHEET_NAMES.BOM, [SHEET_NAMES.OVERVIEW, SHEET_NAMES.CYCLE_BOM]);
   // All doc-based sheets are driven by FILTER formulas — no row sync needed:
@@ -717,6 +745,8 @@ function syncViewSheets() {
   syncSupplySheet(ss);
   syncTrainingMatrix(ss);
   syncTestingMatrix(ss);
+  reapplyAutoFills(ss);   // final pass in case a later structural edit cleared a formula anchor
+  SpreadsheetApp.flush();
   applySupplierDropdowns(ss);
 
   SpreadsheetApp.getUi().alert('✅ Sync complete.');
@@ -774,24 +804,103 @@ function _syncMasterToViews(ss, masterName, viewNames) {
 //  EXPORT
 // ═══════════════════════════════════════════════════════════════════
 function exportJSON() {
-  const ss  = SpreadsheetApp.getActiveSpreadsheet();
-  const out = buildDashboardJSON(ss);
+  const ss   = SpreadsheetApp.getActiveSpreadsheet();
+  const data = buildDashboardJSON(ss);
+
+  // Split into one row per top-level key so no single cell exceeds the
+  // 50,000-character Google Sheets limit.  Each row is a self-contained
+  // {"key": value} JSON object.  The viewer merges them on import.
+  const keys   = Object.keys(data);
+  const chunks = keys.map(k => JSON.stringify({ [k]: data[k] }));
 
   let exportSh = ss.getSheetByName(SHEET_NAMES.EXPORT);
   if (!exportSh) exportSh = ss.insertSheet(SHEET_NAMES.EXPORT);
   exportSh.clearContents();
   exportSh.getRange('A1').setValue('json_output');
-  exportSh.getRange('A2').setValue(out).setWrap(false);
+  chunks.forEach((chunk, i) => {
+    exportSh.getRange(i + 2, 1).setValue(chunk).setWrap(false);
+  });
   exportSh.setColumnWidth(1, 800);
 
+  const lastDataRow = chunks.length + 1;
   ss.setActiveSheet(exportSh);
-  exportSh.setActiveRange(exportSh.getRange('A2'));
+  exportSh.setActiveRange(exportSh.getRange(2, 1, chunks.length, 1));
 
   SpreadsheetApp.getUi().alert(
     '✅ Export ready',
-    'Cell A2 is selected in "_Export".\nPress ⌘C / Ctrl+C, then paste into the dashboard Import dialog.',
+    `Cells A2:A${lastDataRow} are selected in "_Export" (${chunks.length} chunk${chunks.length > 1 ? 's' : ''}).\nPress ⌘C / Ctrl+C, then paste into the dashboard Import dialog.`,
     SpreadsheetApp.getUi().ButtonSet.OK
   );
+}
+
+// ── BOM multi-parent expansion ──────────────────────────────────────────────
+// When a BOM node has a comma-separated parent column (e.g. "P1,P2") it is
+// replicated once per parent — each copy gets the suffix "__PARENTID" appended
+// to its id, and all of its descendants are replicated with the same suffix so
+// each copy carries a full independent sub-tree.
+//
+// Returns { rows, expansionMap } where:
+//   rows         – the expanded flat array ready to feed buildDashboardJSON
+//   expansionMap – { origId: [expandedId1, expandedId2, ...] }
+//                  (only multi-parent nodes and their descendants are keyed here)
+function expandBomRows(rows) {
+  const multiParentIds = new Set(
+    rows.filter(n => String(n.parent || '').includes(','))
+        .map(n => String(n.id))
+  );
+  if (!multiParentIds.size) return { rows, expansionMap: {} };
+
+  // Build a single-parent children map (children of multi-parent nodes
+  // point to the original id which still has a single parent at this stage)
+  const childrenOf = {};
+  rows.forEach(n => {
+    const p = String(n.parent || '').trim();
+    if (p && !p.includes(',')) {
+      (childrenOf[p] = childrenOf[p] || []).push(String(n.id));
+    }
+  });
+
+  // Mark every node that is a descendant of a multi-parent node
+  // (they will be produced by expand() so must be skipped in the main loop)
+  const descendants = new Set();
+  function markDesc(id) {
+    (childrenOf[id] || []).forEach(c => {
+      if (!descendants.has(c)) { descendants.add(c); markDesc(c); }
+    });
+  }
+  multiParentIds.forEach(id => markDesc(id));
+
+  const rowMap = Object.fromEntries(rows.map(r => [String(r.id), r]));
+  const expansionMap = {}; // origId → [newId, ...]
+
+  // Recursively clone origId and all its single-parent descendants,
+  // rewriting ids to origId+suffix and parent to newParentId.
+  function expand(origId, newParentId, suffix) {
+    const row = rowMap[origId];
+    if (!row) return [];
+    const newId = origId + suffix;
+    (expansionMap[origId] = expansionMap[origId] || []).push(newId);
+    const kids = (childrenOf[origId] || []).flatMap(cid => expand(cid, newId, suffix));
+    return [{ ...row, id: newId, parent: newParentId }, ...kids];
+  }
+
+  const result = [];
+  rows.forEach(n => {
+    const origId = String(n.id);
+    const p      = String(n.parent || '').trim();
+    if (multiParentIds.has(origId)) {
+      // One copy per parent
+      p.split(',').map(x => x.trim()).filter(Boolean).forEach(parentId => {
+        result.push(...expand(origId, parentId, `__${parentId}`));
+      });
+    } else if (!descendants.has(origId)) {
+      // Normal node — pass through unchanged
+      result.push({ ...n, parent: p || null });
+    }
+    // descendants are handled recursively by expand(); skip them here
+  });
+
+  return { rows: result, expansionMap };
 }
 
 function buildDashboardJSON(ss) {
@@ -810,6 +919,19 @@ function buildDashboardJSON(ss) {
       });
   }
 
+  const techRows = sheetToObjects(SHEET_NAMES.TECHNICIANS);
+  const techNameById = Object.fromEntries(
+    techRows
+      .map(r => [String(r.id || '').trim(), String(r.name || '').trim()])
+      .filter(([id]) => !!id)
+  );
+  const techRegistry = techRows
+    .map(r => ({
+      id: String(r.id || '').trim(),
+      name: String(r.name || '').trim() || String(r.id || '').trim(),
+    }))
+    .filter(t => t.id);
+
   // ── BOM nodes ───────────────────────────────────────────────────
   const bomRows    = sheetToObjects(SHEET_NAMES.BOM);
   const cycleRows  = sheetToObjects(SHEET_NAMES.CYCLE_BOM);
@@ -817,9 +939,21 @@ function buildDashboardJSON(ss) {
   const cycleById  = Object.fromEntries(cycleRows.map(r  => [String(r.id), r]));
   const supplyById = Object.fromEntries(supplyRows.map(r => [String(r.id), r]));
 
-  const nodes = bomRows.map(n => {
-    const cy  = cycleById[String(n.id)]  ?? {};
-    const sup = supplyById[String(n.id)] ?? {};
+  // Expand any BOM nodes that have comma-separated parents into one clone per parent.
+  // expansionMap lets us resolve doc bom_node_id references to expanded ids later.
+  const { rows: expandedBomRows, expansionMap: bomExpansionMap } = expandBomRows(bomRows);
+
+  // Build a reverse map: expandedId → origId, so cycle/supply lookups still
+  // hit their data after the id has been suffixed (e.g. NODE_A__P1 → NODE_A).
+  const origIdOfBomNode = {};
+  Object.entries(bomExpansionMap).forEach(([origId, expandedIds]) => {
+    expandedIds.forEach(eid => { origIdOfBomNode[eid] = origId; });
+  });
+
+  const nodes = expandedBomRows.map(n => {
+    const lookupId = origIdOfBomNode[String(n.id)] || String(n.id);
+    const cy  = cycleById[lookupId]  ?? {};
+    const sup = supplyById[lookupId] ?? {};
 
     // Parse supplier_1/quality_1 … supplier_3/quality_3
     const supplier_entries = [1, 2, 3].flatMap(i => {
@@ -843,6 +977,12 @@ function buildDashboardJSON(ss) {
   });
 
   // ── Training matrix → technicians per doc ───────────────────────
+  // Supports two score formats per technician cell:
+  //   Plain number  "3"           → applies to every BOM parent of this doc
+  //   Split format  "OA=3,AZ=2"  → per-BOM breakdown (multi-parent docs)
+  //
+  // trainingByDocId[docId] = { plain: [{name,score}], byBom: {bomId:[{name,score}]} }
+  // getTechsForDocBom(td, bomNodeId) merges these: per-BOM scores win; plain fills the rest.
   const trainSh         = ss.getSheetByName(SHEET_NAMES.TRAINING);
   const trainingByDocId = {};
 
@@ -853,15 +993,49 @@ function buildDashboardJSON(ss) {
     trainData.slice(1).forEach(row => {
       const docId = String(row[0]).trim();
       if (!docId) return;
-      const technicians = [];
+      const plain  = [];
+      const byBom  = {};
+
       techInitials.forEach((initials, i) => {
-        const raw = row[TRAINING_BASE_COLS + i];
-        if (raw !== '' && raw !== null && !isNaN(Number(raw))) {
-          technicians.push({ name: initials, score: Number(raw) });
+        const raw = String(row[TRAINING_BASE_COLS + i] ?? '').trim();
+        if (!raw) return;
+
+        if (raw.includes('=')) {
+          // Per-BOM: "OA=3,AZ=2"
+          raw.split(',').forEach(part => {
+            const eq = part.indexOf('=');
+            if (eq === -1) return;
+            const bomId = part.slice(0, eq).trim();
+            const score = Number(part.slice(eq + 1).trim());
+            if (bomId && !isNaN(score)) {
+              (byBom[bomId] = byBom[bomId] || []).push({
+                id: initials,
+                name: techNameById[initials] || initials,
+                score,
+              });
+            }
+          });
+        } else if (!isNaN(Number(raw))) {
+          plain.push({
+            id: initials,
+            name: techNameById[initials] || initials,
+            score: Number(raw)
+          });
         }
       });
-      trainingByDocId[docId] = technicians;
+
+      trainingByDocId[docId] = { plain, byBom };
     });
+  }
+
+  // Returns the technician list for a specific BOM expansion of a doc.
+  // Per-BOM entries override plain ones for the same technician name.
+  function getTechsForDocBom(td, bomNodeId) {
+    if (!td) return [];
+    const bomSpecific = td.byBom?.[bomNodeId] ?? [];
+    const bomIds      = new Set(bomSpecific.map(t => t.id || t.name));
+    const plain       = (td.plain ?? []).filter(t => !bomIds.has(t.id || t.name));
+    return [...plain, ...bomSpecific];
   }
 
   // ── Testing matrices → validates per doc ────────────────────────
@@ -890,6 +1064,25 @@ function buildDashboardJSON(ss) {
   const cycleDocRows = sheetToObjects(SHEET_NAMES.CYCLE_DOCS);
   const cycleDocById = Object.fromEntries(cycleDocRows.map(r => [String(r.doc_id), r]));
 
+  // Parses a leads_to / linked_to cell value which is either:
+  //   - a plain doc ID  → { single: 'DOCX', byBom: null }
+  //   - split format "OA=DOCX,AZ=DOCY" → { single: null, byBom: { OA: 'DOCX', AZ: 'DOCY' } }
+  // The split format lets a multi-parent doc point to different targets in each BOM.
+  function parseLinkField(raw) {
+    const str = String(raw ?? '').trim();
+    if (!str) return { single: null, byBom: null };
+    if (!str.includes('=')) return { single: str, byBom: null };
+    const byBom = {};
+    str.split(',').forEach(part => {
+      const eq = part.indexOf('=');
+      if (eq === -1) return;
+      const bomId = part.slice(0, eq).trim();
+      const docId = part.slice(eq + 1).trim();
+      if (bomId && docId) byBom[bomId] = docId;
+    });
+    return Object.keys(byBom).length ? { single: null, byBom } : { single: str, byBom: null };
+  }
+
   // Parses a cycle_time_hrs cell value which is either:
   //   - a plain number → { total: n, byBom: null }
   //   - split format "A1=3,A2=4" → { total: 7, byBom: { A1: 3, A2: 4 } }
@@ -914,12 +1107,17 @@ function buildDashboardJSON(ss) {
   // ── Doc nodes ───────────────────────────────────────────────────
   const docMaster = sheetToObjects(SHEET_NAMES.DOCS);
 
-  // Pre-build a map of origId → { bomNodeId → suffixedId } for multi-parent docs.
+  // Pre-build a map of origDocId → { expandedBomNodeId → suffixedDocId }.
+  // Accounts for both:
+  //   (a) docs with multiple raw bom_node_id entries (comma-separated)
+  //   (b) docs whose single bom_node_id was expanded due to BOM multi-parent expansion
   // Used in the post-pass to rewrite leads_to / linked_to references.
   const docIdMap = {};
   docMaster.forEach(d => {
-    const origId = String(d.id);
-    const bomIds = String(d.bom_node_id).split(',').map(s => s.trim()).filter(Boolean);
+    const origId    = String(d.id);
+    const rawBomIds = String(d.bom_node_id).split(',').map(s => s.trim()).filter(Boolean);
+    // Resolve each raw BOM id through the expansion map
+    const bomIds    = rawBomIds.flatMap(id => bomExpansionMap[id] || [id]);
     if (bomIds.length > 1) {
       docIdMap[origId] = {};
       bomIds.forEach(bomId => { docIdMap[origId][bomId] = `${origId}__${bomId}`; });
@@ -927,8 +1125,12 @@ function buildDashboardJSON(ss) {
   });
 
   const docNodes = docMaster.flatMap(d => {
-    const origId = String(d.id);
-    const bomIds = String(d.bom_node_id).split(',').map(s => s.trim()).filter(Boolean);
+    const origId    = String(d.id);
+    const rawBomIds = String(d.bom_node_id).split(',').map(s => s.trim()).filter(Boolean);
+    // Expand raw BOM node ids through the BOM multi-parent expansion map.
+    // e.g. if NODE_A was expanded to NODE_A__P1 / NODE_A__P2, a doc linked
+    // to NODE_A will automatically get instances in both sub-trees.
+    const bomIds = rawBomIds.flatMap(id => bomExpansionMap[id] || [id]);
     const multi  = bomIds.length > 1;
     const cy     = cycleDocById[origId] ?? {};
 
@@ -952,11 +1154,18 @@ function buildDashboardJSON(ss) {
     const rawGt = String(cy.goal_cycle_time_hrs ?? '').trim();
     const { total: gtTotal, byBom: gtByBom } = parseCycleTime(rawGt);
 
+    // Per-BOM leads_to / linked_to (format: "OA=DOCX,AZ=DOCY" or plain "DOCX")
+    const { single: ltSingle, byBom: ltByBom } = parseLinkField(d.leads_to);
+    const { single: liSingle, byBom: liByBom } = parseLinkField(d.linked_to);
+
     return bomIds.map(bomNodeId => {
       const nodeId = multi ? `${origId}__${bomNodeId}` : origId;
       // For multi-parent docs, use the per-BOM split cycle time if available
       const ct = (multi && ctByBom) ? (ctByBom[bomNodeId] ?? ctTotal) : ctTotal;
       const gt = (multi && gtByBom) ? (gtByBom[bomNodeId] ?? gtTotal) : gtTotal;
+      // Pick the per-BOM link target, falling back to the single (plain) value
+      const leadsToRaw  = ltByBom ? (ltByBom[bomNodeId] ?? null) : ltSingle;
+      const linkedToRaw = liByBom ? (liByBom[bomNodeId] ?? null) : liSingle;
       return {
         id:             nodeId,
         bomNodeId,
@@ -969,14 +1178,14 @@ function buildDashboardJSON(ss) {
         doc_num:        String(d.doc_num  || ''),
         score:          Number(d.score)   || 0,
         // leads_to / linked_to resolved in post-pass below
-        leads_to:       d.leads_to  ? String(d.leads_to)  : null,
-        linked_to:      d.linked_to ? String(d.linked_to) : null,
+        leads_to:       leadsToRaw  || null,
+        linked_to:      linkedToRaw || null,
         cycle_time_hrs:      ct,
         goal_cycle_time_hrs: gt,
         // cycle_time_by_bom only emitted for single-parent docs using split format
         ...((!multi && ctByBom) ? { cycle_time_by_bom: ctByBom } : {}),
         validates,
-        technicians:    trainingByDocId[origId] ?? [],
+        technicians:    getTechsForDocBom(trainingByDocId[origId], bomNodeId),
       };
     });
   });
@@ -1000,5 +1209,5 @@ function buildDashboardJSON(ss) {
     trust_score: Number(s.trust_score) || 0,
   }));
 
-  return JSON.stringify({ nodes, docNodes, supplierRegistry: suppliers }, null, 2);
+  return { nodes, docNodes, supplierRegistry: suppliers, techRegistry };
 }

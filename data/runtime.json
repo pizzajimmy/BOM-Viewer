@@ -1,0 +1,660 @@
+{
+  "version": 1,
+  "dataImportedAt": "2026-04-22T03:54:27.693Z",
+  "queues": {
+    "AC": [
+      "8623e3748c07",
+      "b489e7714bcb",
+      "7febf55d51fd",
+      "487f486d24e4",
+      "2eda91d76576",
+      "d18ca6c6fdda"
+    ],
+    "BS": [],
+    "ZZ": [
+      "482c9fd07708",
+      "db85f97d9346"
+    ],
+    "CA": [
+      "4354d72fd940",
+      "60d35e84513d",
+      "01333ea06721",
+      "ff3ab6439653",
+      "b543d9e4ee38",
+      "792e25c30be0"
+    ],
+    "CC": [],
+    "CS": [
+      "7342c6bc434f",
+      "9ce103ed4ae2",
+      "c32fe6bbd074",
+      "36869042e72a",
+      "7dfadf684b74"
+    ]
+  },
+  "assignments": {
+    "ac6d826647a8": {
+      "id": "ac6d826647a8",
+      "techInitials": "AC",
+      "docId": "DOC_AZ1_P1",
+      "bomNodeId": "AZ1",
+      "context": {
+        "kind": "build",
+        "buildId": "B1",
+        "sn": "CJ18-07"
+      },
+      "state": "complete",
+      "startedAt": "2026-04-21T03:46:34.633Z",
+      "completedAt": "2026-04-21T03:46:34.675Z",
+      "productiveMs": 42,
+      "downtimeMs": 0,
+      "currentSegmentStartedAt": null,
+      "currentDowntime": null,
+      "coAssigneeAutoclosed": false,
+      "createdAt": "2026-04-21T03:46:34.537Z"
+    },
+    "1e107f763aff": {
+      "id": "1e107f763aff",
+      "techInitials": "AC",
+      "docId": "DOC_AZ1_P2",
+      "bomNodeId": "AZ1",
+      "context": {
+        "kind": "build",
+        "buildId": "B1",
+        "sn": "CJ18-07"
+      },
+      "state": "complete",
+      "startedAt": "2026-04-21T03:46:34.698Z",
+      "completedAt": "2026-04-21T03:46:34.703Z",
+      "productiveMs": 5,
+      "downtimeMs": 0,
+      "currentSegmentStartedAt": null,
+      "currentDowntime": null,
+      "coAssigneeAutoclosed": false,
+      "createdAt": "2026-04-21T03:46:34.538Z"
+    },
+    "e75c3c21dc43": {
+      "id": "e75c3c21dc43",
+      "techInitials": "AC",
+      "docId": "DOC_AZ1_T1",
+      "bomNodeId": "AZ1",
+      "context": {
+        "kind": "build",
+        "buildId": "B1",
+        "sn": "CJ18-07"
+      },
+      "state": "complete",
+      "startedAt": "2026-04-21T03:46:34.725Z",
+      "completedAt": "2026-04-21T03:46:34.732Z",
+      "productiveMs": 7,
+      "downtimeMs": 0,
+      "currentSegmentStartedAt": null,
+      "currentDowntime": null,
+      "coAssigneeAutoclosed": false,
+      "createdAt": "2026-04-21T03:46:34.538Z"
+    },
+    "07c752432644": {
+      "id": "07c752432644",
+      "techInitials": "BS",
+      "docId": "DOC_RL1_P1",
+      "bomNodeId": "RL1",
+      "context": {
+        "kind": "build",
+        "buildId": "B1",
+        "sn": "CJ18-07"
+      },
+      "state": "complete",
+      "startedAt": "2026-04-21T03:46:34.776Z",
+      "completedAt": "2026-04-21T03:46:34.781Z",
+      "productiveMs": 5,
+      "downtimeMs": 0,
+      "currentSegmentStartedAt": null,
+      "currentDowntime": null,
+      "coAssigneeAutoclosed": false,
+      "createdAt": "2026-04-21T03:46:34.548Z"
+    },
+    "7e43b066e15b": {
+      "id": "7e43b066e15b",
+      "techInitials": "BS",
+      "docId": "DOC_RL1_T1",
+      "bomNodeId": "RL1",
+      "context": {
+        "kind": "build",
+        "buildId": "B1",
+        "sn": "CJ18-07"
+      },
+      "state": "complete",
+      "startedAt": "2026-04-21T03:46:34.803Z",
+      "completedAt": "2026-04-21T03:46:34.808Z",
+      "productiveMs": 5,
+      "downtimeMs": 0,
+      "currentSegmentStartedAt": null,
+      "currentDowntime": null,
+      "coAssigneeAutoclosed": false,
+      "createdAt": "2026-04-21T03:46:34.548Z"
+    },
+    "6985fa042fa3": {
+      "id": "6985fa042fa3",
+      "techInitials": "BS",
+      "docId": "DOC_AZ1_T1",
+      "bomNodeId": "AZ1",
+      "context": {
+        "kind": "build",
+        "buildId": "B1",
+        "sn": "CJ18-07"
+      },
+      "state": "complete",
+      "startedAt": null,
+      "completedAt": "2026-04-21T03:46:34.732Z",
+      "productiveMs": 0,
+      "downtimeMs": 0,
+      "currentSegmentStartedAt": null,
+      "currentDowntime": null,
+      "coAssigneeAutoclosed": true,
+      "createdAt": "2026-04-21T03:46:34.555Z"
+    },
+    "482c9fd07708": {
+      "id": "482c9fd07708",
+      "techInitials": "ZZ",
+      "docId": "D1",
+      "bomNodeId": "X",
+      "context": {
+        "kind": "build",
+        "sn": "TEST-01"
+      },
+      "state": "active",
+      "startedAt": "2026-04-21T14:50:26.690Z",
+      "completedAt": null,
+      "productiveMs": 0,
+      "downtimeMs": 0,
+      "currentSegmentStartedAt": "2026-04-21T14:50:26.690Z",
+      "currentDowntime": null,
+      "coAssigneeAutoclosed": false,
+      "createdAt": "2026-04-21T14:49:41.507Z"
+    },
+    "db85f97d9346": {
+      "id": "db85f97d9346",
+      "techInitials": "ZZ",
+      "docId": "D3",
+      "bomNodeId": "X",
+      "context": null,
+      "state": "queued",
+      "startedAt": null,
+      "completedAt": null,
+      "productiveMs": 0,
+      "downtimeMs": 0,
+      "currentSegmentStartedAt": null,
+      "currentDowntime": null,
+      "coAssigneeAutoclosed": false,
+      "createdAt": "2026-04-21T14:50:26.477Z"
+    },
+    "c5ff825a3b51": {
+      "id": "c5ff825a3b51",
+      "techInitials": "AC",
+      "docId": "DOC_AZ1_P1",
+      "bomNodeId": "AZ1",
+      "context": {
+        "kind": "build",
+        "buildId": "B1",
+        "sn": "CJ18-07"
+      },
+      "state": "complete",
+      "startedAt": "2026-04-21T15:20:59.274Z",
+      "completedAt": "2026-04-21T15:25:47.708Z",
+      "productiveMs": 264705,
+      "downtimeMs": 12823,
+      "currentSegmentStartedAt": null,
+      "currentDowntime": null,
+      "coAssigneeAutoclosed": false,
+      "createdAt": "2026-04-21T15:20:17.720Z"
+    },
+    "7dbbf2d52896": {
+      "id": "7dbbf2d52896",
+      "techInitials": "AC",
+      "docId": "DOC_AZ1_P2",
+      "bomNodeId": "AZ1",
+      "context": {
+        "kind": "build",
+        "buildId": "B1",
+        "sn": "CJ18-07"
+      },
+      "state": "complete",
+      "startedAt": "2026-04-21T15:27:22.825Z",
+      "completedAt": "2026-04-21T15:27:23.831Z",
+      "productiveMs": 1006,
+      "downtimeMs": 0,
+      "currentSegmentStartedAt": null,
+      "currentDowntime": null,
+      "coAssigneeAutoclosed": false,
+      "createdAt": "2026-04-21T15:20:17.724Z"
+    },
+    "8623e3748c07": {
+      "id": "8623e3748c07",
+      "techInitials": "AC",
+      "docId": "DOC_AZ1_T1",
+      "bomNodeId": "AZ1",
+      "context": {
+        "kind": "build",
+        "buildId": "B1",
+        "sn": "CJ18-07"
+      },
+      "state": "queued",
+      "startedAt": null,
+      "completedAt": null,
+      "productiveMs": 0,
+      "downtimeMs": 0,
+      "currentSegmentStartedAt": null,
+      "currentDowntime": null,
+      "coAssigneeAutoclosed": false,
+      "createdAt": "2026-04-21T15:20:17.724Z"
+    },
+    "4de23f190627": {
+      "id": "4de23f190627",
+      "techInitials": "BS",
+      "docId": "DOC_RL1_P1",
+      "bomNodeId": "RL1",
+      "context": {
+        "kind": "build",
+        "buildId": "B1",
+        "sn": "CJ18-07"
+      },
+      "state": "complete",
+      "startedAt": "2026-04-21T19:30:04.756Z",
+      "completedAt": "2026-04-21T19:30:05.400Z",
+      "productiveMs": 644,
+      "downtimeMs": 0,
+      "currentSegmentStartedAt": null,
+      "currentDowntime": null,
+      "coAssigneeAutoclosed": false,
+      "createdAt": "2026-04-21T15:35:56.523Z"
+    },
+    "de18c465f2e7": {
+      "id": "de18c465f2e7",
+      "techInitials": "BS",
+      "docId": "DOC_RL1_T1",
+      "bomNodeId": "RL1",
+      "context": {
+        "kind": "build",
+        "buildId": "B1",
+        "sn": "CJ18-07"
+      },
+      "state": "complete",
+      "startedAt": "2026-04-21T19:30:05.928Z",
+      "completedAt": "2026-04-21T19:30:06.552Z",
+      "productiveMs": 624,
+      "downtimeMs": 0,
+      "currentSegmentStartedAt": null,
+      "currentDowntime": null,
+      "coAssigneeAutoclosed": false,
+      "createdAt": "2026-04-21T15:35:56.524Z"
+    },
+    "b489e7714bcb": {
+      "id": "b489e7714bcb",
+      "techInitials": "AC",
+      "docId": "DD_A1_P1",
+      "bomNodeId": "A1",
+      "context": {
+        "kind": "build",
+        "buildId": "b_mo92qa3e",
+        "sn": "SN-TEST-001"
+      },
+      "state": "queued",
+      "startedAt": null,
+      "completedAt": null,
+      "productiveMs": 0,
+      "downtimeMs": 0,
+      "currentSegmentStartedAt": null,
+      "currentDowntime": null,
+      "coAssigneeAutoclosed": false,
+      "createdAt": "2026-04-22T00:35:56.557Z"
+    },
+    "7febf55d51fd": {
+      "id": "7febf55d51fd",
+      "techInitials": "AC",
+      "docId": "DD_A1_P2",
+      "bomNodeId": "A1",
+      "context": {
+        "kind": "build",
+        "buildId": "b_mo92qa3e",
+        "sn": "SN-TEST-001"
+      },
+      "state": "queued",
+      "startedAt": null,
+      "completedAt": null,
+      "productiveMs": 0,
+      "downtimeMs": 0,
+      "currentSegmentStartedAt": null,
+      "currentDowntime": null,
+      "coAssigneeAutoclosed": false,
+      "createdAt": "2026-04-22T00:35:56.563Z"
+    },
+    "487f486d24e4": {
+      "id": "487f486d24e4",
+      "techInitials": "AC",
+      "docId": "DD_A1_TP1",
+      "bomNodeId": "A1",
+      "context": {
+        "kind": "build",
+        "buildId": "b_mo92qa3e",
+        "sn": "SN-TEST-001"
+      },
+      "state": "queued",
+      "startedAt": null,
+      "completedAt": null,
+      "productiveMs": 0,
+      "downtimeMs": 0,
+      "currentSegmentStartedAt": null,
+      "currentDowntime": null,
+      "coAssigneeAutoclosed": false,
+      "createdAt": "2026-04-22T00:35:56.563Z"
+    },
+    "2eda91d76576": {
+      "id": "2eda91d76576",
+      "techInitials": "AC",
+      "docId": "DD_A1_C1",
+      "bomNodeId": "A1",
+      "context": {
+        "kind": "build",
+        "buildId": "b_mo92qa3e",
+        "sn": "SN-TEST-001"
+      },
+      "state": "queued",
+      "startedAt": null,
+      "completedAt": null,
+      "productiveMs": 0,
+      "downtimeMs": 0,
+      "currentSegmentStartedAt": null,
+      "currentDowntime": null,
+      "coAssigneeAutoclosed": false,
+      "createdAt": "2026-04-22T00:35:56.563Z"
+    },
+    "d18ca6c6fdda": {
+      "id": "d18ca6c6fdda",
+      "techInitials": "AC",
+      "docId": "DD_A1_S1",
+      "bomNodeId": "A1",
+      "context": {
+        "kind": "build",
+        "buildId": "b_mo92qa3e",
+        "sn": "SN-TEST-001"
+      },
+      "state": "queued",
+      "startedAt": null,
+      "completedAt": null,
+      "productiveMs": 0,
+      "downtimeMs": 0,
+      "currentSegmentStartedAt": null,
+      "currentDowntime": null,
+      "coAssigneeAutoclosed": false,
+      "createdAt": "2026-04-22T00:35:56.563Z"
+    },
+    "4354d72fd940": {
+      "id": "4354d72fd940",
+      "techInitials": "CA",
+      "docId": "OA_PROC__AH",
+      "bomNodeId": "AH",
+      "context": {
+        "kind": "build",
+        "buildId": "bld_1776823277908",
+        "sn": "test"
+      },
+      "state": "queued",
+      "startedAt": null,
+      "completedAt": null,
+      "productiveMs": 0,
+      "downtimeMs": 0,
+      "currentSegmentStartedAt": null,
+      "currentDowntime": null,
+      "coAssigneeAutoclosed": false,
+      "createdAt": "2026-04-22T02:11:52.254Z"
+    },
+    "60d35e84513d": {
+      "id": "60d35e84513d",
+      "techInitials": "CA",
+      "docId": "OA_CHEC__AH",
+      "bomNodeId": "AH",
+      "context": {
+        "kind": "build",
+        "buildId": "bld_1776823277908",
+        "sn": "test"
+      },
+      "state": "queued",
+      "startedAt": null,
+      "completedAt": null,
+      "productiveMs": 0,
+      "downtimeMs": 0,
+      "currentSegmentStartedAt": null,
+      "currentDowntime": null,
+      "coAssigneeAutoclosed": false,
+      "createdAt": "2026-04-22T02:11:52.254Z"
+    },
+    "01333ea06721": {
+      "id": "01333ea06721",
+      "techInitials": "CA",
+      "docId": "TC_PROC__M2",
+      "bomNodeId": "M2",
+      "context": {
+        "kind": "build",
+        "buildId": "bld_1776823277908",
+        "sn": "test"
+      },
+      "state": "queued",
+      "startedAt": null,
+      "completedAt": null,
+      "productiveMs": 0,
+      "downtimeMs": 0,
+      "currentSegmentStartedAt": null,
+      "currentDowntime": null,
+      "coAssigneeAutoclosed": false,
+      "createdAt": "2026-04-22T02:14:39.307Z"
+    },
+    "ff3ab6439653": {
+      "id": "ff3ab6439653",
+      "techInitials": "CA",
+      "docId": "PLI_PROC",
+      "bomNodeId": "M2",
+      "context": {
+        "kind": "build",
+        "buildId": "bld_1776823277908",
+        "sn": "test"
+      },
+      "state": "queued",
+      "startedAt": null,
+      "completedAt": null,
+      "productiveMs": 0,
+      "downtimeMs": 0,
+      "currentSegmentStartedAt": null,
+      "currentDowntime": null,
+      "coAssigneeAutoclosed": false,
+      "createdAt": "2026-04-22T02:14:39.307Z"
+    },
+    "b543d9e4ee38": {
+      "id": "b543d9e4ee38",
+      "techInitials": "CA",
+      "docId": "COM_PROC",
+      "bomNodeId": "M2",
+      "context": {
+        "kind": "build",
+        "buildId": "bld_1776823277908",
+        "sn": "test"
+      },
+      "state": "queued",
+      "startedAt": null,
+      "completedAt": null,
+      "productiveMs": 0,
+      "downtimeMs": 0,
+      "currentSegmentStartedAt": null,
+      "currentDowntime": null,
+      "coAssigneeAutoclosed": false,
+      "createdAt": "2026-04-22T02:14:39.308Z"
+    },
+    "792e25c30be0": {
+      "id": "792e25c30be0",
+      "techInitials": "CA",
+      "docId": "LASB_PROC",
+      "bomNodeId": "M2",
+      "context": {
+        "kind": "build",
+        "buildId": "bld_1776823277908",
+        "sn": "test"
+      },
+      "state": "queued",
+      "startedAt": null,
+      "completedAt": null,
+      "productiveMs": 0,
+      "downtimeMs": 0,
+      "currentSegmentStartedAt": null,
+      "currentDowntime": null,
+      "coAssigneeAutoclosed": false,
+      "createdAt": "2026-04-22T02:14:39.308Z"
+    },
+    "7342c6bc434f": {
+      "id": "7342c6bc434f",
+      "techInitials": "CS",
+      "docId": "EL_CHEC__EL",
+      "bomNodeId": "EL",
+      "context": {
+        "kind": "build",
+        "buildId": "bld_1776830009080",
+        "sn": "test"
+      },
+      "state": "queued",
+      "startedAt": null,
+      "completedAt": null,
+      "productiveMs": 0,
+      "downtimeMs": 0,
+      "currentSegmentStartedAt": null,
+      "currentDowntime": null,
+      "coAssigneeAutoclosed": false,
+      "createdAt": "2026-04-22T03:55:28.350Z"
+    },
+    "9ce103ed4ae2": {
+      "id": "9ce103ed4ae2",
+      "techInitials": "CS",
+      "docId": "EL_PROC__EL",
+      "bomNodeId": "EL",
+      "context": {
+        "kind": "build",
+        "buildId": "bld_1776830009080",
+        "sn": "test"
+      },
+      "state": "queued",
+      "startedAt": null,
+      "completedAt": null,
+      "productiveMs": 0,
+      "downtimeMs": 0,
+      "currentSegmentStartedAt": null,
+      "currentDowntime": null,
+      "coAssigneeAutoclosed": false,
+      "createdAt": "2026-04-22T03:55:28.352Z"
+    },
+    "c32fe6bbd074": {
+      "id": "c32fe6bbd074",
+      "techInitials": "CS",
+      "docId": "OA_PROC__AH",
+      "bomNodeId": "AH",
+      "context": {
+        "kind": "build",
+        "buildId": "bld_1776830009080",
+        "sn": "test"
+      },
+      "state": "queued",
+      "startedAt": null,
+      "completedAt": null,
+      "productiveMs": 0,
+      "downtimeMs": 0,
+      "currentSegmentStartedAt": null,
+      "currentDowntime": null,
+      "coAssigneeAutoclosed": false,
+      "createdAt": "2026-04-22T03:55:31.819Z"
+    },
+    "36869042e72a": {
+      "id": "36869042e72a",
+      "techInitials": "CS",
+      "docId": "SPR_PROC",
+      "bomNodeId": "OA",
+      "context": {
+        "kind": "build",
+        "buildId": "bld_1776830009080",
+        "sn": "test"
+      },
+      "state": "queued",
+      "startedAt": null,
+      "completedAt": null,
+      "productiveMs": 0,
+      "downtimeMs": 0,
+      "currentSegmentStartedAt": null,
+      "currentDowntime": null,
+      "coAssigneeAutoclosed": false,
+      "createdAt": "2026-04-22T03:55:31.820Z"
+    },
+    "7dfadf684b74": {
+      "id": "7dfadf684b74",
+      "techInitials": "CS",
+      "docId": "OA_CHEC__AH",
+      "bomNodeId": "AH",
+      "context": {
+        "kind": "build",
+        "buildId": "bld_1776830009080",
+        "sn": "test"
+      },
+      "state": "queued",
+      "startedAt": null,
+      "completedAt": null,
+      "productiveMs": 0,
+      "downtimeMs": 0,
+      "currentSegmentStartedAt": null,
+      "currentDowntime": null,
+      "coAssigneeAutoclosed": false,
+      "createdAt": "2026-04-22T03:55:31.820Z"
+    }
+  },
+  "completions": {
+    "docs": {
+      "DOC_AZ1_P1": {
+        "ts": "2026-04-21T03:46:34.675Z",
+        "by": "tech",
+        "techInitials": "AC",
+        "assignmentId": "ac6d826647a8"
+      },
+      "DOC_AZ1_P2": {
+        "ts": "2026-04-21T03:46:34.703Z",
+        "by": "tech",
+        "techInitials": "AC",
+        "assignmentId": "1e107f763aff"
+      },
+      "DOC_AZ1_T1": {
+        "ts": "2026-04-21T03:46:34.732Z",
+        "by": "tech",
+        "techInitials": "AC",
+        "assignmentId": "e75c3c21dc43"
+      },
+      "DOC_RL1_P1": {
+        "ts": "2026-04-21T03:46:34.781Z",
+        "by": "tech",
+        "techInitials": "BS",
+        "assignmentId": "07c752432644"
+      },
+      "DOC_RL1_T1": {
+        "ts": "2026-04-21T03:46:34.808Z",
+        "by": "tech",
+        "techInitials": "BS",
+        "assignmentId": "7e43b066e15b"
+      }
+    },
+    "bomNodes": {
+      "AZ1": {
+        "ts": "2026-04-21T03:46:34.732Z",
+        "by": "tech"
+      },
+      "RL1": {
+        "ts": "2026-04-21T03:46:34.808Z",
+        "by": "tech"
+      },
+      "CJ18": {
+        "ts": "2026-04-21T03:46:34.808Z",
+        "by": "rollup"
+      }
+    }
+  }
+}

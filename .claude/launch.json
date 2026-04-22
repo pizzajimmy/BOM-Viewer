@@ -1,0 +1,17 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "bom-viewer",
+      "runtimeExecutable": "python3",
+      "runtimeArgs": ["-m", "http.server", "3456"],
+      "port": 3456
+    },
+    {
+      "name": "mds",
+      "runtimeExecutable": "node",
+      "runtimeArgs": ["server.js"],
+      "port": 3737
+    }
+  ]
+}

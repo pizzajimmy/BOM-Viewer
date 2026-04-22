@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Tech — Time Logger</title>
+<style>
+  /* Palette mirrors bom-viewer.html so the two feel like one product. */
+  :root {
+    --bg:        #0f172a;
+    --surface:   #1e293b;
+    --surface2:  #334155;
+    --border:    #475569;
+    --text:      #f1f5f9;
+    --muted:     #94a3b8;
+    --accent:    #6366f1;
+    --accent-h:  #818cf8;
+    --green:     #10b981;
+    --amber:     #f59e0b;
+    --red:       #ef4444;
+    --r: 10px;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; background: var(--bg); color: var(--text);
+    font-family: system-ui, -apple-system, sans-serif;
+    font-size: 15px; line-height: 1.35; -webkit-font-smoothing: antialiased; }
+  button { font: inherit; color: inherit; }
+
+  /* Header ----------------------------------------------------------- */
+  header {
+    display: flex; align-items: center; gap: 12px;
+    padding: 10px 18px; background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    position: sticky; top: 0; z-index: 3;
+  }
+  .badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: var(--surface2); border: 1px solid var(--border);
+    padding: 4px 10px; border-radius: 999px; font-size: 0.78rem;
+    color: var(--muted);
+  }
+  .dot { width: 8px; height: 8px; border-radius: 999px; background: var(--muted); }
+  .dot.ok  { background: var(--green);  box-shadow: 0 0 6px var(--green); }
+  .dot.off { background: var(--red); }
+  h1 { font-size: 1rem; font-weight: 700; letter-spacing: .02em; }
+  .tech-tag {
+    margin-left: auto;
+    background: var(--accent); color: #fff; font-weight: 700;
+    padding: 6px 14px; border-radius: 8px; font-size: 0.95rem;
+    letter-spacing: .06em;
+  }
+
+  /* Layout ----------------------------------------------------------- */
+  main { max-width: 720px; margin: 0 auto; padding: 18px 16px 80px; }
+  section { margin-bottom: 20px; }
+  .section-title {
+    font-size: 0.72rem; text-transform: uppercase; letter-spacing: .14em;
+    color: var(--muted); margin: 14px 4px 8px;
+  }
+
+  /* Current-task card ------------------------------------------------ */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--r);
+    padding: 18px;
+  }
+  .card.primary { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent) inset; }
+  .card.running  { border-color: var(--green);  box-shadow: 0 0 0 1px var(--green) inset; }
+  .card.paused   { border-color: var(--amber);  box-shadow: 0 0 0 1px var(--amber) inset; }
+  .card.downtime { border-color: var(--red);    box-shadow: 0 0 0 1px var(--red) inset; }
+
+  .task-head {
+    display: flex; justify-content: space-between; align-items: baseline; gap: 10px;
+    margin-bottom: 6px;
+  }
+  .doc-label { font-size: 1.25rem; font-weight: 700; line-height: 1.2; }
+  .context {
+    font-size: 0.82rem; color: var(--muted);
+    display: flex; flex-wrap: wrap; gap: 4px 12px; margin: 4px 0 14px;
+  }
+  .context b { color: var(--text); font-weight: 600; }
+
+  /* Timer ------------------------------------------------------------ */
+  .timer-block {
+    display: flex; flex-direction: column; gap: 8px;
+    padding: 12px; border-radius: var(--r);
+    background: var(--bg); border: 1px solid var(--border);
+    margin-bottom: 14px;
+  }
+  .timer-row { display: flex; justify-content: space-between; align-items: baseline; }
+  .timer-val {
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 2.3rem; font-weight: 700; letter-spacing: .02em; color: var(--text);
+    font-variant-numeric: tabular-nums;
+  }
+  .timer-val.muted { color: var(--muted); font-size: 1.3rem; }
+  .timer-sub { color: var(--muted); font-size: 0.82rem; }
+  .downtime-banner {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 8px 12px; margin-top: 6px;
+    background: rgba(239,68,68,.12); color: var(--red);
+    border: 1px solid var(--red); border-radius: 8px;
+    font-weight: 600; font-size: 0.85rem;
+  }
+
+  /* Buttons ---------------------------------------------------------- */
+  .btn {
+    padding: 12px 18px; border-radius: var(--r);
+    border: 1px solid var(--border); background: var(--surface2);
+    color: var(--text); font-weight: 600; font-size: 0.95rem;
+    cursor: pointer; transition: background .12s, transform .05s;
+    min-width: 100px;
+  }
+  .btn:hover    { background: var(--border); }
+  .btn:active   { transform: scale(.98); }
+  .btn:disabled { opacity: .4; cursor: not-allowed; }
+  .btn.start    { background: var(--green); border-color: var(--green); color: #02251a; }
+  .btn.pause    { background: var(--amber); border-color: var(--amber); color: #2a1c02; }
+  .btn.resume   { background: var(--green); border-color: var(--green); color: #02251a; }
+  .btn.stop     { background: var(--red);   border-color: var(--red);   color: #2d0707; }
+  .btn.stop.confirm {
+    background: #7f1d1d; color: #fff; border-color: var(--red);
+    animation: pulse 1s ease-in-out infinite;
+  }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.7} }
+  .btn.large    { padding: 14px 22px; font-size: 1.05rem; min-width: 130px; }
+  .btn-row { display: flex; gap: 10px; flex-wrap: wrap; }
+  .btn-row.spread { justify-content: space-between; }
+
+  /* Downtime chips --------------------------------------------------- */
+  .chip-label { color: var(--muted); font-size: 0.82rem; margin: 10px 2px 6px; }
+  .chips { display: flex; gap: 8px; flex-wrap: wrap; }
+  .chip {
+    padding: 9px 14px; border-radius: 999px;
+    background: var(--bg); border: 1px solid var(--border);
+    color: var(--text); font-weight: 500; font-size: 0.88rem;
+    cursor: pointer; transition: background .12s;
+  }
+  .chip:hover { background: var(--surface2); }
+  .chip.danger { border-color: var(--red); color: var(--red); }
+  .chip.danger:hover { background: rgba(239,68,68,.12); }
+  .chip.ghost { border-style: dashed; color: var(--muted); }
+
+  /* Doc list / queue ------------------------------------------------- */
+  .group { margin-bottom: 16px; }
+  .group-head {
+    font-size: 0.8rem; color: var(--muted);
+    display: flex; justify-content: space-between; align-items: baseline;
+    padding: 0 4px 6px;
+  }
+  .group-head b { color: var(--text); font-weight: 600; font-size: 0.92rem; }
+  ul.docs { list-style: none; }
+  ul.docs li {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 12px; margin-bottom: 4px;
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 8px; font-size: 0.9rem;
+  }
+  ul.docs li.active { border-color: var(--accent); background: rgba(99,102,241,.08); }
+  ul.docs li.complete { opacity: .55; }
+  .ico {
+    width: 22px; height: 22px; flex-shrink: 0;
+    display: inline-flex; align-items: center; justify-content: center;
+    font-size: 0.75rem; font-weight: 700; border-radius: 999px;
+    background: var(--surface2); color: var(--muted);
+  }
+  .ico.active   { background: var(--accent); color: #fff; }
+  .ico.complete { background: var(--green); color: #02251a; }
+  .doc-meta { margin-left: auto; color: var(--muted); font-size: 0.78rem; }
+
+  /* Waiting ---------------------------------------------------------- */
+  .waiting {
+    text-align: center; padding: 60px 20px;
+    background: var(--surface); border: 1px dashed var(--border);
+    border-radius: var(--r);
+  }
+  .waiting .big { font-size: 1.4rem; font-weight: 600; margin-bottom: 8px; }
+  .waiting .small { color: var(--muted); font-size: 0.9rem; }
+  .dots-anim {
+    display: inline-block; font-size: 2rem; letter-spacing: .3em;
+    color: var(--muted); margin-bottom: 18px;
+  }
+
+  /* Error ------------------------------------------------------------ */
+  .error-screen {
+    padding: 40px 24px; text-align: center;
+  }
+  .error-screen .big { font-size: 1.3rem; color: var(--red); margin-bottom: 10px; }
+  .error-screen .sub { color: var(--muted); font-size: 0.9rem; }
+
+  /* Toast ------------------------------------------------------------ */
+  .toast {
+    position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+    background: var(--surface2); color: var(--text);
+    border: 1px solid var(--red);
+    padding: 10px 16px; border-radius: var(--r);
+    font-size: 0.88rem; z-index: 50;
+    pointer-events: none; opacity: 0; transition: opacity .2s;
+  }
+  .toast.show { opacity: 1; }
+
+  @media (max-width: 480px) {
+    main { padding: 14px 12px 80px; }
+    .timer-val { font-size: 2rem; }
+    .btn { padding: 11px 14px; }
+  }
+</style>
+</head>
+<body>
+<header>
+  <h1>Time Logger</h1>
+  <span class="badge" id="conn"><span class="dot" id="connDot"></span><span id="connLabel">connecting…</span></span>
+  <span class="tech-tag" id="techTag">?</span>
+</header>
+<main id="app"></main>
+<div class="toast" id="toast"></div>
+
+<script>
+/* ------------------------------------------------------------------ *
+ * Tech time-logger. Identity comes from ?tech= on the URL (initials,
+ * case-insensitive). All state lives on the server; this view is a
+ * thin SSE consumer that renders whatever the server most recently
+ * pushed plus a per-second tick for live elapsed display.
+ * ------------------------------------------------------------------ */
+
+const params = new URLSearchParams(location.search);
+const rawTech = (params.get('tech') || '').trim();
+const TECH = rawTech.toUpperCase();
+
+// Live state mirror + UI flags
+let state = null;           // whatever /api/events hello frame delivers
+let dashboardData = null;   // { nodes, docNodes, ... }
+let es = null;              // EventSource
+let tickHandle = null;
+let stopArmed = false;      // two-click confirmation for the Stop button
+let stopArmTimer = null;
+
+const $app      = document.getElementById('app');
+const $conn     = document.getElementById('conn');
+const $connDot  = document.getElementById('connDot');
+const $connLabel = document.getElementById('connLabel');
+const $techTag  = document.getElementById('techTag');
+const $toast    = document.getElementById('toast');
+
+$techTag.textContent = TECH || '—';
+
+function rosterMap() {
+  const map = new Map();
+  const roster = (state && Array.isArray(state.techRegistry)) ? state.techRegistry : [];
+  roster.forEach(t => {
+    if (!t) return;
+    if (typeof t === 'string') {
+      const id = t.trim();
+      if (id) map.set(id, id);
+      return;
+    }
+    const id = String(t.id || '').trim();
+    const name = String(t.name || t.id || '').trim();
+    if (id) map.set(id, name || id);
+  });
+  return map;
+}
+
+function techDisplayName(id) {
+  return rosterMap().get(id) || id;
+}
+
+/* ------------------------------------------------------------------ *
+ * Connection / SSE
+ * ------------------------------------------------------------------ */
+
+function setConnected(ok, label) {
+  $connDot.className = 'dot ' + (ok ? 'ok' : 'off');
+  $connLabel.textContent = label;
+}
+
+function connect() {
+  setConnected(false, 'connecting…');
+  es = new EventSource('/api/events');
+
+  es.onopen = () => setConnected(true, 'connected');
+
+  es.onmessage = (ev) => {
+    let msg;
+    try { msg = JSON.parse(ev.data); } catch { return; }
+    if (msg.type === 'hello') {
+      state = msg.state;
+      Promise.all([loadData()]).then(render);
+    } else if (msg.type === 'runtime') {
+      // Server sends the runtime-only blob; merge the non-derived parts
+      // and re-fetch a full snapshot in the background to pick up perBom.
+      state = { ...state, ...msg.runtime };
+      fetchState();
+    } else if (msg.type === 'data') {
+      loadData().then(render);
+    } else if (msg.type === 'event') {
+      // Events are purely informational for the tech view; state comes
+      // via the runtime push that accompanies every mutation.
+    }
+  };
+
+  es.onerror = () => {
+    // Browser auto-reconnects SSE; we just surface the blip.
+    setConnected(false, 'reconnecting…');
+  };
+}
+
+async function loadData() {
+  const r = await fetch('/api/data');
+  dashboardData = await r.json();
+  return dashboardData;
+}
+
+async function fetchState() {
+  const r = await fetch('/api/state');
+  state = await r.json();
+  render();
+}
+
+/* ------------------------------------------------------------------ *
+ * Actions — thin wrappers over /api/timer.
+ * ------------------------------------------------------------------ */
+
+async function post(path, body) {
+  const r = await fetch(path, {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify(body)
+  });
+  const j = await r.json().catch(() => ({}));
+  if (!r.ok || j.ok === false) throw new Error(j.error || r.statusText);
+  return j;
+}
+
+function showToast(msg, ms = 2500) {
+  $toast.textContent = msg;
+  $toast.classList.add('show');
+  clearTimeout(showToast._t);
+  showToast._t = setTimeout(() => $toast.classList.remove('show'), ms);
+}
+
+async function act(assignmentId, action, reason) {
+  try {
+    await post('/api/timer', { assignmentId, techInitials: TECH, action, reason });
+  } catch (e) {
+    showToast(e.message || 'failed');
+  }
+}
+
+/* ------------------------------------------------------------------ *
+ * Derivations over live state
+ * ------------------------------------------------------------------ */
+
+function myQueueIds() { return (state && state.queues && state.queues[TECH]) || []; }
+
+function myAssignments() {
+  return myQueueIds()
+    .map(id => state.assignments[id])
+    .filter(Boolean);
+}
+
+function activeAssignment() {
+  return myAssignments().find(a => ['active','paused','downtime'].includes(a.state)) || null;
+}
+
+function headAssignment() {
+  // The server always keeps the head of the queue as the tech's "up next".
+  return myAssignments()[0] || null;
+}
+
+function docById(id) {
+  if (!dashboardData) return null;
+  return (dashboardData.docNodes || []).find(d => d.id === id) || null;
+}
+
+function nodeById(id) {
+  if (!dashboardData) return null;
+  return (dashboardData.nodes || []).find(n => n.id === id) || null;
+}
+
+// Live elapsed ms reconstituted client-side so the timer ticks without
+// waiting on a server push.
+function liveElapsed(a, now = Date.now()) {
+  let prod = a.productiveMs || 0;
+  let down = a.downtimeMs || 0;
+  if (a.state === 'active' && a.currentSegmentStartedAt) {
+    prod += now - new Date(a.currentSegmentStartedAt).getTime();
+  } else if (a.state === 'downtime' && a.currentDowntime) {
+    down += now - new Date(a.currentDowntime.startedAt).getTime();
+  }
+  return { prod, down };
+}
+
+function fmtHMS(ms) {
+  const s = Math.max(0, Math.floor(ms/1000));
+  const h = Math.floor(s/3600), m = Math.floor((s%3600)/60), ss = s%60;
+  return (h > 0 ? String(h).padStart(2,'0')+':' : '') +
+         String(m).padStart(2,'0') + ':' + String(ss).padStart(2,'0');
+}
+
+function fmtGoal(hrs) {
+  if (hrs == null || isNaN(hrs)) return '';
+  if (hrs >= 1) return hrs.toFixed(hrs % 1 === 0 ? 0 : 1) + 'h goal';
+  return (hrs * 60).toFixed(0) + 'm goal';
+}
+
+function armStop(assignmentId) {
+  if (stopArmed === assignmentId) return true;
+  stopArmed = assignmentId;
+  clearTimeout(stopArmTimer);
+  stopArmTimer = setTimeout(() => { stopArmed = false; render(); }, 4000);
+  render();
+  showToast('click again to confirm complete');
+  return false;
+}
+
+/* ------------------------------------------------------------------ *
+ * Render — picks one of: error / waiting / assigned / active
+ * ------------------------------------------------------------------ */
+
+function render() {
+  // Validate tech identity against registry as soon as we have one.
+  if (!TECH) {
+    $app.innerHTML = errorView('No tech specified',
+      'Append <code>?tech=YOUR_INITIALS</code> to the URL.');
+    return;
+  }
+  const roster = rosterMap();
+  if (state && roster.size > 0 && !roster.has(TECH)) {
+    $app.innerHTML = errorView(
+      'Unknown tech: ' + TECH,
+      'Valid techs: ' + Array.from(roster.entries()).map(([id, name]) => name === id ? id : `${id} (${name})`).join(', '));
+    return;
+  }
+  $techTag.textContent = roster.has(TECH)
+    ? (techDisplayName(TECH) === TECH ? TECH : `${TECH} · ${techDisplayName(TECH)}`)
+    : (TECH || '—');
+  if (!state || !dashboardData) {
+    $app.innerHTML = `<section class="waiting"><div class="big">Loading…</div></section>`;
+    return;
+  }
+
+  const q = myAssignments();
+  if (!q.length) return renderWaiting();
+
+  const active = activeAssignment();
+  const focus = active || q[0];
+  const focusDoc = docById(focus.docId);
+  const focusBom = focusDoc ? nodeById(focusDoc.bomNodeId) : null;
+
+  // Group the tech's queue by bomNodeId so BOM-assigned docs show under
+  // a single header. Groups stay in queue order.
+  const groups = [];
+  const gi = new Map();
+  for (const a of q) {
+    const key = a.bomNodeId || '_none';
+    if (!gi.has(key)) { gi.set(key, groups.length); groups.push({ bomId: a.bomNodeId, items: [] }); }
+    groups[gi.get(key)].items.push(a);
+  }
+
+  $app.innerHTML =
+    renderFocus(focus, focusDoc, focusBom) +
+    renderGroups(groups, focus);
+
+  wireFocus(focus);
+  ensureTicker();
+}
+
+function renderFocus(a, d, n) {
+  const live = liveElapsed(a);
+  const cardCls = a.state === 'active' ? 'running'
+                : a.state === 'downtime' ? 'downtime'
+                : a.state === 'paused' ? 'paused'
+                : 'primary';
+
+  const ctx = [];
+  if (n) ctx.push(`<b>${escapeHtml(n.label || n.id)}</b>${n.sublabel ? ` (${escapeHtml(n.sublabel)})` : ''}`);
+  if (a.context && a.context.sn) ctx.push(`build <b>${escapeHtml(a.context.sn)}</b>`);
+  else if (a.context && a.context.kind === 'batch') ctx.push(`batch${a.context.qty ? ' · qty <b>'+a.context.qty+'</b>' : ''}`);
+
+  const goalHrs = d && typeof d.cycle_time_hrs === 'number' ? d.cycle_time_hrs : null;
+
+  const buttons = a.state === 'queued'   ? renderQueuedButtons(a)
+                : a.state === 'active'   ? renderActiveButtons(a)
+                : a.state === 'paused'   ? renderPausedButtons(a)
+                : a.state === 'downtime' ? renderDowntimeButtons(a)
+                : '';
+
+  return `
+    <div class="card ${cardCls}">
+      <div class="task-head">
+        <div class="doc-label">${escapeHtml(d ? (d.label || d.id) : a.docId)}</div>
+      </div>
+      <div class="context">${ctx.join(' · ')}</div>
+      <div class="timer-block">
+        <div class="timer-row">
+          <div>
+            <div class="timer-val" data-live-prod="${a.id}">${fmtHMS(live.prod)}</div>
+            <div class="timer-sub">productive${goalHrs != null ? ' · '+fmtGoal(goalHrs) : ''}</div>
+          </div>
+          <div>
+            <div class="timer-val muted" data-live-down="${a.id}">${fmtHMS(live.down)}</div>
+            <div class="timer-sub">downtime</div>
+          </div>
+        </div>
+        ${a.state === 'downtime' && a.currentDowntime ? `
+          <div class="downtime-banner">
+            <span>⚠ ${escapeHtml(a.currentDowntime.reason)}</span>
+            <span data-live-down-cur="${a.id}">${fmtHMS(Date.now() - new Date(a.currentDowntime.startedAt).getTime())}</span>
+          </div>` : ''}
+      </div>
+      ${buttons}
+    </div>
+  `;
+}
+
+function renderQueuedButtons(a) {
+  return `
+    <div class="btn-row">
+      <button class="btn start large" data-act="start" data-id="${a.id}">Start ▶</button>
+    </div>`;
+}
+function renderActiveButtons(a) {
+  const armed = (stopArmed === a.id);
+  return `
+    <div class="btn-row spread">
+      <button class="btn pause large" data-act="pause" data-id="${a.id}">Pause ⏸</button>
+      <button class="btn stop large ${armed ? 'confirm' : ''}" data-act="stop" data-id="${a.id}">
+        ${armed ? 'Confirm complete ✓' : 'Stop ■'}
+      </button>
+    </div>`;
+}
+function renderPausedButtons(a) {
+  const armed = (stopArmed === a.id);
+  return `
+    <div class="btn-row spread">
+      <button class="btn resume large" data-act="resume" data-id="${a.id}">Resume ▶</button>
+      <button class="btn stop large ${armed ? 'confirm' : ''}" data-act="stop" data-id="${a.id}">
+        ${armed ? 'Confirm complete ✓' : 'Stop ■'}
+      </button>
+    </div>
+    <div class="chip-label">Log this pause as downtime? (optional)</div>
+    <div class="chips">
+      ${(state.downtimeReasons || []).map(r =>
+        `<button class="chip danger" data-act="downtime_start" data-id="${a.id}" data-reason="${escapeHtml(r)}">${escapeHtml(r)}</button>`
+      ).join('')}
+      <button class="chip ghost" data-act="_dismiss">Just a pause</button>
+    </div>`;
+}
+function renderDowntimeButtons(a) {
+  const armed = (stopArmed === a.id);
+  return `
+    <div class="btn-row spread">
+      <button class="btn resume large" data-act="resume" data-id="${a.id}">Resume ▶</button>
+      <button class="btn stop large ${armed ? 'confirm' : ''}" data-act="stop" data-id="${a.id}">
+        ${armed ? 'Confirm complete ✓' : 'Stop ■'}
+      </button>
+    </div>`;
+}
+
+function renderGroups(groups, focus) {
+  if (groups.length === 0) return '';
+  const out = [`<div class="section-title">Your queue</div>`];
+  for (const g of groups) {
+    const bom = g.bomId ? nodeById(g.bomId) : null;
+    const bomLabel = bom ? (bom.label || bom.id) : 'Ad-hoc';
+    const ctxSn = g.items[0].context && g.items[0].context.sn;
+    out.push(`
+      <div class="group">
+        <div class="group-head">
+          <b>${escapeHtml(bomLabel)}</b>
+          ${ctxSn ? `<span>build ${escapeHtml(ctxSn)}</span>` : ''}
+        </div>
+        <ul class="docs">
+          ${g.items.map(a => {
+            const d = docById(a.docId);
+            const isFocus = a.id === focus.id;
+            const cls = isFocus ? 'active'
+                      : a.state === 'complete' ? 'complete'
+                      : '';
+            const ico = isFocus ? '●'
+                      : a.state === 'complete' ? '✓'
+                      : '○';
+            const icoCls = isFocus ? 'active'
+                      : a.state === 'complete' ? 'complete'
+                      : '';
+            const meta = d && d.doc_num ? escapeHtml(d.doc_num)
+                       : d && d.type ? escapeHtml(d.type)
+                       : '';
+            return `<li class="${cls}">
+              <span class="ico ${icoCls}">${ico}</span>
+              <span>${escapeHtml(d ? (d.label || d.id) : a.docId)}</span>
+              ${meta ? `<span class="doc-meta">${meta}</span>` : ''}
+            </li>`;
+          }).join('')}
+        </ul>
+      </div>
+    `);
+  }
+  return out.join('');
+}
+
+function renderWaiting() {
+  $app.innerHTML = `
+    <section class="waiting">
+      <div class="dots-anim">● ● ●</div>
+      <div class="big">No task assigned</div>
+      <div class="small">Waiting for supervisor to push work to your queue.</div>
+    </section>`;
+}
+
+function errorView(big, sub) {
+  return `<section class="error-screen">
+    <div class="big">${escapeHtml(big)}</div>
+    <div class="sub">${sub}</div>
+  </section>`;
+}
+
+/* ------------------------------------------------------------------ *
+ * Wire button handlers.
+ * Delegated at the app level since we re-render on every state push.
+ * ------------------------------------------------------------------ */
+function wireFocus(/* focus */) {
+  $app.onclick = async (ev) => {
+    const btn = ev.target.closest('[data-act]');
+    if (!btn) return;
+    const act_ = btn.dataset.act;
+    const id = btn.dataset.id;
+    const reason = btn.dataset.reason;
+    if (act_ === '_dismiss') {
+      // Clearing the chip strip without logging downtime — the task stays
+      // plainly paused; no server call needed.
+      const a = state.assignments[id] || activeAssignment();
+      if (a) {
+        // Hide the chip strip by swapping the paused render to a "just
+        // paused" version — simplest is to suppress by stamping a flag.
+      }
+      // Just rerender; chips reappear only when paused, so user sees the
+      // Resume button either way. Nothing to actually persist here.
+      render();
+      return;
+    }
+    if (act_ === 'stop') {
+      if (!armStop(id)) return;
+      stopArmed = false;
+      clearTimeout(stopArmTimer);
+      await act(id, 'stop');
+      return;
+    }
+    await act(id, act_, reason);
+  };
+}
+
+/* ------------------------------------------------------------------ *
+ * Per-second tick so the displayed elapsed stays live without waiting
+ * on a server push. Only the numeric spans get rewritten — the whole
+ * DOM is not re-rendered on the tick path.
+ * ------------------------------------------------------------------ */
+function ensureTicker() {
+  const a = activeAssignment();
+  if (!a) { if (tickHandle) { clearInterval(tickHandle); tickHandle = null; } return; }
+  if (tickHandle) return;
+  tickHandle = setInterval(() => {
+    const cur = activeAssignment();
+    if (!cur) { clearInterval(tickHandle); tickHandle = null; return; }
+    const live = liveElapsed(cur);
+    const p = document.querySelector(`[data-live-prod="${cur.id}"]`);
+    const d = document.querySelector(`[data-live-down="${cur.id}"]`);
+    if (p) p.textContent = fmtHMS(live.prod);
+    if (d) d.textContent = fmtHMS(live.down);
+    if (cur.state === 'downtime' && cur.currentDowntime) {
+      const el = document.querySelector(`[data-live-down-cur="${cur.id}"]`);
+      if (el) el.textContent = fmtHMS(Date.now() - new Date(cur.currentDowntime.startedAt).getTime());
+    }
+  }, 1000);
+}
+
+/* ------------------------------------------------------------------ */
+function escapeHtml(s) {
+  return String(s == null ? '' : s)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+
+// Hard-pause the ticker when the tab is hidden; timer math is based on
+// absolute wall time so there's nothing to catch up on when it's resumed.
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden && tickHandle) { clearInterval(tickHandle); tickHandle = null; }
+  else if (!document.hidden) { ensureTicker(); }
+});
+
+connect();
+</script>
+</body>
+</html>

@@ -1,0 +1,2990 @@
+{
+  "nodes": [
+    {
+      "id": "M2",
+      "parent": null,
+      "type": "product",
+      "label": "M2 Gimbal",
+      "sublabel": "011-0000",
+      "cycle_time_hrs": 0,
+      "goal_cycle_time_hrs": 8,
+      "supplier_entries": [],
+      "validates": [],
+      "technicians": []
+    },
+    {
+      "id": "PL",
+      "parent": "M2",
+      "type": "assembly",
+      "label": "Payload V1.1",
+      "sublabel": "011-0120",
+      "cycle_time_hrs": 0,
+      "goal_cycle_time_hrs": 8,
+      "supplier_entries": [],
+      "validates": [],
+      "technicians": []
+    },
+    {
+      "id": "OA",
+      "parent": "M2",
+      "type": "assembly",
+      "label": "Outer Axis",
+      "sublabel": "011-0001",
+      "cycle_time_hrs": 0,
+      "goal_cycle_time_hrs": 16,
+      "supplier_entries": [],
+      "validates": [],
+      "technicians": []
+    },
+    {
+      "id": "EL",
+      "parent": "OA",
+      "type": "assembly",
+      "label": "EL Ring",
+      "sublabel": "011-0188",
+      "cycle_time_hrs": 0,
+      "goal_cycle_time_hrs": 2,
+      "supplier_entries": [],
+      "validates": [],
+      "technicians": []
+    },
+    {
+      "id": "AH",
+      "parent": "OA",
+      "type": "assembly",
+      "label": "AZ Head",
+      "sublabel": "011-0118",
+      "cycle_time_hrs": 0,
+      "goal_cycle_time_hrs": 8,
+      "supplier_entries": [],
+      "validates": [],
+      "technicians": []
+    },
+    {
+      "id": "AZ",
+      "parent": "OA",
+      "type": "assembly",
+      "label": "AZ Arm",
+      "sublabel": "011-0245",
+      "cycle_time_hrs": 0,
+      "goal_cycle_time_hrs": 8,
+      "supplier_entries": [],
+      "validates": [],
+      "technicians": []
+    },
+    {
+      "id": "RL",
+      "parent": "OA",
+      "type": "assembly",
+      "label": "RL Arm",
+      "sublabel": "011-0246",
+      "cycle_time_hrs": 0,
+      "goal_cycle_time_hrs": 8,
+      "supplier_entries": [],
+      "validates": [],
+      "technicians": []
+    },
+    {
+      "id": "IAZ",
+      "parent": "EL",
+      "type": "assembly",
+      "label": "Inner AZ/EL",
+      "sublabel": "011-0183",
+      "cycle_time_hrs": 0,
+      "goal_cycle_time_hrs": 6,
+      "supplier_entries": [],
+      "validates": [],
+      "technicians": [],
+      "row": 3
+    },
+    {
+      "id": "RLB",
+      "parent": "EL",
+      "type": "assembly",
+      "label": "RL Bearing",
+      "sublabel": "011-0169",
+      "cycle_time_hrs": 0,
+      "goal_cycle_time_hrs": 3,
+      "supplier_entries": [],
+      "validates": [],
+      "technicians": [],
+      "row": 3
+    },
+    {
+      "id": "PLB",
+      "parent": "PL",
+      "type": "assembly",
+      "label": "Payload Base",
+      "sublabel": "011-0150",
+      "cycle_time_hrs": 0,
+      "goal_cycle_time_hrs": 3,
+      "supplier_entries": [],
+      "validates": [],
+      "technicians": []
+    },
+    {
+      "id": "EOW",
+      "parent": "PLB",
+      "type": "assembly",
+      "label": "Wide Field Camera",
+      "sublabel": "011-0153",
+      "cycle_time_hrs": 0,
+      "goal_cycle_time_hrs": 1,
+      "supplier_entries": [],
+      "validates": [],
+      "technicians": []
+    },
+    {
+      "id": "EON",
+      "parent": "PL",
+      "type": "assembly",
+      "label": "CJ18 Lens Assembly",
+      "sublabel": "011-0267",
+      "cycle_time_hrs": 0,
+      "goal_cycle_time_hrs": 6,
+      "supplier_entries": [],
+      "validates": [],
+      "technicians": []
+    },
+    {
+      "id": "NOX",
+      "parent": "PL",
+      "type": "assembly",
+      "label": "Noxant Camera Assembly",
+      "sublabel": "",
+      "cycle_time_hrs": 0,
+      "goal_cycle_time_hrs": 1,
+      "supplier_entries": [],
+      "validates": [],
+      "technicians": []
+    },
+    {
+      "id": "AGX",
+      "parent": "PLB",
+      "type": "assembly",
+      "label": "AGX Carrier Assembly",
+      "sublabel": "",
+      "cycle_time_hrs": 0,
+      "goal_cycle_time_hrs": 0,
+      "supplier_entries": [],
+      "validates": [],
+      "technicians": [],
+      "row": 4
+    },
+    {
+      "id": "GPS",
+      "parent": "AH",
+      "type": "assembly",
+      "label": "GPS Carrier Assembly",
+      "sublabel": "011-0110",
+      "cycle_time_hrs": 0,
+      "goal_cycle_time_hrs": 0,
+      "supplier_entries": [],
+      "validates": [],
+      "technicians": [],
+      "row": 4
+    },
+    {
+      "id": "AZIM",
+      "parent": "IAZ",
+      "type": "assembly",
+      "label": "AZ Inner Motor",
+      "sublabel": "",
+      "cycle_time_hrs": 0,
+      "goal_cycle_time_hrs": 0,
+      "supplier_entries": [],
+      "validates": [],
+      "technicians": [],
+      "row": 4
+    },
+    {
+      "id": "ELIM",
+      "parent": "IAZ",
+      "type": "assembly",
+      "label": "EL Inner Motor",
+      "sublabel": "",
+      "cycle_time_hrs": 0,
+      "goal_cycle_time_hrs": 0,
+      "supplier_entries": [],
+      "validates": [],
+      "technicians": [],
+      "row": 4
+    },
+    {
+      "id": "RLIM",
+      "parent": "IAZ",
+      "type": "assembly",
+      "label": "RL Inner Motor",
+      "sublabel": "",
+      "cycle_time_hrs": 0,
+      "goal_cycle_time_hrs": 0,
+      "supplier_entries": [],
+      "validates": [],
+      "technicians": [],
+      "row": 4
+    },
+    {
+      "id": "CO",
+      "parent": "EON",
+      "type": "assembly",
+      "label": "EON Corrective Optics Assembly",
+      "sublabel": "",
+      "cycle_time_hrs": 0,
+      "goal_cycle_time_hrs": 2,
+      "supplier_entries": [],
+      "validates": [],
+      "technicians": [],
+      "row": 3
+    },
+    {
+      "id": "RLP",
+      "parent": "RL",
+      "type": "assembly",
+      "label": "RL Arm PSU",
+      "sublabel": "",
+      "cycle_time_hrs": 0,
+      "goal_cycle_time_hrs": 0,
+      "supplier_entries": [],
+      "validates": [],
+      "technicians": [],
+      "row": 4
+    },
+    {
+      "id": "AZOM",
+      "parent": "AH",
+      "type": "assembly",
+      "label": "AZ Outer Motor",
+      "sublabel": "",
+      "cycle_time_hrs": 0,
+      "goal_cycle_time_hrs": 1,
+      "supplier_entries": [],
+      "validates": [],
+      "technicians": [],
+      "row": 4
+    },
+    {
+      "id": "RLOM",
+      "parent": "AZ",
+      "type": "assembly",
+      "label": "RL Outer Motor",
+      "sublabel": "",
+      "cycle_time_hrs": 0,
+      "goal_cycle_time_hrs": 1,
+      "supplier_entries": [],
+      "validates": [],
+      "technicians": [],
+      "row": 4
+    },
+    {
+      "id": "ELOM",
+      "parent": "RL",
+      "type": "assembly",
+      "label": "EL Outer Motor",
+      "sublabel": "",
+      "cycle_time_hrs": 0,
+      "goal_cycle_time_hrs": 1,
+      "supplier_entries": [],
+      "validates": [],
+      "technicians": [],
+      "row": 4
+    },
+    {
+      "id": "ELMB",
+      "parent": "ELIM",
+      "type": "assembly",
+      "label": "EL Motor Backiron",
+      "sublabel": "",
+      "cycle_time_hrs": 0,
+      "goal_cycle_time_hrs": 0,
+      "supplier_entries": [],
+      "validates": [],
+      "technicians": [],
+      "row": 5
+    },
+    {
+      "id": "AZMB",
+      "parent": "AZIM",
+      "type": "assembly",
+      "label": "AZ Motor Backiron",
+      "sublabel": "",
+      "cycle_time_hrs": 0,
+      "goal_cycle_time_hrs": 0,
+      "supplier_entries": [],
+      "validates": [],
+      "technicians": [],
+      "row": 5
+    },
+    {
+      "id": "RLMB",
+      "parent": "RLIM",
+      "type": "assembly",
+      "label": "RL Motor Backiron",
+      "sublabel": "",
+      "cycle_time_hrs": 0,
+      "goal_cycle_time_hrs": 0,
+      "supplier_entries": [],
+      "validates": [],
+      "technicians": [],
+      "row": 5
+    },
+    {
+      "id": "ELMC",
+      "parent": "ELIM",
+      "type": "assembly",
+      "label": "EL Motor Coil",
+      "sublabel": "",
+      "cycle_time_hrs": 0,
+      "goal_cycle_time_hrs": 0,
+      "supplier_entries": [],
+      "validates": [],
+      "technicians": [],
+      "row": 5
+    },
+    {
+      "id": "AZMC",
+      "parent": "AZIM",
+      "type": "assembly",
+      "label": "AZ Motor Coil",
+      "sublabel": "",
+      "cycle_time_hrs": 0,
+      "goal_cycle_time_hrs": 0,
+      "supplier_entries": [],
+      "validates": [],
+      "technicians": [],
+      "row": 5
+    },
+    {
+      "id": "RLMC",
+      "parent": "RLIM",
+      "type": "assembly",
+      "label": "RL Motor Coil",
+      "sublabel": "",
+      "cycle_time_hrs": 0,
+      "goal_cycle_time_hrs": 0,
+      "supplier_entries": [],
+      "validates": [],
+      "technicians": [],
+      "row": 5
+    },
+    {
+      "id": "AGXB",
+      "parent": "AGX",
+      "type": "pcb",
+      "label": "AGX Carrier Board",
+      "sublabel": "",
+      "cycle_time_hrs": 0,
+      "goal_cycle_time_hrs": 0,
+      "supplier_entries": [],
+      "validates": [],
+      "technicians": [],
+      "row": 5
+    },
+    {
+      "id": "GPSB",
+      "parent": "GPS",
+      "type": "pcb",
+      "label": "GPS Carrier Board",
+      "sublabel": "",
+      "cycle_time_hrs": 0,
+      "goal_cycle_time_hrs": 0,
+      "supplier_entries": [],
+      "validates": [],
+      "technicians": [],
+      "row": 5
+    },
+    {
+      "id": "SPC",
+      "parent": "AZ",
+      "type": "assembly",
+      "label": "SuperCap Assembly",
+      "sublabel": "",
+      "cycle_time_hrs": 0,
+      "goal_cycle_time_hrs": 0,
+      "supplier_entries": [],
+      "validates": [],
+      "technicians": [],
+      "row": 4
+    },
+    {
+      "id": "GPB",
+      "parent": "AH",
+      "type": "pcb",
+      "label": "Gimbal Power Board",
+      "sublabel": "",
+      "cycle_time_hrs": 0,
+      "goal_cycle_time_hrs": 0,
+      "supplier_entries": [],
+      "validates": [],
+      "technicians": [],
+      "row": 4
+    },
+    {
+      "id": "BNBX",
+      "parent": "PL",
+      "type": "assembly",
+      "label": "Brain Box",
+      "sublabel": "",
+      "cycle_time_hrs": 0,
+      "goal_cycle_time_hrs": 0,
+      "supplier_entries": [],
+      "validates": [],
+      "technicians": [],
+      "row": 4
+    },
+    {
+      "id": "RLAL",
+      "parent": "AZ",
+      "type": "assembly",
+      "label": "RL Axis Lock Assembly",
+      "sublabel": "",
+      "cycle_time_hrs": 0,
+      "goal_cycle_time_hrs": 0,
+      "supplier_entries": [],
+      "validates": [],
+      "technicians": [],
+      "row": 4
+    },
+    {
+      "id": "ELAL",
+      "parent": "RL",
+      "type": "assembly",
+      "label": "EL Axis Lock Assembly",
+      "sublabel": "",
+      "cycle_time_hrs": 0,
+      "goal_cycle_time_hrs": 0,
+      "supplier_entries": [],
+      "validates": [],
+      "technicians": [],
+      "row": 4
+    },
+    {
+      "id": "ISVO",
+      "parent": "EON",
+      "type": "assembly",
+      "label": "Lens Servo - Iris",
+      "sublabel": "",
+      "cycle_time_hrs": 0,
+      "goal_cycle_time_hrs": 0,
+      "supplier_entries": [],
+      "validates": [],
+      "technicians": [],
+      "row": 4
+    },
+    {
+      "id": "ZSVO",
+      "parent": "EON",
+      "type": "assembly",
+      "label": "Lens Servo - Zoom",
+      "sublabel": "",
+      "cycle_time_hrs": 0,
+      "goal_cycle_time_hrs": 0,
+      "supplier_entries": [],
+      "validates": [],
+      "technicians": [],
+      "row": 4
+    },
+    {
+      "id": "FVSO",
+      "parent": "EON",
+      "type": "assembly",
+      "label": "Lens Servo - Focus",
+      "sublabel": "",
+      "cycle_time_hrs": 0,
+      "goal_cycle_time_hrs": 0,
+      "supplier_entries": [],
+      "validates": [],
+      "technicians": [],
+      "row": 4
+    },
+    {
+      "id": "ENCR",
+      "parent": "EON",
+      "type": "assembly",
+      "label": "CJ18 Encoder Rings",
+      "sublabel": "",
+      "cycle_time_hrs": 0,
+      "goal_cycle_time_hrs": 0,
+      "supplier_entries": [],
+      "validates": [],
+      "technicians": [],
+      "row": 4
+    },
+    {
+      "id": "SLTS__RLOM",
+      "parent": "RLOM",
+      "type": "assembly",
+      "label": "Shaft Locking Taper Sleeves - Modified",
+      "sublabel": "",
+      "cycle_time_hrs": 0,
+      "goal_cycle_time_hrs": 0,
+      "supplier_entries": [],
+      "validates": [],
+      "technicians": []
+    },
+    {
+      "id": "SLTS__AZOM",
+      "parent": "AZOM",
+      "type": "assembly",
+      "label": "Shaft Locking Taper Sleeves - Modified",
+      "sublabel": "",
+      "cycle_time_hrs": 0,
+      "goal_cycle_time_hrs": 0,
+      "supplier_entries": [],
+      "validates": [],
+      "technicians": []
+    },
+    {
+      "id": "SLTS__ELOM",
+      "parent": "ELOM",
+      "type": "assembly",
+      "label": "Shaft Locking Taper Sleeves - Modified",
+      "sublabel": "",
+      "cycle_time_hrs": 0,
+      "goal_cycle_time_hrs": 0,
+      "supplier_entries": [],
+      "validates": [],
+      "technicians": []
+    },
+    {
+      "id": "FC",
+      "parent": "M2",
+      "type": "assembly",
+      "label": "Front Cover",
+      "sublabel": "",
+      "cycle_time_hrs": 0,
+      "goal_cycle_time_hrs": 0,
+      "supplier_entries": [],
+      "validates": [],
+      "technicians": []
+    },
+    {
+      "id": "RC",
+      "parent": "M2",
+      "type": "assembly",
+      "label": "Rear Cover",
+      "sublabel": "",
+      "cycle_time_hrs": 0,
+      "goal_cycle_time_hrs": 0,
+      "supplier_entries": [],
+      "validates": [],
+      "technicians": [],
+      "row": 4
+    },
+    {
+      "id": "VI",
+      "parent": "M2",
+      "type": "assembly",
+      "label": "Vibration Isolator",
+      "sublabel": "",
+      "cycle_time_hrs": 0,
+      "goal_cycle_time_hrs": 0,
+      "supplier_entries": [],
+      "validates": [],
+      "technicians": []
+    },
+    {
+      "id": "ITLA",
+      "parent": "M2",
+      "type": "assembly",
+      "label": "Inner Transit Lock Assembly",
+      "sublabel": "",
+      "cycle_time_hrs": 0,
+      "goal_cycle_time_hrs": 0,
+      "supplier_entries": [],
+      "validates": [],
+      "technicians": [],
+      "row": 4
+    },
+    {
+      "id": "BFE",
+      "parent": "EON",
+      "type": "assembly",
+      "label": "Back Focus Extender Assembly",
+      "sublabel": "",
+      "cycle_time_hrs": 0,
+      "goal_cycle_time_hrs": 0,
+      "supplier_entries": [],
+      "validates": [],
+      "technicians": [],
+      "row": 4
+    },
+    {
+      "id": "MSVO",
+      "parent": "BFE",
+      "type": "assembly",
+      "label": "Maxon Servo Motor",
+      "sublabel": "",
+      "cycle_time_hrs": 0,
+      "goal_cycle_time_hrs": 0,
+      "supplier_entries": [],
+      "validates": [],
+      "technicians": [],
+      "row": 5
+    },
+    {
+      "id": "SC",
+      "parent": "M2",
+      "type": "assembly",
+      "label": "M2 Shipping Case",
+      "sublabel": "",
+      "cycle_time_hrs": 0,
+      "goal_cycle_time_hrs": 0,
+      "supplier_entries": [],
+      "validates": [],
+      "technicians": []
+    },
+    {
+      "id": "LAP",
+      "parent": "M2",
+      "type": "assembly",
+      "label": "Laser Arming Panel",
+      "sublabel": "",
+      "cycle_time_hrs": 0,
+      "goal_cycle_time_hrs": 0,
+      "supplier_entries": [],
+      "validates": [],
+      "technicians": [],
+      "row": 4
+    },
+    {
+      "id": "PLT",
+      "parent": "PL",
+      "type": "assembly",
+      "label": "Payload Laser Tray",
+      "sublabel": "",
+      "cycle_time_hrs": 0,
+      "goal_cycle_time_hrs": 0,
+      "supplier_entries": [],
+      "validates": [],
+      "technicians": []
+    },
+    {
+      "id": "LASM",
+      "parent": "PLT",
+      "type": "assembly",
+      "label": "Laser Pointer/Illuminator",
+      "sublabel": "",
+      "cycle_time_hrs": 0,
+      "goal_cycle_time_hrs": 0,
+      "supplier_entries": [],
+      "validates": [],
+      "technicians": [],
+      "row": 4
+    },
+    {
+      "id": "WRI",
+      "parent": "VI",
+      "type": "stock",
+      "label": "Wire Rope Isolator",
+      "sublabel": "",
+      "cycle_time_hrs": 0,
+      "goal_cycle_time_hrs": 0,
+      "supplier_entries": [],
+      "validates": [],
+      "technicians": []
+    },
+    {
+      "id": "TAC",
+      "parent": "M2",
+      "type": "stock",
+      "label": "TAC-450 IMU",
+      "sublabel": "",
+      "cycle_time_hrs": 0,
+      "goal_cycle_time_hrs": 0,
+      "supplier_entries": [],
+      "validates": [],
+      "technicians": [],
+      "row": 4
+    },
+    {
+      "id": "DK",
+      "parent": "M2",
+      "type": "assembly",
+      "label": "Dessicant Kit",
+      "sublabel": "",
+      "cycle_time_hrs": 0,
+      "goal_cycle_time_hrs": 0,
+      "supplier_entries": [],
+      "validates": [],
+      "technicians": [],
+      "row": 4
+    },
+    {
+      "id": "MK",
+      "parent": "M2",
+      "type": "assembly",
+      "label": "Maintenance Kit",
+      "sublabel": "",
+      "cycle_time_hrs": 0,
+      "goal_cycle_time_hrs": 0,
+      "supplier_entries": [],
+      "validates": [],
+      "technicians": [],
+      "row": 4
+    },
+    {
+      "id": "PK",
+      "parent": "M2",
+      "type": "assembly",
+      "label": "Purge Kit",
+      "sublabel": "",
+      "cycle_time_hrs": 0,
+      "goal_cycle_time_hrs": 0,
+      "supplier_entries": [],
+      "validates": [],
+      "technicians": [],
+      "row": 4
+    },
+    {
+      "id": "LAPB",
+      "parent": "LAP",
+      "type": "pcb",
+      "label": "LAP PCBA",
+      "sublabel": "",
+      "cycle_time_hrs": 0,
+      "goal_cycle_time_hrs": 0,
+      "supplier_entries": [],
+      "validates": [],
+      "technicians": [],
+      "row": 5
+    },
+    {
+      "id": "LPB",
+      "parent": "PLT",
+      "type": "pcb",
+      "label": "Laser Payload PCBA",
+      "sublabel": "",
+      "cycle_time_hrs": 0,
+      "goal_cycle_time_hrs": 0,
+      "supplier_entries": [],
+      "validates": [],
+      "technicians": [],
+      "row": 4
+    },
+    {
+      "id": "LIB",
+      "parent": "AH",
+      "type": "pcb",
+      "label": "Laser Interface PCBA",
+      "sublabel": "",
+      "cycle_time_hrs": 0,
+      "goal_cycle_time_hrs": 0,
+      "supplier_entries": [],
+      "validates": [],
+      "technicians": [],
+      "row": 4
+    },
+    {
+      "id": "GPB",
+      "parent": "AH",
+      "type": "pcb",
+      "label": "GPIO Interface PCBA",
+      "sublabel": "",
+      "cycle_time_hrs": 0,
+      "goal_cycle_time_hrs": 0,
+      "supplier_entries": [],
+      "validates": [],
+      "technicians": []
+    },
+    {
+      "id": "MIPI",
+      "parent": "PLB",
+      "type": "pcb",
+      "label": "MIPI Flex Cables",
+      "sublabel": "",
+      "cycle_time_hrs": 0,
+      "goal_cycle_time_hrs": 0,
+      "supplier_entries": [],
+      "validates": [],
+      "technicians": [],
+      "row": 4
+    },
+    {
+      "id": "IFB",
+      "parent": "AH",
+      "type": "pcb",
+      "label": "Input Filter PCBA",
+      "sublabel": "",
+      "cycle_time_hrs": 0,
+      "goal_cycle_time_hrs": 0,
+      "supplier_entries": [],
+      "validates": [],
+      "technicians": [],
+      "row": 4
+    },
+    {
+      "id": "DPB",
+      "parent": "BNBX",
+      "type": "pcb",
+      "label": "Digital Power PCBA",
+      "sublabel": "",
+      "cycle_time_hrs": 0,
+      "goal_cycle_time_hrs": 0,
+      "supplier_entries": [],
+      "validates": [],
+      "technicians": [],
+      "row": 5
+    }
+  ],
+  "sections": [],
+  "docNodes": [
+    {
+      "id": "OA_PROC__OA",
+      "bomNodeId": "OA",
+      "tests_node_id": "",
+      "type": "assembly",
+      "label": "Outer Axis Assembly Procedure",
+      "doc_num": "",
+      "score": 2,
+      "leads_to": "SPR_PROC",
+      "linked_to": null,
+      "cycle_time_hrs": 15,
+      "goal_cycle_time_hrs": 0,
+      "validates": [],
+      "technicians": [
+        {
+          "id": "CS",
+          "name": "CS",
+          "score": 3
+        },
+        {
+          "id": "RS",
+          "name": "RS",
+          "score": 2
+        }
+      ]
+    },
+    {
+      "id": "OA_PROC__AZ",
+      "bomNodeId": "AZ",
+      "tests_node_id": "",
+      "type": "assembly",
+      "label": "Outer Axis Assembly Procedure",
+      "doc_num": "",
+      "score": 2,
+      "leads_to": "SPR_PROC",
+      "linked_to": null,
+      "cycle_time_hrs": 10,
+      "goal_cycle_time_hrs": 0,
+      "validates": [],
+      "technicians": [
+        {
+          "id": "CS",
+          "name": "CS",
+          "score": 3
+        },
+        {
+          "id": "RS",
+          "name": "RS",
+          "score": 2
+        }
+      ]
+    },
+    {
+      "id": "OA_PROC__AH",
+      "bomNodeId": "AH",
+      "tests_node_id": "",
+      "type": "assembly",
+      "label": "Outer Axis Assembly Procedure",
+      "doc_num": "",
+      "score": 2,
+      "leads_to": "SPR_PROC",
+      "linked_to": null,
+      "cycle_time_hrs": 10,
+      "goal_cycle_time_hrs": 0,
+      "validates": [],
+      "technicians": [
+        {
+          "id": "CS",
+          "name": "CS",
+          "score": 3
+        },
+        {
+          "id": "RS",
+          "name": "RS",
+          "score": 2
+        }
+      ]
+    },
+    {
+      "id": "OA_PROC__RL",
+      "bomNodeId": "RL",
+      "tests_node_id": "",
+      "type": "assembly",
+      "label": "Outer Axis Assembly Procedure",
+      "doc_num": "",
+      "score": 2,
+      "leads_to": "SPR_PROC",
+      "linked_to": null,
+      "cycle_time_hrs": 10,
+      "goal_cycle_time_hrs": 0,
+      "validates": [],
+      "technicians": [
+        {
+          "id": "CS",
+          "name": "CS",
+          "score": 3
+        },
+        {
+          "id": "RS",
+          "name": "RS",
+          "score": 2
+        }
+      ]
+    },
+    {
+      "id": "OA_CHEC__OA",
+      "bomNodeId": "OA",
+      "tests_node_id": "OA,AZ,AH,RL",
+      "type": "checklist",
+      "label": "Outer Axis Assembly Checklist",
+      "doc_num": "",
+      "score": 2,
+      "leads_to": null,
+      "linked_to": "OA_PROC__OA",
+      "cycle_time_hrs": 0,
+      "goal_cycle_time_hrs": 0,
+      "validates": [],
+      "technicians": []
+    },
+    {
+      "id": "OA_CHEC__AZ",
+      "bomNodeId": "AZ",
+      "tests_node_id": "OA,AZ,AH,RL",
+      "type": "checklist",
+      "label": "Outer Axis Assembly Checklist",
+      "doc_num": "",
+      "score": 2,
+      "leads_to": null,
+      "linked_to": "OA_PROC__AZ",
+      "cycle_time_hrs": 0,
+      "goal_cycle_time_hrs": 0,
+      "validates": [],
+      "technicians": []
+    },
+    {
+      "id": "OA_CHEC__AH",
+      "bomNodeId": "AH",
+      "tests_node_id": "OA,AZ,AH,RL",
+      "type": "checklist",
+      "label": "Outer Axis Assembly Checklist",
+      "doc_num": "",
+      "score": 2,
+      "leads_to": null,
+      "linked_to": "OA_PROC__AH",
+      "cycle_time_hrs": 0,
+      "goal_cycle_time_hrs": 0,
+      "validates": [],
+      "technicians": []
+    },
+    {
+      "id": "OA_CHEC__RL",
+      "bomNodeId": "RL",
+      "tests_node_id": "OA,AZ,AH,RL",
+      "type": "checklist",
+      "label": "Outer Axis Assembly Checklist",
+      "doc_num": "",
+      "score": 2,
+      "leads_to": null,
+      "linked_to": "OA_PROC__RL",
+      "cycle_time_hrs": 0,
+      "goal_cycle_time_hrs": 0,
+      "validates": [],
+      "technicians": []
+    },
+    {
+      "id": "PL_PROC__PL",
+      "bomNodeId": "PL",
+      "tests_node_id": "",
+      "type": "assembly",
+      "label": "Payload Assembly Procedure",
+      "doc_num": "",
+      "score": 1,
+      "leads_to": "PLR_PROC",
+      "linked_to": null,
+      "cycle_time_hrs": 4,
+      "goal_cycle_time_hrs": 0,
+      "validates": [],
+      "technicians": [
+        {
+          "id": "NL",
+          "name": "NL",
+          "score": 2
+        },
+        {
+          "id": "RS",
+          "name": "RS",
+          "score": 2
+        },
+        {
+          "id": "AL",
+          "name": "AL",
+          "score": 2
+        }
+      ]
+    },
+    {
+      "id": "PL_PROC__PLB",
+      "bomNodeId": "PLB",
+      "tests_node_id": "",
+      "type": "assembly",
+      "label": "Payload Assembly Procedure",
+      "doc_num": "",
+      "score": 1,
+      "leads_to": "PLR_PROC",
+      "linked_to": null,
+      "cycle_time_hrs": 6,
+      "goal_cycle_time_hrs": 0,
+      "validates": [],
+      "technicians": [
+        {
+          "id": "NL",
+          "name": "NL",
+          "score": 2
+        },
+        {
+          "id": "RS",
+          "name": "RS",
+          "score": 2
+        },
+        {
+          "id": "AL",
+          "name": "AL",
+          "score": 2
+        }
+      ]
+    },
+    {
+      "id": "PL_CHEC__PL",
+      "bomNodeId": "PL",
+      "tests_node_id": "PL,PLB",
+      "type": "checklist",
+      "label": "Payload Assembly Checklist",
+      "doc_num": "",
+      "score": 1,
+      "leads_to": null,
+      "linked_to": "PL_PROC__PL",
+      "cycle_time_hrs": 0,
+      "goal_cycle_time_hrs": 0,
+      "validates": [
+        {
+          "id": "PL",
+          "score": 0,
+          "note": "Requires update with new procedure"
+        }
+      ],
+      "technicians": []
+    },
+    {
+      "id": "PL_CHEC__PLB",
+      "bomNodeId": "PLB",
+      "tests_node_id": "PL,PLB",
+      "type": "checklist",
+      "label": "Payload Assembly Checklist",
+      "doc_num": "",
+      "score": 1,
+      "leads_to": null,
+      "linked_to": "PL_PROC__PLB",
+      "cycle_time_hrs": 0,
+      "goal_cycle_time_hrs": 0,
+      "validates": [
+        {
+          "id": "PL",
+          "score": 0,
+          "note": "Requires update with new procedure"
+        }
+      ],
+      "technicians": []
+    },
+    {
+      "id": "EL_CHEC__EL",
+      "bomNodeId": "EL",
+      "tests_node_id": "EL,RLB,IAZ",
+      "type": "checklist",
+      "label": "EL Ring Assembly Checklist",
+      "doc_num": "",
+      "score": 2,
+      "leads_to": null,
+      "linked_to": "EL_PROC__EL",
+      "cycle_time_hrs": 0,
+      "goal_cycle_time_hrs": 0,
+      "validates": [],
+      "technicians": []
+    },
+    {
+      "id": "EL_CHEC__RLB",
+      "bomNodeId": "RLB",
+      "tests_node_id": "EL,RLB,IAZ",
+      "type": "checklist",
+      "label": "EL Ring Assembly Checklist",
+      "doc_num": "",
+      "score": 2,
+      "leads_to": null,
+      "linked_to": "EL_PROC__RLB",
+      "cycle_time_hrs": 0,
+      "goal_cycle_time_hrs": 0,
+      "validates": [],
+      "technicians": []
+    },
+    {
+      "id": "EL_CHEC__IAZ",
+      "bomNodeId": "IAZ",
+      "tests_node_id": "EL,RLB,IAZ",
+      "type": "checklist",
+      "label": "EL Ring Assembly Checklist",
+      "doc_num": "",
+      "score": 2,
+      "leads_to": null,
+      "linked_to": "EL_PROC__IAZ",
+      "cycle_time_hrs": 0,
+      "goal_cycle_time_hrs": 0,
+      "validates": [],
+      "technicians": []
+    },
+    {
+      "id": "EL_PROC__EL",
+      "bomNodeId": "EL",
+      "tests_node_id": "",
+      "type": "assembly",
+      "label": "EL Ring Assembly Procedure",
+      "doc_num": "",
+      "score": 2,
+      "leads_to": null,
+      "linked_to": null,
+      "cycle_time_hrs": 2,
+      "goal_cycle_time_hrs": 0,
+      "validates": [],
+      "technicians": [
+        {
+          "id": "CS",
+          "name": "CS",
+          "score": 3
+        },
+        {
+          "id": "NL",
+          "name": "NL",
+          "score": 2
+        }
+      ]
+    },
+    {
+      "id": "EL_PROC__RLB",
+      "bomNodeId": "RLB",
+      "tests_node_id": "",
+      "type": "assembly",
+      "label": "EL Ring Assembly Procedure",
+      "doc_num": "",
+      "score": 2,
+      "leads_to": null,
+      "linked_to": null,
+      "cycle_time_hrs": 5,
+      "goal_cycle_time_hrs": 0,
+      "validates": [],
+      "technicians": [
+        {
+          "id": "CS",
+          "name": "CS",
+          "score": 3
+        },
+        {
+          "id": "NL",
+          "name": "NL",
+          "score": 2
+        }
+      ]
+    },
+    {
+      "id": "EL_PROC__IAZ",
+      "bomNodeId": "IAZ",
+      "tests_node_id": "",
+      "type": "assembly",
+      "label": "EL Ring Assembly Procedure",
+      "doc_num": "",
+      "score": 2,
+      "leads_to": null,
+      "linked_to": null,
+      "cycle_time_hrs": 6,
+      "goal_cycle_time_hrs": 0,
+      "validates": [],
+      "technicians": [
+        {
+          "id": "CS",
+          "name": "CS",
+          "score": 3
+        },
+        {
+          "id": "NL",
+          "name": "NL",
+          "score": 2
+        }
+      ]
+    },
+    {
+      "id": "IM_PROC__RLIM",
+      "bomNodeId": "RLIM",
+      "tests_node_id": "RLMC,AZMC,ELMC",
+      "type": "assembly/test",
+      "label": "Inner Motor Assembly Procedure",
+      "doc_num": "",
+      "score": 0,
+      "leads_to": null,
+      "linked_to": null,
+      "cycle_time_hrs": 0,
+      "goal_cycle_time_hrs": 0,
+      "validates": [],
+      "technicians": [
+        {
+          "id": "CS",
+          "name": "CS",
+          "score": 3
+        },
+        {
+          "id": "NL",
+          "name": "NL",
+          "score": 2
+        },
+        {
+          "id": "RS",
+          "name": "RS",
+          "score": 2
+        },
+        {
+          "id": "AL",
+          "name": "AL",
+          "score": 2
+        }
+      ]
+    },
+    {
+      "id": "IM_PROC__AZIM",
+      "bomNodeId": "AZIM",
+      "tests_node_id": "RLMC,AZMC,ELMC",
+      "type": "assembly/test",
+      "label": "Inner Motor Assembly Procedure",
+      "doc_num": "",
+      "score": 0,
+      "leads_to": null,
+      "linked_to": null,
+      "cycle_time_hrs": 0,
+      "goal_cycle_time_hrs": 0,
+      "validates": [],
+      "technicians": [
+        {
+          "id": "CS",
+          "name": "CS",
+          "score": 3
+        },
+        {
+          "id": "NL",
+          "name": "NL",
+          "score": 2
+        },
+        {
+          "id": "RS",
+          "name": "RS",
+          "score": 2
+        },
+        {
+          "id": "AL",
+          "name": "AL",
+          "score": 2
+        }
+      ]
+    },
+    {
+      "id": "IM_PROC__ELIM",
+      "bomNodeId": "ELIM",
+      "tests_node_id": "RLMC,AZMC,ELMC",
+      "type": "assembly/test",
+      "label": "Inner Motor Assembly Procedure",
+      "doc_num": "",
+      "score": 0,
+      "leads_to": null,
+      "linked_to": null,
+      "cycle_time_hrs": 0,
+      "goal_cycle_time_hrs": 0,
+      "validates": [],
+      "technicians": [
+        {
+          "id": "CS",
+          "name": "CS",
+          "score": 3
+        },
+        {
+          "id": "NL",
+          "name": "NL",
+          "score": 2
+        },
+        {
+          "id": "RS",
+          "name": "RS",
+          "score": 2
+        },
+        {
+          "id": "AL",
+          "name": "AL",
+          "score": 2
+        }
+      ]
+    },
+    {
+      "id": "IM_PROC__RLMB",
+      "bomNodeId": "RLMB",
+      "tests_node_id": "RLMC,AZMC,ELMC",
+      "type": "assembly/test",
+      "label": "Inner Motor Assembly Procedure",
+      "doc_num": "",
+      "score": 0,
+      "leads_to": null,
+      "linked_to": null,
+      "cycle_time_hrs": 0,
+      "goal_cycle_time_hrs": 0,
+      "validates": [],
+      "technicians": [
+        {
+          "id": "CS",
+          "name": "CS",
+          "score": 3
+        },
+        {
+          "id": "NL",
+          "name": "NL",
+          "score": 2
+        },
+        {
+          "id": "RS",
+          "name": "RS",
+          "score": 2
+        },
+        {
+          "id": "AL",
+          "name": "AL",
+          "score": 2
+        }
+      ]
+    },
+    {
+      "id": "IM_PROC__AZMB",
+      "bomNodeId": "AZMB",
+      "tests_node_id": "RLMC,AZMC,ELMC",
+      "type": "assembly/test",
+      "label": "Inner Motor Assembly Procedure",
+      "doc_num": "",
+      "score": 0,
+      "leads_to": null,
+      "linked_to": null,
+      "cycle_time_hrs": 0,
+      "goal_cycle_time_hrs": 0,
+      "validates": [],
+      "technicians": [
+        {
+          "id": "CS",
+          "name": "CS",
+          "score": 3
+        },
+        {
+          "id": "NL",
+          "name": "NL",
+          "score": 2
+        },
+        {
+          "id": "RS",
+          "name": "RS",
+          "score": 2
+        },
+        {
+          "id": "AL",
+          "name": "AL",
+          "score": 2
+        }
+      ]
+    },
+    {
+      "id": "IM_PROC__ELMB",
+      "bomNodeId": "ELMB",
+      "tests_node_id": "RLMC,AZMC,ELMC",
+      "type": "assembly/test",
+      "label": "Inner Motor Assembly Procedure",
+      "doc_num": "",
+      "score": 0,
+      "leads_to": null,
+      "linked_to": null,
+      "cycle_time_hrs": 0,
+      "goal_cycle_time_hrs": 0,
+      "validates": [],
+      "technicians": [
+        {
+          "id": "CS",
+          "name": "CS",
+          "score": 3
+        },
+        {
+          "id": "NL",
+          "name": "NL",
+          "score": 2
+        },
+        {
+          "id": "RS",
+          "name": "RS",
+          "score": 2
+        },
+        {
+          "id": "AL",
+          "name": "AL",
+          "score": 2
+        }
+      ]
+    },
+    {
+      "id": "IM_PROC__RLMC",
+      "bomNodeId": "RLMC",
+      "tests_node_id": "RLMC,AZMC,ELMC",
+      "type": "assembly/test",
+      "label": "Inner Motor Assembly Procedure",
+      "doc_num": "",
+      "score": 0,
+      "leads_to": null,
+      "linked_to": null,
+      "cycle_time_hrs": 0,
+      "goal_cycle_time_hrs": 0,
+      "validates": [],
+      "technicians": [
+        {
+          "id": "CS",
+          "name": "CS",
+          "score": 3
+        },
+        {
+          "id": "NL",
+          "name": "NL",
+          "score": 2
+        },
+        {
+          "id": "RS",
+          "name": "RS",
+          "score": 2
+        },
+        {
+          "id": "AL",
+          "name": "AL",
+          "score": 2
+        }
+      ]
+    },
+    {
+      "id": "IM_PROC__AZMC",
+      "bomNodeId": "AZMC",
+      "tests_node_id": "RLMC,AZMC,ELMC",
+      "type": "assembly/test",
+      "label": "Inner Motor Assembly Procedure",
+      "doc_num": "",
+      "score": 0,
+      "leads_to": null,
+      "linked_to": null,
+      "cycle_time_hrs": 0,
+      "goal_cycle_time_hrs": 0,
+      "validates": [],
+      "technicians": [
+        {
+          "id": "CS",
+          "name": "CS",
+          "score": 3
+        },
+        {
+          "id": "NL",
+          "name": "NL",
+          "score": 2
+        },
+        {
+          "id": "RS",
+          "name": "RS",
+          "score": 2
+        },
+        {
+          "id": "AL",
+          "name": "AL",
+          "score": 2
+        }
+      ]
+    },
+    {
+      "id": "IM_PROC__ELMC",
+      "bomNodeId": "ELMC",
+      "tests_node_id": "RLMC,AZMC,ELMC",
+      "type": "assembly/test",
+      "label": "Inner Motor Assembly Procedure",
+      "doc_num": "",
+      "score": 0,
+      "leads_to": null,
+      "linked_to": null,
+      "cycle_time_hrs": 0,
+      "goal_cycle_time_hrs": 0,
+      "validates": [],
+      "technicians": [
+        {
+          "id": "CS",
+          "name": "CS",
+          "score": 3
+        },
+        {
+          "id": "NL",
+          "name": "NL",
+          "score": 2
+        },
+        {
+          "id": "RS",
+          "name": "RS",
+          "score": 2
+        },
+        {
+          "id": "AL",
+          "name": "AL",
+          "score": 2
+        }
+      ]
+    },
+    {
+      "id": "SPR_PROC",
+      "bomNodeId": "OA",
+      "tests_node_id": "OA,AZ,EL,RL,RLB,IAZ,AH,GPS,RLIM,AZIM,ELIM,ELMC,AZMC,RLMC,ELMB,AZMB,RLMB,AZOM,RLOM,ELOM",
+      "type": "test",
+      "label": "Surrogate Payload Runup Procedure",
+      "doc_num": "",
+      "score": 2,
+      "leads_to": null,
+      "linked_to": null,
+      "cycle_time_hrs": 6,
+      "goal_cycle_time_hrs": 0,
+      "cycle_time_by_bom": {
+        "OA": 6
+      },
+      "validates": [
+        {
+          "id": "OA",
+          "score": 0,
+          "note": "Needs benchmarks for travel tests, stabilization tests"
+        }
+      ],
+      "technicians": [
+        {
+          "id": "CS",
+          "name": "CS",
+          "score": 3
+        },
+        {
+          "id": "NL",
+          "name": "NL",
+          "score": 2
+        },
+        {
+          "id": "AL",
+          "name": "AL",
+          "score": 2
+        }
+      ]
+    },
+    {
+      "id": "PLR_PROC",
+      "bomNodeId": "PL",
+      "tests_node_id": "PL,PLB,CO,EOW,EON,NOX,AGX",
+      "type": "test",
+      "label": "Payload Runup Procedure",
+      "doc_num": "",
+      "score": 2,
+      "leads_to": null,
+      "linked_to": null,
+      "cycle_time_hrs": 2,
+      "goal_cycle_time_hrs": 0,
+      "cycle_time_by_bom": {
+        "PL": 2
+      },
+      "validates": [
+        {
+          "id": "PL",
+          "score": 0,
+          "note": "Needs better analysis of travel tests"
+        }
+      ],
+      "technicians": [
+        {
+          "id": "CS",
+          "name": "CS",
+          "score": 3
+        },
+        {
+          "id": "NL",
+          "name": "NL",
+          "score": 2
+        },
+        {
+          "id": "RS",
+          "name": "RS",
+          "score": 2
+        }
+      ]
+    },
+    {
+      "id": "BORE_PROC",
+      "bomNodeId": "PL",
+      "tests_node_id": "PL,PLB,CO,EOW,EON,NOX",
+      "type": "test",
+      "label": "Optical Centre/Boresight Procedure",
+      "doc_num": "",
+      "score": 2,
+      "leads_to": null,
+      "linked_to": "PLR_PROC",
+      "cycle_time_hrs": 6,
+      "goal_cycle_time_hrs": 0,
+      "cycle_time_by_bom": {
+        "PL": 6
+      },
+      "validates": [
+        {
+          "id": "PL",
+          "score": 0,
+          "note": "Noxant boresight found to be shifting after gimbal installation.  Missing mechanical optical centre procedure"
+        }
+      ],
+      "technicians": [
+        {
+          "id": "CS",
+          "name": "CS",
+          "score": 3
+        },
+        {
+          "id": "RS",
+          "name": "RS",
+          "score": 2
+        },
+        {
+          "id": "AL",
+          "name": "AL",
+          "score": 2
+        }
+      ]
+    },
+    {
+      "id": "COM_PROC",
+      "bomNodeId": "M2",
+      "tests_node_id": "M2,PL,OA,EL,RLB,IAZ,AH,GPS,AGX",
+      "type": "test",
+      "label": "Combined Runup",
+      "doc_num": "",
+      "score": 2,
+      "leads_to": "LASB_PROC",
+      "linked_to": null,
+      "cycle_time_hrs": 8,
+      "goal_cycle_time_hrs": 0,
+      "cycle_time_by_bom": {
+        "M2": 8
+      },
+      "validates": [
+        {
+          "id": "M2",
+          "score": 0,
+          "note": "Missing benchmarks for travel tests and stabilization"
+        },
+        {
+          "id": "OA",
+          "score": 0,
+          "note": "Missing benchmarks for travel tests and stabilization"
+        }
+      ],
+      "technicians": [
+        {
+          "id": "RS",
+          "name": "RS",
+          "score": 2
+        },
+        {
+          "id": "AL",
+          "name": "AL",
+          "score": 2
+        }
+      ]
+    },
+    {
+      "id": "CO_PROC",
+      "bomNodeId": "CO",
+      "tests_node_id": "",
+      "type": "assembly",
+      "label": "Corrective Optics Assembly Procedure",
+      "doc_num": "",
+      "score": 2,
+      "leads_to": null,
+      "linked_to": null,
+      "cycle_time_hrs": 4,
+      "goal_cycle_time_hrs": 0,
+      "cycle_time_by_bom": {
+        "CO": 4
+      },
+      "validates": [],
+      "technicians": [
+        {
+          "id": "CS",
+          "name": "CS",
+          "score": 3
+        },
+        {
+          "id": "RS",
+          "name": "RS",
+          "score": 2
+        },
+        {
+          "id": "AL",
+          "name": "AL",
+          "score": 2
+        }
+      ]
+    },
+    {
+      "id": "OM_PROC__RLOM",
+      "bomNodeId": "RLOM",
+      "tests_node_id": "RLOM,AZOM,ELOM",
+      "type": "assembly/test",
+      "label": "M2 Outer Motor Assembly Procedure",
+      "doc_num": "",
+      "score": 1,
+      "leads_to": null,
+      "linked_to": null,
+      "cycle_time_hrs": 2,
+      "goal_cycle_time_hrs": 0,
+      "validates": [],
+      "technicians": [
+        {
+          "id": "CS",
+          "name": "CS",
+          "score": 3
+        },
+        {
+          "id": "NL",
+          "name": "NL",
+          "score": 2
+        },
+        {
+          "id": "RS",
+          "name": "RS",
+          "score": 2
+        },
+        {
+          "id": "AL",
+          "name": "AL",
+          "score": 2
+        }
+      ]
+    },
+    {
+      "id": "OM_PROC__AZOM",
+      "bomNodeId": "AZOM",
+      "tests_node_id": "RLOM,AZOM,ELOM",
+      "type": "assembly/test",
+      "label": "M2 Outer Motor Assembly Procedure",
+      "doc_num": "",
+      "score": 1,
+      "leads_to": null,
+      "linked_to": null,
+      "cycle_time_hrs": 2,
+      "goal_cycle_time_hrs": 0,
+      "validates": [],
+      "technicians": [
+        {
+          "id": "CS",
+          "name": "CS",
+          "score": 3
+        },
+        {
+          "id": "NL",
+          "name": "NL",
+          "score": 2
+        },
+        {
+          "id": "RS",
+          "name": "RS",
+          "score": 2
+        },
+        {
+          "id": "AL",
+          "name": "AL",
+          "score": 2
+        }
+      ]
+    },
+    {
+      "id": "OM_PROC__ELOM",
+      "bomNodeId": "ELOM",
+      "tests_node_id": "RLOM,AZOM,ELOM",
+      "type": "assembly/test",
+      "label": "M2 Outer Motor Assembly Procedure",
+      "doc_num": "",
+      "score": 1,
+      "leads_to": null,
+      "linked_to": null,
+      "cycle_time_hrs": 2,
+      "goal_cycle_time_hrs": 0,
+      "validates": [],
+      "technicians": [
+        {
+          "id": "CS",
+          "name": "CS",
+          "score": 3
+        },
+        {
+          "id": "NL",
+          "name": "NL",
+          "score": 2
+        },
+        {
+          "id": "RS",
+          "name": "RS",
+          "score": 2
+        },
+        {
+          "id": "AL",
+          "name": "AL",
+          "score": 2
+        }
+      ]
+    },
+    {
+      "id": "OM_PROC__OA",
+      "bomNodeId": "OA",
+      "tests_node_id": "RLOM,AZOM,ELOM",
+      "type": "assembly/test",
+      "label": "M2 Outer Motor Assembly Procedure",
+      "doc_num": "",
+      "score": 1,
+      "leads_to": null,
+      "linked_to": "OA_PROC__OA",
+      "cycle_time_hrs": 1,
+      "goal_cycle_time_hrs": 0,
+      "validates": [],
+      "technicians": [
+        {
+          "id": "CS",
+          "name": "CS",
+          "score": 3
+        },
+        {
+          "id": "NL",
+          "name": "NL",
+          "score": 2
+        },
+        {
+          "id": "RS",
+          "name": "RS",
+          "score": 2
+        },
+        {
+          "id": "AL",
+          "name": "AL",
+          "score": 2
+        }
+      ]
+    },
+    {
+      "id": "TC_PROC__OA",
+      "bomNodeId": "OA",
+      "tests_node_id": "",
+      "type": "reference",
+      "label": "M1/M2/B1 Tuning Check",
+      "doc_num": "",
+      "score": 3,
+      "leads_to": null,
+      "linked_to": "SPR_PROC",
+      "cycle_time_hrs": 0,
+      "goal_cycle_time_hrs": 0,
+      "validates": [],
+      "technicians": []
+    },
+    {
+      "id": "TC_PROC__M2",
+      "bomNodeId": "M2",
+      "tests_node_id": "",
+      "type": "reference",
+      "label": "M1/M2/B1 Tuning Check",
+      "doc_num": "",
+      "score": 3,
+      "leads_to": null,
+      "linked_to": "COM_PROC",
+      "cycle_time_hrs": 0,
+      "goal_cycle_time_hrs": 0,
+      "validates": [],
+      "technicians": []
+    },
+    {
+      "id": "PLI_PROC",
+      "bomNodeId": "M2",
+      "tests_node_id": "",
+      "type": "assembly",
+      "label": "Payload Installation Procedure",
+      "doc_num": "",
+      "score": 0,
+      "leads_to": "COM_PROC",
+      "linked_to": null,
+      "cycle_time_hrs": 3,
+      "goal_cycle_time_hrs": 0,
+      "cycle_time_by_bom": {
+        "M2": 3
+      },
+      "validates": [],
+      "technicians": [
+        {
+          "id": "CS",
+          "name": "CS",
+          "score": 3
+        },
+        {
+          "id": "NL",
+          "name": "NL",
+          "score": 2
+        },
+        {
+          "id": "RS",
+          "name": "RS",
+          "score": 2
+        }
+      ]
+    },
+    {
+      "id": "EON_PROC",
+      "bomNodeId": "EON",
+      "tests_node_id": "",
+      "type": "assembly",
+      "label": "CJ18 Assembly Procedure",
+      "doc_num": "002-9375",
+      "score": 2,
+      "leads_to": null,
+      "linked_to": null,
+      "cycle_time_hrs": 6,
+      "goal_cycle_time_hrs": 0,
+      "cycle_time_by_bom": {
+        "EON": 6
+      },
+      "validates": [],
+      "technicians": [
+        {
+          "id": "CS",
+          "name": "CS",
+          "score": 3
+        },
+        {
+          "id": "NL",
+          "name": "NL",
+          "score": 2
+        },
+        {
+          "id": "RS",
+          "name": "RS",
+          "score": 2
+        }
+      ]
+    },
+    {
+      "id": "EON_CHEC",
+      "bomNodeId": "EON",
+      "tests_node_id": "EON",
+      "type": "checklist",
+      "label": "CJ18 Assembly Checklist",
+      "doc_num": "002-9454",
+      "score": 1,
+      "leads_to": null,
+      "linked_to": "EON_PROC",
+      "cycle_time_hrs": 0,
+      "goal_cycle_time_hrs": 0,
+      "validates": [],
+      "technicians": []
+    },
+    {
+      "id": "EOW_PROC",
+      "bomNodeId": "EOW",
+      "tests_node_id": "",
+      "type": "assembly",
+      "label": "EOW Assembly Procedure",
+      "doc_num": "002-9626",
+      "score": 2,
+      "leads_to": null,
+      "linked_to": null,
+      "cycle_time_hrs": 3,
+      "goal_cycle_time_hrs": 0,
+      "cycle_time_by_bom": {
+        "EOW": 3
+      },
+      "validates": [],
+      "technicians": [
+        {
+          "id": "NL",
+          "name": "NL",
+          "score": 2
+        },
+        {
+          "id": "RS",
+          "name": "RS",
+          "score": 2
+        }
+      ]
+    },
+    {
+      "id": "NOX_PROC",
+      "bomNodeId": "NOX",
+      "tests_node_id": "",
+      "type": "assembly",
+      "label": "Noxant Assembly Procedure",
+      "doc_num": "002-9376",
+      "score": 2,
+      "leads_to": null,
+      "linked_to": null,
+      "cycle_time_hrs": 4,
+      "goal_cycle_time_hrs": 0,
+      "cycle_time_by_bom": {
+        "NOX": 4
+      },
+      "validates": [],
+      "technicians": [
+        {
+          "id": "CS",
+          "name": "CS",
+          "score": 3
+        },
+        {
+          "id": "NL",
+          "name": "NL",
+          "score": 2
+        },
+        {
+          "id": "RS",
+          "name": "RS",
+          "score": 2
+        }
+      ]
+    },
+    {
+      "id": "NOX_CHEC",
+      "bomNodeId": "NOX",
+      "tests_node_id": "NOX",
+      "type": "checklist",
+      "label": "Noxant Assembly Checklist",
+      "doc_num": "002-9446",
+      "score": 2,
+      "leads_to": null,
+      "linked_to": "NOX_PROC",
+      "cycle_time_hrs": 0,
+      "goal_cycle_time_hrs": 0,
+      "validates": [],
+      "technicians": []
+    },
+    {
+      "id": "FSA_PROC__CO",
+      "bomNodeId": "CO",
+      "tests_node_id": "",
+      "type": "reference",
+      "label": "FSA Programming Procedure",
+      "doc_num": "002-9584",
+      "score": 3,
+      "leads_to": null,
+      "linked_to": "CO_PROC",
+      "cycle_time_hrs": 0,
+      "goal_cycle_time_hrs": 0,
+      "validates": [],
+      "technicians": []
+    },
+    {
+      "id": "FSA_PROC__EOW",
+      "bomNodeId": "EOW",
+      "tests_node_id": "",
+      "type": "reference",
+      "label": "FSA Programming Procedure",
+      "doc_num": "002-9584",
+      "score": 3,
+      "leads_to": null,
+      "linked_to": "EOW_PROC",
+      "cycle_time_hrs": 0,
+      "goal_cycle_time_hrs": 0,
+      "validates": [],
+      "technicians": []
+    },
+    {
+      "id": "GPSV_PROC",
+      "bomNodeId": "OA",
+      "tests_node_id": "",
+      "type": "reference",
+      "label": "GPS Carrier Voltage Sense Calibration Procedure",
+      "doc_num": "002-9246",
+      "score": 3,
+      "leads_to": null,
+      "linked_to": "OA_PROC__OA",
+      "cycle_time_hrs": 0,
+      "goal_cycle_time_hrs": 0,
+      "validates": [],
+      "technicians": []
+    },
+    {
+      "id": "ENCC_PROC",
+      "bomNodeId": "OA",
+      "tests_node_id": "",
+      "type": "reference",
+      "label": "Bogen Encoder Calibration Procedure",
+      "doc_num": "002-9247",
+      "score": 3,
+      "leads_to": null,
+      "linked_to": "OA_PROC__OA",
+      "cycle_time_hrs": 0,
+      "goal_cycle_time_hrs": 0,
+      "validates": [],
+      "technicians": []
+    },
+    {
+      "id": "PRT_PROC",
+      "bomNodeId": "OA",
+      "tests_node_id": "OA",
+      "type": "test",
+      "label": "Pressure Test Procedure",
+      "doc_num": "002-9368",
+      "score": 2,
+      "leads_to": null,
+      "linked_to": "OA_PROC__OA",
+      "cycle_time_hrs": 4,
+      "goal_cycle_time_hrs": 0,
+      "cycle_time_by_bom": {
+        "OA": 4
+      },
+      "validates": [],
+      "technicians": [
+        {
+          "id": "CS",
+          "name": "CS",
+          "score": 3
+        },
+        {
+          "id": "NL",
+          "name": "NL",
+          "score": 2
+        },
+        {
+          "id": "RS",
+          "name": "RS",
+          "score": 2
+        }
+      ]
+    },
+    {
+      "id": "CERA_PROC",
+      "bomNodeId": "OA",
+      "tests_node_id": "",
+      "type": "assembly",
+      "label": "Cerakote Parts Preparation Procedure",
+      "doc_num": "002-9595",
+      "score": 1,
+      "leads_to": "OA_PROC__OA",
+      "linked_to": null,
+      "cycle_time_hrs": 6,
+      "goal_cycle_time_hrs": 0,
+      "cycle_time_by_bom": {
+        "OA": 6
+      },
+      "validates": [],
+      "technicians": [
+        {
+          "id": "CS",
+          "name": "CS",
+          "score": 3
+        },
+        {
+          "id": "NL",
+          "name": "NL",
+          "score": 2
+        },
+        {
+          "id": "RS",
+          "name": "RS",
+          "score": 2
+        },
+        {
+          "id": "AL",
+          "name": "AL",
+          "score": 2
+        }
+      ]
+    },
+    {
+      "id": "LASB_PROC",
+      "bomNodeId": "M2",
+      "tests_node_id": "M2,LAZ,PLT",
+      "type": "assembly/test",
+      "label": "Laser Boresight Procedure",
+      "doc_num": "002-9506",
+      "score": 1,
+      "leads_to": null,
+      "linked_to": null,
+      "cycle_time_hrs": 2,
+      "goal_cycle_time_hrs": 0,
+      "cycle_time_by_bom": {
+        "M2": 2
+      },
+      "validates": [],
+      "technicians": [
+        {
+          "id": "CS",
+          "name": "CS",
+          "score": 3
+        },
+        {
+          "id": "NL",
+          "name": "NL",
+          "score": 2
+        },
+        {
+          "id": "RS",
+          "name": "RS",
+          "score": 2
+        },
+        {
+          "id": "AL",
+          "name": "AL",
+          "score": 2
+        }
+      ]
+    },
+    {
+      "id": "AL_PROC__RLAL",
+      "bomNodeId": "RLAL",
+      "tests_node_id": "",
+      "type": "assembly",
+      "label": "Outer Axis Lock Assembly Procedure",
+      "doc_num": "002-9519",
+      "score": 2,
+      "leads_to": null,
+      "linked_to": null,
+      "cycle_time_hrs": 1,
+      "goal_cycle_time_hrs": 0,
+      "validates": [],
+      "technicians": [
+        {
+          "id": "CS",
+          "name": "CS",
+          "score": 3
+        },
+        {
+          "id": "NL",
+          "name": "NL",
+          "score": 2
+        },
+        {
+          "id": "AL",
+          "name": "AL",
+          "score": 2
+        }
+      ]
+    },
+    {
+      "id": "AL_PROC__ELAL",
+      "bomNodeId": "ELAL",
+      "tests_node_id": "",
+      "type": "assembly",
+      "label": "Outer Axis Lock Assembly Procedure",
+      "doc_num": "002-9519",
+      "score": 2,
+      "leads_to": null,
+      "linked_to": null,
+      "cycle_time_hrs": 1,
+      "goal_cycle_time_hrs": 0,
+      "validates": [],
+      "technicians": [
+        {
+          "id": "CS",
+          "name": "CS",
+          "score": 3
+        },
+        {
+          "id": "NL",
+          "name": "NL",
+          "score": 2
+        },
+        {
+          "id": "AL",
+          "name": "AL",
+          "score": 2
+        }
+      ]
+    },
+    {
+      "id": "LS_PROC__ISVO",
+      "bomNodeId": "ISVO",
+      "tests_node_id": "",
+      "type": "assembly",
+      "label": "Lens Servo Assembly Procedure",
+      "doc_num": "002-9600",
+      "score": 3,
+      "leads_to": null,
+      "linked_to": null,
+      "cycle_time_hrs": 1,
+      "goal_cycle_time_hrs": 0,
+      "validates": [],
+      "technicians": [
+        {
+          "id": "AL",
+          "name": "AL",
+          "score": 2
+        }
+      ]
+    },
+    {
+      "id": "LS_PROC__FSVO",
+      "bomNodeId": "FSVO",
+      "tests_node_id": "",
+      "type": "assembly",
+      "label": "Lens Servo Assembly Procedure",
+      "doc_num": "002-9600",
+      "score": 3,
+      "leads_to": null,
+      "linked_to": null,
+      "cycle_time_hrs": 1,
+      "goal_cycle_time_hrs": 0,
+      "validates": [],
+      "technicians": [
+        {
+          "id": "AL",
+          "name": "AL",
+          "score": 2
+        }
+      ]
+    },
+    {
+      "id": "LS_PROC__ZSVO",
+      "bomNodeId": "ZSVO",
+      "tests_node_id": "",
+      "type": "assembly",
+      "label": "Lens Servo Assembly Procedure",
+      "doc_num": "002-9600",
+      "score": 3,
+      "leads_to": null,
+      "linked_to": null,
+      "cycle_time_hrs": 1,
+      "goal_cycle_time_hrs": 0,
+      "validates": [],
+      "technicians": [
+        {
+          "id": "AL",
+          "name": "AL",
+          "score": 2
+        }
+      ]
+    },
+    {
+      "id": "MSVO_PROC",
+      "bomNodeId": "MSVO",
+      "tests_node_id": "MSVO",
+      "type": "assembly/test",
+      "label": "Maxon Servo Motor Assembly/Test Procedure",
+      "doc_num": "002-9633",
+      "score": 3,
+      "leads_to": null,
+      "linked_to": null,
+      "cycle_time_hrs": 1,
+      "goal_cycle_time_hrs": 0,
+      "cycle_time_by_bom": {
+        "MSVO": 1
+      },
+      "validates": [],
+      "technicians": [
+        {
+          "id": "CS",
+          "name": "CS",
+          "score": 3
+        }
+      ]
+    },
+    {
+      "id": "RLPS_PROC",
+      "bomNodeId": "RLP",
+      "tests_node_id": "RLP",
+      "type": "assembly/test",
+      "label": "12.7V Camera Power Supply Assembly Procedure",
+      "doc_num": "002-9605",
+      "score": 2,
+      "leads_to": null,
+      "linked_to": null,
+      "cycle_time_hrs": 1,
+      "goal_cycle_time_hrs": 0,
+      "cycle_time_by_bom": {
+        "RLP": 1
+      },
+      "validates": [],
+      "technicians": [
+        {
+          "id": "CS",
+          "name": "CS",
+          "score": 3
+        },
+        {
+          "id": "AL",
+          "name": "AL",
+          "score": 2
+        }
+      ]
+    },
+    {
+      "id": "SWB_PROC",
+      "bomNodeId": "FC",
+      "tests_node_id": "",
+      "type": "assembly",
+      "label": "Sapphire Window Bonding Assembly Procedure",
+      "doc_num": "002-9356",
+      "score": 2,
+      "leads_to": "FC_PROC",
+      "linked_to": null,
+      "cycle_time_hrs": 8,
+      "goal_cycle_time_hrs": 0,
+      "cycle_time_by_bom": {
+        "FC": 8
+      },
+      "validates": [],
+      "technicians": [
+        {
+          "id": "AL",
+          "name": "AL",
+          "score": 2
+        }
+      ]
+    },
+    {
+      "id": "FC_PROC",
+      "bomNodeId": "FC",
+      "tests_node_id": "",
+      "type": "assembly",
+      "label": "Front Cover Assembly Procedure",
+      "doc_num": "",
+      "score": 0,
+      "leads_to": null,
+      "linked_to": null,
+      "cycle_time_hrs": 2,
+      "goal_cycle_time_hrs": 0,
+      "cycle_time_by_bom": {
+        "FC": 2
+      },
+      "validates": [],
+      "technicians": [
+        {
+          "id": "AL",
+          "name": "AL",
+          "score": 2
+        }
+      ]
+    },
+    {
+      "id": "VI_PROC",
+      "bomNodeId": "VI",
+      "tests_node_id": "",
+      "type": "assembly",
+      "label": "Vibration Isolator Assembly Procedure",
+      "doc_num": "002-9256",
+      "score": 3,
+      "leads_to": null,
+      "linked_to": null,
+      "cycle_time_hrs": 4,
+      "goal_cycle_time_hrs": 0,
+      "cycle_time_by_bom": {
+        "VI": 4
+      },
+      "validates": [],
+      "technicians": []
+    },
+    {
+      "id": "VI_CHEC",
+      "bomNodeId": "VI",
+      "tests_node_id": "VI",
+      "type": "checklist",
+      "label": "Vibration Isolator Assembly Checklist",
+      "doc_num": "002-9259",
+      "score": 2,
+      "leads_to": null,
+      "linked_to": "VI_PROC",
+      "cycle_time_hrs": 0,
+      "goal_cycle_time_hrs": 0,
+      "validates": [],
+      "technicians": []
+    },
+    {
+      "id": "ITLA_PROC",
+      "bomNodeId": "ITLA",
+      "tests_node_id": "",
+      "type": "assembly",
+      "label": "Inner Transit Lock Assembly Procedure",
+      "doc_num": "002-9459",
+      "score": 0,
+      "leads_to": null,
+      "linked_to": null,
+      "cycle_time_hrs": 0.5,
+      "goal_cycle_time_hrs": 0,
+      "cycle_time_by_bom": {
+        "ITLA": 0.5
+      },
+      "validates": [],
+      "technicians": []
+    },
+    {
+      "id": "RC_PROC",
+      "bomNodeId": "RC",
+      "tests_node_id": "",
+      "type": "assembly",
+      "label": "Rear Cover Assembly Procedure",
+      "doc_num": "",
+      "score": 0,
+      "leads_to": null,
+      "linked_to": null,
+      "cycle_time_hrs": 1,
+      "goal_cycle_time_hrs": 0,
+      "cycle_time_by_bom": {
+        "RC": 1
+      },
+      "validates": [],
+      "technicians": []
+    },
+    {
+      "id": "BFE_PROC",
+      "bomNodeId": "BFE",
+      "tests_node_id": "",
+      "type": "assembly",
+      "label": "Back Focus Extender Assembly Procedure",
+      "doc_num": "",
+      "score": 0,
+      "leads_to": null,
+      "linked_to": null,
+      "cycle_time_hrs": 2,
+      "goal_cycle_time_hrs": 0,
+      "cycle_time_by_bom": {
+        "BFE": 2
+      },
+      "validates": [],
+      "technicians": []
+    },
+    {
+      "id": "ENCR_PROC",
+      "bomNodeId": "ENCR",
+      "tests_node_id": "",
+      "type": "assembly",
+      "label": "CJ18 Encoder Ring Assembly Procedure",
+      "doc_num": "",
+      "score": 0,
+      "leads_to": null,
+      "linked_to": null,
+      "cycle_time_hrs": 0.5,
+      "goal_cycle_time_hrs": 0,
+      "cycle_time_by_bom": {
+        "ENCR": 0.5
+      },
+      "validates": [],
+      "technicians": []
+    },
+    {
+      "id": "WRI_PROC",
+      "bomNodeId": "WRI",
+      "tests_node_id": "WRI",
+      "type": "test",
+      "label": "Wire Rope Isolator Critical Checks",
+      "doc_num": "002-9594",
+      "score": 1,
+      "leads_to": null,
+      "linked_to": null,
+      "cycle_time_hrs": 0,
+      "goal_cycle_time_hrs": 0,
+      "validates": [],
+      "technicians": []
+    },
+    {
+      "id": "LAPB_PROC",
+      "bomNodeId": "LAPB",
+      "tests_node_id": "LAP",
+      "type": "test",
+      "label": "LAP PCB Test Procedure",
+      "doc_num": "002-9378",
+      "score": 1,
+      "leads_to": "LAP_PROC",
+      "linked_to": null,
+      "cycle_time_hrs": 0,
+      "goal_cycle_time_hrs": 0,
+      "validates": [],
+      "technicians": []
+    },
+    {
+      "id": "LAP_PROC",
+      "bomNodeId": "LAP",
+      "tests_node_id": "",
+      "type": "assembly",
+      "label": "LAP Assembly Procedure",
+      "doc_num": "002-9361",
+      "score": 1,
+      "leads_to": "LAPR_PROC",
+      "linked_to": null,
+      "cycle_time_hrs": 0,
+      "goal_cycle_time_hrs": 0,
+      "validates": [],
+      "technicians": []
+    },
+    {
+      "id": "LAPR_PROC",
+      "bomNodeId": "LAP",
+      "tests_node_id": "LAP",
+      "type": "test",
+      "label": "LAP Functional Check Procedure",
+      "doc_num": "002-9403",
+      "score": 1,
+      "leads_to": null,
+      "linked_to": null,
+      "cycle_time_hrs": 0,
+      "goal_cycle_time_hrs": 0,
+      "validates": [],
+      "technicians": []
+    },
+    {
+      "id": "MK_PROC",
+      "bomNodeId": "MK",
+      "tests_node_id": "",
+      "type": "assembly",
+      "label": "Maintenance Kit Assembly Procedure",
+      "doc_num": "002-9385",
+      "score": 2,
+      "leads_to": null,
+      "linked_to": null,
+      "cycle_time_hrs": 0,
+      "goal_cycle_time_hrs": 0,
+      "validates": [],
+      "technicians": []
+    },
+    {
+      "id": "SC_PROC",
+      "bomNodeId": "SC",
+      "tests_node_id": "",
+      "type": "assembly",
+      "label": "Shipping Case Assembly Procedure",
+      "doc_num": "002-9429",
+      "score": 2,
+      "leads_to": null,
+      "linked_to": null,
+      "cycle_time_hrs": 0,
+      "goal_cycle_time_hrs": 0,
+      "validates": [],
+      "technicians": []
+    },
+    {
+      "id": "PK_PROC",
+      "bomNodeId": "PK",
+      "tests_node_id": "",
+      "type": "assembly",
+      "label": "Purge Kit Assembly Procedure",
+      "doc_num": "002-9384",
+      "score": 2,
+      "leads_to": null,
+      "linked_to": null,
+      "cycle_time_hrs": 0,
+      "goal_cycle_time_hrs": 0,
+      "validates": [],
+      "technicians": []
+    },
+    {
+      "id": "DK_PROC",
+      "bomNodeId": "DK",
+      "tests_node_id": "",
+      "type": "assembly",
+      "label": "Dessicant Kit Assembly Procedure",
+      "doc_num": "002-9386",
+      "score": 2,
+      "leads_to": null,
+      "linked_to": null,
+      "cycle_time_hrs": 0,
+      "goal_cycle_time_hrs": 0,
+      "validates": [],
+      "technicians": []
+    },
+    {
+      "id": "TAC_PROC",
+      "bomNodeId": "TAC",
+      "tests_node_id": "TAC",
+      "type": "assembly/test",
+      "label": "TAC 450 Runup Procedure",
+      "doc_num": "002-9316",
+      "score": 2,
+      "leads_to": null,
+      "linked_to": null,
+      "cycle_time_hrs": 0,
+      "goal_cycle_time_hrs": 0,
+      "validates": [],
+      "technicians": []
+    },
+    {
+      "id": "LPBA_PROC",
+      "bomNodeId": "LPB",
+      "tests_node_id": "",
+      "type": "assembly",
+      "label": "Laser Payload PCB Assembly Procedure",
+      "doc_num": "002-9562",
+      "score": 0,
+      "leads_to": "LPBR_PROC",
+      "linked_to": null,
+      "cycle_time_hrs": 0,
+      "goal_cycle_time_hrs": 0,
+      "validates": [],
+      "technicians": []
+    },
+    {
+      "id": "LPBR_PROC",
+      "bomNodeId": "LPB",
+      "tests_node_id": "LPB",
+      "type": "test",
+      "label": "Laser Payload PCB Test Procedure",
+      "doc_num": "002-9562",
+      "score": 0,
+      "leads_to": null,
+      "linked_to": null,
+      "cycle_time_hrs": 0,
+      "goal_cycle_time_hrs": 0,
+      "validates": [],
+      "technicians": []
+    },
+    {
+      "id": "PLT_PROC",
+      "bomNodeId": "PLT",
+      "tests_node_id": "",
+      "type": "assembly",
+      "label": "Laser Tray Assembly Procedure",
+      "doc_num": "002-9364",
+      "score": 0,
+      "leads_to": null,
+      "linked_to": "PLTI_CHEC",
+      "cycle_time_hrs": 0,
+      "goal_cycle_time_hrs": 0,
+      "validates": [],
+      "technicians": []
+    },
+    {
+      "id": "PLTI_CHEC",
+      "bomNodeId": "PLT",
+      "tests_node_id": "PLT",
+      "type": "checklist",
+      "label": "Laser Tray Inspection Checklist",
+      "doc_num": "002-9399",
+      "score": 0,
+      "leads_to": null,
+      "linked_to": null,
+      "cycle_time_hrs": 0,
+      "goal_cycle_time_hrs": 0,
+      "validates": [],
+      "technicians": []
+    },
+    {
+      "id": "PLTA_CHEC",
+      "bomNodeId": "PLT",
+      "tests_node_id": "PLT",
+      "type": "checklist",
+      "label": "Laser Tray Assembly Checklist",
+      "doc_num": "",
+      "score": 0,
+      "leads_to": null,
+      "linked_to": "PLT_PROC",
+      "cycle_time_hrs": 0,
+      "goal_cycle_time_hrs": 0,
+      "validates": [],
+      "technicians": []
+    },
+    {
+      "id": "LASM_CHEC",
+      "bomNodeId": "LASM",
+      "tests_node_id": "",
+      "type": "checklist",
+      "label": "Laser Module Inspection Checklist",
+      "doc_num": "",
+      "score": 0,
+      "leads_to": null,
+      "linked_to": "LASM_PROC",
+      "cycle_time_hrs": 0,
+      "goal_cycle_time_hrs": 0,
+      "validates": [],
+      "technicians": []
+    },
+    {
+      "id": "LASM_PROC",
+      "bomNodeId": "LASM",
+      "tests_node_id": "LASM",
+      "type": "test",
+      "label": "Laser Module Inspection Procedure",
+      "doc_num": "",
+      "score": 0,
+      "leads_to": null,
+      "linked_to": null,
+      "cycle_time_hrs": 0,
+      "goal_cycle_time_hrs": 0,
+      "validates": [],
+      "technicians": []
+    }
+  ],
+  "partNodes": [
+    {
+      "id": "PT_A1_1",
+      "bomNodeId": "A1",
+      "label": "Aluminium Extrusion 80×80",
+      "part_num": "MAT-A1-001",
+      "supplier": "Bosch Rexroth",
+      "trust_score": 3,
+      "has_backup": true,
+      "backup_supplier": "Item GmbH",
+      "causes_issues": false,
+      "notes": ""
+    },
+    {
+      "id": "PT_A1_2",
+      "bomNodeId": "A1",
+      "label": "M8 Socket Head Bolts ×50",
+      "part_num": "HDW-A1-001",
+      "supplier": "Fastenal",
+      "trust_score": 2,
+      "has_backup": false,
+      "backup_supplier": "",
+      "causes_issues": false,
+      "notes": ""
+    },
+    {
+      "id": "PT_A1_3",
+      "bomNodeId": "A1",
+      "label": "Corner Brackets",
+      "part_num": "BRK-A1-001",
+      "supplier": "Generic Metals Co.",
+      "trust_score": 1,
+      "has_backup": false,
+      "backup_supplier": "",
+      "causes_issues": true,
+      "notes": "Frequent dimensional variance — check incoming QC"
+    },
+    {
+      "id": "PT_A2_1",
+      "bomNodeId": "A2",
+      "label": "Ball Screw Assy 16 mm",
+      "part_num": "DRV-A2-001",
+      "supplier": "NSK Bearings",
+      "trust_score": 3,
+      "has_backup": true,
+      "backup_supplier": "THK Co.",
+      "causes_issues": false,
+      "notes": ""
+    },
+    {
+      "id": "PT_A2_2",
+      "bomNodeId": "A2",
+      "label": "Servo Motor 750 W",
+      "part_num": "DRV-A2-002",
+      "supplier": "Yaskawa",
+      "trust_score": 3,
+      "has_backup": true,
+      "backup_supplier": "Panasonic",
+      "causes_issues": false,
+      "notes": ""
+    },
+    {
+      "id": "PT_A2_3",
+      "bomNodeId": "A2",
+      "label": "Flexible Coupling",
+      "part_num": "DRV-A2-003",
+      "supplier": "Ruland",
+      "trust_score": 2,
+      "has_backup": false,
+      "backup_supplier": "",
+      "causes_issues": true,
+      "notes": "Lead time 6–8 wks — maintain safety stock"
+    },
+    {
+      "id": "PT_A3_1",
+      "bomNodeId": "A3",
+      "label": "24 V DIN Rail PSU",
+      "part_num": "ELEC-A3-001",
+      "supplier": "Phoenix Contact",
+      "trust_score": 3,
+      "has_backup": true,
+      "backup_supplier": "Weidmüller",
+      "causes_issues": false,
+      "notes": ""
+    },
+    {
+      "id": "PT_A3_2",
+      "bomNodeId": "A3",
+      "label": "EtherCAT Slave Card",
+      "part_num": "ELEC-A3-002",
+      "supplier": "Beckhoff",
+      "trust_score": 3,
+      "has_backup": false,
+      "backup_supplier": "",
+      "causes_issues": false,
+      "notes": "Single-source — no viable alternative"
+    },
+    {
+      "id": "PT_A3_3",
+      "bomNodeId": "A3",
+      "label": "Cable Drag Chain 25×50",
+      "part_num": "ELEC-A3-003",
+      "supplier": "Igus",
+      "trust_score": 1,
+      "has_backup": false,
+      "backup_supplier": "",
+      "causes_issues": true,
+      "notes": "Recent quality drop — evaluate alternatives urgently"
+    }
+  ],
+  "supplierRegistry": [
+    {
+      "id": "SUP1",
+      "name": "Bosch Rexroth",
+      "trust_score": 3
+    },
+    {
+      "id": "SUP2",
+      "name": "Generic Metals Co.",
+      "trust_score": 1
+    },
+    {
+      "id": "SUP3",
+      "name": "Fastenal",
+      "trust_score": 2
+    }
+  ],
+  "techRegistry": [
+    {
+      "id": "AJL",
+      "name": "AJL"
+    },
+    {
+      "id": "AL",
+      "name": "AL"
+    },
+    {
+      "id": "CC",
+      "name": "CC"
+    },
+    {
+      "id": "CS",
+      "name": "CS"
+    },
+    {
+      "id": "EB",
+      "name": "EB"
+    },
+    {
+      "id": "JH",
+      "name": "JH"
+    },
+    {
+      "id": "NL",
+      "name": "NL"
+    },
+    {
+      "id": "RS",
+      "name": "RS"
+    }
+  ],
+  "techs": [
+    "AJL",
+    "AL",
+    "CC",
+    "CS",
+    "EB",
+    "JH",
+    "NL",
+    "RS"
+  ]
+}

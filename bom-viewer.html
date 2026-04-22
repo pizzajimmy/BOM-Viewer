@@ -146,6 +146,36 @@
     /* ── Fit button ──────────────────────────────────────────────────── */
     #fit-btn { position: absolute; bottom: 14px; right: 14px; }
 
+    /* ── Validation edge info box (testing view click) ───────────────── */
+    #edge-info {
+      position: fixed; background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--r); padding: 12px 16px; max-width: 380px; min-width: 220px;
+      font-size: 0.8rem; z-index: 50; box-shadow: 0 4px 24px rgba(0,0,0,.6);
+      pointer-events: none;
+    }
+    #edge-info.hidden { display: none; }
+    #edge-info .ei-verb {
+      font-size: 0.65rem; font-weight: 700; color: var(--muted);
+      text-transform: uppercase; letter-spacing: .08em; margin-bottom: 5px;
+    }
+    #edge-info .ei-doc  { font-weight: 700; font-size: 0.88rem; }
+    #edge-info .ei-arrow { color: var(--muted); margin: 0 4px; font-size: 0.8rem; }
+    #edge-info .ei-target { font-weight: 700; font-size: 0.88rem; }
+    #edge-info .ei-note {
+      color: var(--muted); font-size: 0.76rem; border-top: 1px solid var(--border);
+      padding-top: 7px; margin-top: 8px;
+    }
+    #edge-info .ei-stats {
+      display: flex; gap: 14px; margin-top: 8px; font-size: 0.72rem; color: var(--muted);
+    }
+    #edge-info .ei-stat span { font-weight: 700; color: var(--text); }
+
+    /* BOM node highlight ring when a validation edge is selected */
+    .node-rect.edge-hi {
+      stroke: #fff !important; stroke-width: 2.5 !important;
+      filter: brightness(1.3);
+    }
+
     /* ── Modal overlay ───────────────────────────────────────────────── */
     .overlay {
       position: fixed; inset: 0; background: rgba(0,0,0,.72);
@@ -304,15 +334,54 @@
     /* ── Sim controls (simulate view) ───────────────────────────────────── */
     #sim-controls {
       display: none;
-      position: absolute; bottom: 14px; left: 50%; transform: translateX(-50%);
-      align-items: center; gap: 10px;
+      position: absolute; bottom: 14px; left: 20px; right: 20px;
+      flex-direction: column; gap: 8px;
       background: var(--surface); border: 1px solid var(--border);
-      border-radius: var(--r); padding: 8px 18px;
-      z-index: 10; box-shadow: 0 2px 14px rgba(0,0,0,.5); white-space: nowrap;
+      border-radius: var(--r); padding: 10px 18px;
+      z-index: 10; box-shadow: 0 2px 14px rgba(0,0,0,.5);
     }
     #sim-controls.active { display: flex; }
-    #sim-slider { width: 240px; accent-color: var(--accent); cursor: pointer; }
-    #sim-time-label { font-size: 0.78rem; font-weight: 700; color: var(--text); min-width: 100px; }
+    .sim-controls-row1 { display: flex; align-items: center; gap: 10px; }
+    .sim-controls-hint {
+      margin-left: auto; font-size: 0.7rem; color: var(--muted);
+      font-style: italic; white-space: nowrap;
+    }
+    .sim-row { display: flex; align-items: center; gap: 10px; }
+    .sim-row-label {
+      font-size: 0.7rem; font-weight: 700; color: var(--muted);
+      text-transform: uppercase; letter-spacing: .04em;
+      width: 56px; flex-shrink: 0;
+    }
+    .sim-slider-wrap {
+      flex: 1; position: relative; padding-bottom: 12px; min-width: 0;
+    }
+    .sim-slider-wrap input[type=range] {
+      width: 100%; accent-color: var(--accent); cursor: pointer;
+      margin: 0; display: block;
+    }
+    .sim-slider-wrap input[type=range]:disabled { cursor: default; opacity: 0.75; }
+    .sim-ticks {
+      position: absolute; left: 8px; right: 8px; bottom: 0; height: 10px;
+      pointer-events: none;
+    }
+    .sim-tick {
+      position: absolute; top: 0; width: 1px; height: 4px;
+      background: rgba(255,255,255,.30); transform: translateX(-0.5px);
+    }
+    .sim-tick.week {
+      height: 7px; width: 2px; background: rgba(255,255,255,.55);
+      transform: translateX(-1px);
+    }
+    .sim-tick-lbl {
+      position: absolute; top: 5px; font-size: 0.58rem; color: var(--muted);
+      transform: translateX(-50%); font-variant-numeric: tabular-nums;
+      white-space: nowrap;
+    }
+    .sim-val {
+      font-size: 0.78rem; font-weight: 700; color: var(--text);
+      font-variant-numeric: tabular-nums; white-space: nowrap;
+      min-width: 130px; text-align: right; flex-shrink: 0;
+    }
     .sim-assign-row {
       display: flex; justify-content: space-between; align-items: center;
       background: var(--bg); border: 1px solid var(--border); border-radius: 6px;
@@ -321,6 +390,88 @@
     .sim-assign-name  { font-size: 0.78rem; flex: 1; }
     .sim-assign-score { font-size: 0.71rem; font-weight: 600; white-space: nowrap; }
     .sim-assign-btn   { font-size: 0.72rem; padding: 2px 8px; white-space: nowrap; }
+
+    /* ── Sim queue panel (right-dock, simulate view) ──────────────────── */
+    #sim-queue-panel {
+      width: 360px; background: var(--surface); border-left: 1px solid var(--border);
+      display: none; flex-direction: column; overflow: hidden; flex-shrink: 0;
+    }
+    #sim-queue-panel.active { display: flex; }
+    .sqp-head {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 10px 12px; border-bottom: 1px solid var(--border); gap: 8px;
+    }
+    .sqp-title { font-size: 0.85rem; font-weight: 700; }
+    .sqp-totals {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 4px 10px;
+      margin-top: 4px; font-variant-numeric: tabular-nums;
+    }
+    .sqp-metric {
+      display: flex; justify-content: space-between; gap: 6px; align-items: baseline;
+      padding: 2px 6px; background: var(--bg); border-radius: 4px;
+    }
+    .sqp-metric-label {
+      font-size: 0.62rem; color: var(--muted);
+      text-transform: uppercase; letter-spacing: .04em; font-weight: 600;
+    }
+    .sqp-metric-val { font-size: 0.74rem; color: var(--text); font-weight: 600; }
+    .sqp-body { flex: 1; overflow-y: auto; overflow-x: hidden; padding: 8px 10px; }
+    .sqp-col {
+      margin-bottom: 12px; border: 1px solid var(--border); border-radius: 8px;
+      background: var(--bg); padding: 8px;
+    }
+    .sqp-col.unassigned { border-style: dashed; }
+    .sqp-col-head {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 2px 4px 6px; gap: 8px; border-bottom: 1px solid var(--border);
+      margin-bottom: 6px;
+    }
+    .sqp-col-name { font-size: 0.78rem; font-weight: 700; color: var(--text); }
+    .sqp-col-meta { font-size: 0.68rem; color: var(--muted); white-space: nowrap; }
+    .sqp-tiles { display: flex; flex-direction: column; gap: 4px; min-height: 8px; }
+    .sqp-tile {
+      background: var(--surface); border: 1px solid var(--border); border-radius: 6px;
+      padding: 6px 8px; cursor: grab; user-select: none;
+      display: flex; flex-direction: column; gap: 2px;
+      transition: background 0.08s, border-color 0.08s;
+    }
+    .sqp-tile:hover { border-color: rgba(255,255,255,.30); }
+    .sqp-tile.dragging { opacity: 0.35; cursor: grabbing; }
+    .sqp-tile.drop-before { box-shadow: 0 -2px 0 0 var(--accent); }
+    .sqp-tile.drop-after  { box-shadow: 0  2px 0 0 var(--accent); }
+    .sqp-tile.invalid-drop { box-shadow: 0 0 0 2px var(--red); cursor: not-allowed; }
+    .sqp-tile.is-selected { border-color: #fff; }
+    .sqp-tile-top {
+      display: flex; align-items: center; justify-content: space-between; gap: 6px;
+    }
+    .sqp-tile-label {
+      font-size: 0.76rem; font-weight: 600; color: var(--text);
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex: 1;
+    }
+    .sqp-tile-cyc {
+      font-size: 0.67rem; color: var(--muted); white-space: nowrap;
+      background: rgba(255,255,255,.06); padding: 1px 5px; border-radius: 3px;
+    }
+    .sqp-tile-time {
+      font-size: 0.66rem; color: var(--muted); white-space: nowrap;
+      font-variant-numeric: tabular-nums;
+    }
+    .sqp-tile.waiting   { border-left: 3px solid #f59e0b; }
+    .sqp-tile.working   { border-left: 3px solid #6366f1; background: #6366f114; }
+    .sqp-tile.done      { border-left: 3px solid #10b981; opacity: 0.65; }
+    .sqp-tile-wait {
+      font-size: 0.64rem; color: #f59e0b; display: flex; align-items: center;
+      gap: 3px; margin-top: 1px;
+    }
+    .sqp-drop-slot {
+      min-height: 18px; border: 1px dashed transparent; border-radius: 4px;
+      margin-top: 4px;
+    }
+    .sqp-drop-slot.can-drop { border-color: var(--accent); background: rgba(99,102,241,.08); }
+    .sqp-empty {
+      font-size: 0.7rem; color: var(--muted); font-style: italic;
+      text-align: center; padding: 8px 4px;
+    }
 
     /* ── Part flow bar ────────────────────────────────────────────────── */
     #part-flow-bar {
@@ -446,6 +597,14 @@
       background: var(--bg); color: var(--text); font-size: 0.75rem; max-width: 200px;
     }
 
+    /* ── Batch toolbar (inside header toolbar, batch view only) ─────── */
+    #batch-toolbar { display: none; align-items: center; gap: 5px; }
+    #batch-toolbar.active { display: flex; }
+    #batch-select {
+      padding: 4px 8px; border-radius: var(--r); border: 1px solid var(--border);
+      background: var(--bg); color: var(--text); font-size: 0.75rem; max-width: 200px;
+    }
+
     /* ── Downtime row ─────────────────────────────────────────────────── */
     .downtime-row { display: flex; gap: 5px; align-items: center; }
     .downtime-row .dt-reason { flex: 1; min-width: 0; }
@@ -528,6 +687,169 @@
     .sup-entry-row { display: flex; gap: 6px; align-items: center; }
     .sup-entry-row .sup-select { flex: 1; min-width: 0; }
     .sup-entry-row .sup-qual { width: 200px; flex-shrink: 0; }
+
+    /* ── Live Queue Panel (Builds + Batch views) ─────────────────────────
+       Shares visual vocabulary with #sim-queue-panel but is driven by the
+       live server state (via integration.js) rather than local sim state. */
+    #queue-panel {
+      width: 360px; background: var(--surface); border-left: 1px solid var(--border);
+      display: none; flex-direction: column; overflow: hidden; flex-shrink: 0;
+    }
+    #queue-panel.active { display: flex; }
+    .qp-head {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 10px 12px; border-bottom: 1px solid var(--border); gap: 8px;
+    }
+    .qp-title { font-size: 0.85rem; font-weight: 700; }
+    .qp-sub   { font-size: 0.68rem; color: var(--muted); margin-top: 2px; }
+    .qp-conn  {
+      display: inline-flex; align-items: center; gap: 5px; font-size: 0.64rem;
+      color: var(--muted); margin-top: 3px;
+    }
+    .qp-conn .dot {
+      width: 7px; height: 7px; border-radius: 999px; background: var(--muted);
+    }
+    .qp-conn.ok  .dot { background: var(--green); box-shadow: 0 0 5px var(--green); }
+    .qp-conn.off .dot { background: var(--red); }
+    .qp-body { flex: 1; overflow-y: auto; overflow-x: hidden; padding: 8px 10px; }
+
+    .qp-col {
+      margin-bottom: 12px; border: 1px solid var(--border); border-radius: 8px;
+      background: var(--bg); padding: 8px;
+    }
+    .qp-col-head {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 2px 4px 6px; gap: 8px; border-bottom: 1px solid var(--border);
+      margin-bottom: 6px;
+    }
+    .qp-col-name { font-size: 0.78rem; font-weight: 700; color: var(--text); }
+    .qp-col-name small { color: var(--muted); font-weight: 400; margin-left: 6px; }
+    .qp-col-meta { font-size: 0.68rem; color: var(--muted); white-space: nowrap; }
+    .qp-tiles { display: flex; flex-direction: column; gap: 4px; min-height: 8px; }
+
+    .qp-tile {
+      background: var(--surface); border: 1px solid var(--border); border-radius: 6px;
+      padding: 6px 8px; user-select: none;
+      display: flex; flex-direction: column; gap: 3px;
+      transition: background 0.08s, border-color 0.08s;
+    }
+    .qp-tile.active   { border-color: var(--green); background: rgba(16,185,129,0.08); }
+    .qp-tile.paused   { border-color: var(--amber); background: rgba(245,158,11,0.06); }
+    .qp-tile.downtime { border-color: var(--red);   background: rgba(239,68,68,0.06); }
+    .qp-tile.complete { opacity: 0.55; }
+    .qp-tile-top {
+      display: flex; align-items: center; justify-content: space-between; gap: 6px;
+    }
+    .qp-tile-label {
+      font-size: 0.78rem; font-weight: 600; color: var(--text);
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex: 1;
+    }
+    .qp-tile-chip {
+      font-size: 0.64rem; font-weight: 700; letter-spacing: 0.03em;
+      padding: 1px 6px; border-radius: 3px; white-space: nowrap;
+      font-variant-numeric: tabular-nums;
+    }
+    .qp-tile-chip.sn   { background: rgba(99,102,241,.18);  color: #c7d2fe; }
+    .qp-tile-chip.qty  { background: rgba(16,185,129,.18);  color: #a7f3d0; }
+    .qp-tile-meta {
+      display: flex; align-items: center; gap: 8px; font-size: 0.65rem;
+      color: var(--muted); font-variant-numeric: tabular-nums;
+    }
+    .qp-tile-docs {
+      display: flex; flex-wrap: wrap; gap: 3px; margin-top: 1px;
+    }
+    .qp-doc-pill {
+      font-size: 0.62rem; padding: 1px 5px; border-radius: 3px;
+      background: rgba(255,255,255,0.04); color: var(--muted);
+      border: 1px solid transparent; white-space: nowrap;
+    }
+    .qp-doc-pill.active   { background: rgba(16,185,129,.22); color: #d1fae5; }
+    .qp-doc-pill.paused   { background: rgba(245,158,11,.22); color: #fde68a; }
+    .qp-doc-pill.downtime { background: rgba(239,68,68,.22);  color: #fecaca; }
+    .qp-doc-pill.complete { text-decoration: line-through; opacity: 0.55; }
+    .qp-tile-actions {
+      display: flex; gap: 4px; margin-top: 2px; align-items: center;
+    }
+    .qp-tile-actions .btn { font-size: 0.64rem; padding: 2px 7px; }
+    .qp-tile-state {
+      font-size: 0.62rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.06em; color: var(--muted); margin-right: auto;
+    }
+    .qp-tile-state.active   { color: var(--green); }
+    .qp-tile-state.paused   { color: var(--amber); }
+    .qp-tile-state.downtime { color: var(--red); }
+    .qp-tile-state.complete { color: var(--muted); }
+    .qp-tile-timer {
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 0.66rem; color: var(--text); font-weight: 600;
+    }
+    .qp-tile-timer.downtime { color: var(--red); }
+
+    .qp-empty {
+      font-size: 0.72rem; color: var(--muted); font-style: italic;
+      text-align: center; padding: 8px 4px;
+    }
+    .qp-tech-empty {
+      font-size: 0.68rem; color: var(--muted); font-style: italic;
+      padding: 6px 4px; text-align: center;
+    }
+
+    /* Assign popover (replaces legacy build/batch side panel on node click) */
+    .assign-wrap { padding: 12px; display: flex; flex-direction: column; gap: 12px; }
+    .assign-ctx {
+      display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+      padding: 8px 10px; background: var(--bg);
+      border: 1px solid var(--border); border-radius: var(--r);
+    }
+    .assign-ctx-label { font-size: 0.68rem; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; }
+    .assign-ctx-val { font-size: 0.82rem; font-weight: 700; color: var(--text); }
+    .assign-qty-input {
+      width: 90px; padding: 5px 9px; border-radius: var(--r);
+      border: 1px solid var(--border); background: var(--bg); color: var(--text);
+      font-size: 0.9rem; font-weight: 700; text-align: right;
+      font-variant-numeric: tabular-nums;
+    }
+    .assign-tech-grid {
+      display: flex; flex-wrap: wrap; gap: 5px;
+    }
+    .assign-tech-chip {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.14);
+      border-radius: 14px; padding: 4px 10px 4px 6px; cursor: pointer;
+      font-size: 0.78rem; color: var(--text); transition: background .1s;
+    }
+    .assign-tech-chip:hover { background: rgba(255,255,255,0.12); }
+    .assign-tech-chip.active {
+      background: var(--accent); border-color: var(--accent-h); color: #fff; font-weight: 600;
+    }
+    .assign-tech-chip.active:hover { background: var(--accent-h); }
+    .assign-tech-chip[disabled] { opacity: 0.5; cursor: not-allowed; }
+    .assign-tech-initials {
+      display: inline-flex; justify-content: center; align-items: center;
+      min-width: 22px; height: 22px; border-radius: 999px;
+      background: rgba(0,0,0,0.25); font-size: 0.7rem; font-weight: 700;
+      letter-spacing: 0.03em;
+    }
+    .assign-tech-chip.active .assign-tech-initials { background: rgba(0,0,0,0.3); }
+    .assign-status-row {
+      display: flex; flex-wrap: wrap; gap: 6px; font-size: 0.7rem; color: var(--muted);
+    }
+    .assign-status-pill {
+      padding: 2px 7px; border-radius: 3px; font-weight: 600;
+      background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
+    }
+    .assign-status-pill.active   { background: rgba(16,185,129,.2); color: #d1fae5; border-color: #10b98155; }
+    .assign-status-pill.paused   { background: rgba(245,158,11,.2); color: #fde68a; border-color: #f59e0b55; }
+    .assign-status-pill.downtime { background: rgba(239,68,68,.2);  color: #fecaca; border-color: #ef444455; }
+    .assign-status-pill.complete { background: rgba(100,116,139,.2); color: #cbd5e1; }
+    .assign-note {
+      font-size: 0.73rem; color: var(--muted); line-height: 1.45;
+    }
+    .assign-offline-banner {
+      padding: 8px 10px; border-left: 3px solid var(--amber);
+      background: rgba(245,158,11,0.08); color: var(--text);
+      font-size: 0.76rem; border-radius: 4px;
+    }
   </style>
 </head>
 <body>
@@ -544,13 +866,14 @@
       <button class="vbtn" data-view="docs">Docs</button>
       <button class="vbtn" data-view="simulate">Simulate</button>
       <button class="vbtn" data-view="builds">Builds</button>
+      <button class="vbtn" data-view="batch">Batch</button>
     </div>
 
     <div id="sheets-wrap">
-      <input id="sheets-url" type="text"
-        placeholder="Paste Google Sheets URL…" />
-      <button class="btn sm" id="btn-load-sheets">Load</button>
       <button class="btn sm" id="btn-import-json">&#128229; Import JSON</button>
+      <button class="btn sm" id="btn-export-overlay" title="Download overlay settings (row/tech assignments, queues, flow divide)">&#128190; Export Settings</button>
+      <button class="btn sm" id="btn-import-overlay" title="Upload overlay settings">&#128228; Import Settings</button>
+      <input type="file" id="overlay-file-input" accept="application/json,.json" style="display:none" />
       <button class="btn sm" id="btn-reset">Reset Demo</button>
     </div>
 
@@ -563,10 +886,15 @@
         <button class="btn sm" id="btn-build-unarchive" style="display:none">Restore</button>
         <button class="btn primary sm" id="btn-new-build">+ New Build</button>
       </div>
-      <button class="btn sm" id="btn-manage-techs">&#128100; Technicians</button>
+      <!-- Batch-view controls — shown only when Batch view is active -->
+      <div id="batch-toolbar">
+        <select id="batch-select" title="Select a batch lot"></select>
+        <button class="btn sm" id="btn-batch-log">&#128203; Batch Log</button>
+        <button class="btn sm danger" id="btn-batch-archive" style="display:none">Archive</button>
+        <button class="btn sm" id="btn-batch-unarchive" style="display:none">Restore</button>
+        <button class="btn primary sm" id="btn-new-batch">+ New Lot</button>
+      </div>
       <button class="btn sm" id="btn-explode">⊞ Explode</button>
-      <button class="btn" id="btn-add-section">+ Section</button>
-      <button class="btn primary" id="btn-add">+ Add Node</button>
     </div>
   </header>
 
@@ -603,10 +931,26 @@
       </div>
       <!-- Simulate view controls bar — shown in simulate view -->
       <div id="sim-controls">
-        <button class="btn sm" id="sim-reset">&#8635; Reset</button>
-        <label style="font-size:0.72rem;font-weight:600;color:var(--muted)">Time</label>
-        <input type="range" id="sim-slider" min="0" max="1000" value="0" step="1" />
-        <span id="sim-time-label">0.0 h / — h</span>
+        <div class="sim-controls-row1">
+          <button class="btn sm" id="sim-reset">&#8635; Reset</button>
+          <span class="sim-controls-hint">Drag Wall to scrub · ticks every 8h (work day), 40h bold (work week)</span>
+        </div>
+        <div class="sim-row">
+          <span class="sim-row-label">Wall</span>
+          <div class="sim-slider-wrap">
+            <input type="range" id="sim-slider" min="0" max="1000" value="0" step="1" />
+            <div class="sim-ticks" id="sim-ticks-wall"></div>
+          </div>
+          <span class="sim-val" id="sim-wall-label">&mdash; / &mdash; h</span>
+        </div>
+        <div class="sim-row">
+          <span class="sim-row-label">Man</span>
+          <div class="sim-slider-wrap">
+            <input type="range" id="sim-man-slider" min="0" max="1000" value="0" step="1" disabled />
+            <div class="sim-ticks" id="sim-ticks-man"></div>
+          </div>
+          <span class="sim-val" id="sim-man-label">&mdash; / &mdash; h</span>
+        </div>
       </div>
       <!-- Training view tech filter bar — shown in training view -->
       <div id="training-controls">
@@ -675,6 +1019,50 @@
       <button class="btn" id="fit-btn">Fit to Screen</button>
     </div>
 
+    <!-- Validation edge info tooltip (testing view) -->
+    <div id="edge-info" class="hidden" role="tooltip">
+      <div class="ei-verb">Tests</div>
+      <div style="line-height:1.35">
+        <span class="ei-doc"   id="ei-doc"></span>
+        <span class="ei-arrow">&#8594;</span>
+        <span class="ei-target" id="ei-target"></span>
+      </div>
+      <div id="ei-note" class="ei-note"></div>
+      <div id="ei-cross-divide" class="ei-note" style="display:none;border-left:3px solid #ef4444;background:#ef444414;color:#fecaca">
+        &#9888; Crosses the flow divide — batch-built BOMs should have their own testing.
+      </div>
+      <div class="ei-stats">
+        <div class="ei-stat">Lag&nbsp;<span id="ei-lag"></span>&nbsp;level(s)</div>
+        <div class="ei-stat">Test score&nbsp;<span id="ei-score"></span></div>
+      </div>
+    </div>
+
+    <aside id="queue-panel">
+      <div class="qp-head">
+        <div style="flex:1;min-width:0">
+          <div class="qp-title">Live Tech Queues</div>
+          <div class="qp-sub" id="qp-sub">—</div>
+          <div class="qp-conn" id="qp-conn"><span class="dot"></span><span id="qp-conn-label">offline</span></div>
+        </div>
+        <button class="icon-btn" id="btn-qp-close" title="Close queue panel">&times;</button>
+      </div>
+      <div class="qp-body" id="qp-body"></div>
+    </aside>
+
+    <aside id="sim-queue-panel">
+      <div class="sqp-head">
+        <div style="flex:1;min-width:0">
+          <div class="sqp-title">Tech Queues</div>
+          <div id="sqp-totals" class="sqp-totals">
+            <div class="sqp-metric"><span class="sqp-metric-label">Wall clock</span><span class="sqp-metric-val" id="sqp-wallclock">—</span></div>
+            <div class="sqp-metric"><span class="sqp-metric-label">Man hours</span><span class="sqp-metric-val" id="sqp-manhrs">—</span></div>
+          </div>
+        </div>
+        <button class="icon-btn" id="btn-sqp-close" title="Close queue panel">&times;</button>
+      </div>
+      <div class="sqp-body" id="sqp-body"></div>
+    </aside>
+
     <aside id="panel" class="hidden">
       <div class="panel-head">
         <div>
@@ -724,6 +1112,10 @@
         <!-- Build tracker node actions -->
         <span id="build-node-acts" style="display:none">
           <button class="btn danger sm" id="build-clear-node">Clear Node Data</button>
+        </span>
+        <!-- Batch tracker node actions -->
+        <span id="batch-node-acts" style="display:none">
+          <!-- no extra actions needed; save is inline in panel -->
         </span>
       </div>
     </aside>
@@ -1189,8 +1581,9 @@
     </div>
     <div class="modal-body">
       <p style="font-size:0.82rem;color:var(--muted);margin:0">
-        In your Google Sheet run <strong>Dashboard → Export JSON</strong>, then copy cell A2
-        from the <strong>_Export</strong> sheet and paste it below.
+        In your Google Sheet run <strong>Dashboard → Export JSON</strong>, then select
+        all filled cells in column A below the header in the <strong>_Export</strong>
+        sheet, copy, and paste below.
       </p>
       <textarea id="ji-input" rows="12"
         style="font-family:monospace;font-size:0.75rem;resize:vertical"
@@ -1205,6 +1598,10 @@
 </div>
 
 <div id="toast"></div>
+
+<!-- Dashboard ↔ server bridge (SSE client, state cache, API wrappers).
+     Served by server.js; on a file:// open it's a 200 stub and MDS stays inert. -->
+<script src="/integration.js"></script>
 
 <script>
 // ─── Demo dataset ──────────────────────────────────────────────────────────────
@@ -1510,10 +1907,22 @@ function techScoreForNode(techName, nd) {
   return t?.score;
 }
 
-// Avg per-doc score: ≥10 great (green) · ≥6 meets minimum (amber) · <6 at risk (red)
+// Training score thresholds (BOM node — avg across docs):
+//   ≥ 8  great           → green
+//   ≥ 5  meets minimum   → amber
+//   > 3  at risk         → orange
+//   ≤ 3  critical deficit → red
+function trainingScoreColor(s) {
+  return s >= 8 ? '#10b981' : s >= 5 ? '#f59e0b' : s > 3 ? '#f97316' : '#ef4444';
+}
 function trainingColor(n) {
-  const s = trainingScore(n);
-  return s >= 10 ? '#10b981' : s >= 6 ? '#f59e0b' : '#ef4444';
+  return trainingScoreColor(trainingScore(n));
+}
+
+// Per-doc training colour (used in exploded compact rows).
+function docTrainingColor(d) {
+  const s = effectiveTechsOnDoc(d).reduce((a, t) => a + (t.score || 0), 0);
+  return trainingScoreColor(s);
 }
 
 // Collect all unique tech names: sheet registry + BOM-level + doc-level assignments
@@ -1604,9 +2013,10 @@ const VIEWS = {
         { label:'Score 0 / Not assigned',                      color:'#1e293b' },
       ];
       return [
-        { label:'Score ≥ 10 — great',        color:'#10b981' },
-        { label:'Score 6 – 9 — meets min.',  color:'#f59e0b' },
-        { label:'Score < 6 — at risk',       color:'#ef4444' },
+        { label:'Score ≥ 8 — great',              color:'#10b981' },
+        { label:'Score 5 – 7 — meets minimum',    color:'#f59e0b' },
+        { label:'Score 4 — at risk',              color:'#f97316' },
+        { label:'Score ≤ 3 — critical deficit',   color:'#ef4444' },
       ];
     },
     badge: false,
@@ -1719,6 +2129,29 @@ const VIEWS = {
     ],
     badge: false,
   },
+  batch: {
+    label:     'Batch Tracker — click a node to log a batch lot',
+    nodeColor: n => {
+      const nd = n.data ?? n;
+      const batch = batches.find(b => b.id === activeBatchId);
+      if (!batch) return '#1e293b';
+      const bnd = (batch.nodeData || {})[nd.id];
+      if (!bnd) return '#334155';
+      const total = (bnd.qty || 0);
+      const pass  = (bnd.pass || 0);
+      if (!total) return '#334155';
+      const rate = pass / total;
+      return rate >= 0.98 ? '#10b981' : rate >= 0.90 ? '#f59e0b' : '#ef4444';
+    },
+    linkColor: () => '#334155',
+    legend: () => [
+      { label: '≥ 98% pass rate', color: '#10b981' },
+      { label: '90–97% pass rate', color: '#f59e0b' },
+      { label: '< 90% pass rate',  color: '#ef4444' },
+      { label: 'No data yet',      color: '#334155' },
+    ],
+    badge: false,
+  },
 };
 
 // ─── State ─────────────────────────────────────────────────────────────────────
@@ -1729,6 +2162,7 @@ let docNodes         = _loaded.docNodes;
 let partNodes        = _loaded.partNodes;
 let currentView      = 'overview';
 let selectedId       = null;
+let selectedEdge     = null;   // selected validation edge { sourceId, targetId, ... }
 let selectedSecId    = null;   // selected section id
 let selectedDocId    = null;   // selected doc node id
 let selectedPartId   = null;   // selected part node id
@@ -1751,15 +2185,27 @@ let valRiskFilter         = null;   // null=all | 'green'|'amber'|'red' — test
 let collapsedIds          = new Set(_loaded.collapsedIds ?? []);
 let _savedTransform  = null;   // saved BOM zoom/pan before entering a sub-flow
 let confirmCb        = null;
-let techRegistry     = _loaded.techRegistry ?? [];  // ordered list of known tech names
+let techDirectory    = normalizeTechRegistry(_loaded.techDirectory ?? _loaded.techRegistry ?? [], _loaded.docNodes ?? []);
+let techRegistry     = techRegistryNames(techDirectory);  // legacy display-name list used by older local-only views
 let simAssignments   = {};     // nodeId → [techName, …]  — sim view tech assignments
+let simQueues        = {};     // techName → [nodeId, …]  — ordered work queue per tech
 let simTime          = 0;      // 0..1 normalized scrub position
 let simTiming        = null;   // computed per-render: nodeId → { rowStart, nodeEnd, row, … }
+let _simSliderDragging = false; // true while user is actively dragging the wall slider
+                                // (prevents applySimProgress from overwriting its value mid-drag)
 let builds           = _loaded.builds ?? [];        // real production build records
 let activeBuildId    = null;   // currently selected build id
 let buildTime        = 0;      // 0..1 timeline scrub position
+let batches          = _loaded.batches  ?? [];      // batch lot records
+let activeBatchId    = null;   // currently selected batch lot id
+let flowDivideRow    = _loaded.flowDivideRow ?? null; // integer row or null
 let buildTiming      = null;   // computed per-render: nodeId → timing info
 let buildTimerInterval = null; // setInterval handle for live timer tick (1 s)
+
+// Layer dashboard-driven overlay settings on top of the imported dataset.
+// (Function declarations are hoisted, so applyOverlayToState / loadOverlay
+// are already defined at this point even though they appear lower in source.)
+applyOverlayToState(loadOverlay());
 
 // Cycle view takt state — persisted across renders
 let cycleState = { demand: 0, estHours: 0, useLogged: false };
@@ -1819,94 +2265,331 @@ function analyzeRows(root) {
 // that tech (their cycle times add up rather than overlap).
 // Returns nodeId → { rowStart, rowEnd, nodeStart, nodeEnd, row, nodeHrs, rowMaxHrs, totalHrs }
 // All time values are normalised 0..1.
-function computeSimTiming(root) {
-  const byRow = {};
-  root.each(n => {
-    if (n.data.id === '__root__') return;
-    const row = n._effectiveRow ?? n.depth;
-    (byRow[row] = byRow[row] || []).push(n);
+// Planned cycle time for a BOM node — used by simulate view for scheduling.
+// Prefers the explicit BOM cycle_time_hrs; falls back to the sum of the node's
+// doc cycle times (how most users actually record procedure durations).
+// Unlike effectiveCycleTime, this does NOT pull from build-log averages — the
+// simulator is about the planned/estimated schedule.
+function plannedCycleTime(nd) {
+  if (nd && nd.cycle_time_hrs > 0) return nd.cycle_time_hrs;
+  if (nd && nd.id) return docCycleSum(nd.id);
+  return 0;
+}
+
+// ─── BOM dependency helpers (raw nodes, multi-parent aware) ──────────────────
+// Parent ids for a raw node (splitting comma-separated multi-parent fields).
+function parentIdsOf(nid) {
+  const n = nodes.find(x => x.id === nid);
+  if (!n || !n.parent) return [];
+  return String(n.parent).split(',').map(s => s.trim()).filter(Boolean);
+}
+
+// Depth in the raw BOM; roots = 0.  Multi-parent → max over parent depths.
+// Cached per-sync; call computeBomDepth() when node parentage may have changed.
+function computeBomDepth() {
+  const depth = {};
+  nodes.forEach(n => {
+    const ps = parentIdsOf(n.id);
+    if (!ps.length) depth[n.id] = 0;
   });
-  // DESCENDING: highest row number (deepest / leaves) executes first
-  const sortedRows = Object.keys(byRow).map(Number).sort((a, b) => b - a);
-
-  let cursor = 0;
-  const rowMeta = {};
-
-  for (const row of sortedRows) {
-    const rowNodes = byRow[row];
-
-    // Base parallel duration = max cycle time in row
-    const baseDur = Math.max(...rowNodes.map(n => n.data.cycle_time_hrs || 0), 0);
-
-    // Tech workload within this row: if a tech is assigned to multiple nodes
-    // those nodes must run sequentially for that tech.
-    const techLoad = {};  // techName → total hrs assigned to them in this row
-    rowNodes.forEach(n => {
-      (simAssignments[n.data.id] || []).forEach(tName => {
-        techLoad[tName] = (techLoad[tName] || 0) + (n.data.cycle_time_hrs || 0);
-      });
+  let changed = true, guard = 0;
+  while (changed && guard++ < 100) {
+    changed = false;
+    nodes.forEach(n => {
+      if (depth[n.id] !== undefined) return;
+      const ps = parentIdsOf(n.id);
+      const ds = ps.map(p => depth[p]).filter(d => d !== undefined);
+      if (ds.length === ps.length) { depth[n.id] = Math.max(...ds) + 1; changed = true; }
     });
-    const maxTechLoad  = Object.values(techLoad).length ? Math.max(...Object.values(techLoad)) : 0;
-    const effectiveDur = Math.max(baseDur, maxTechLoad);
-
-    rowMeta[row] = { absStart: cursor, duration: effectiveDur };
-    cursor += effectiveDur;
   }
+  nodes.forEach(n => { if (depth[n.id] === undefined) depth[n.id] = 0; });
+  return depth;
+}
 
-  const totalTime = cursor || 1;
+// True when ancId is an ancestor of descId in the raw BOM.  Walks all parent
+// paths (multi-parent safe).
+function isBomAncestor(ancId, descId) {
+  if (ancId === descId) return false;
+  const stack = [descId];
+  const seen  = new Set();
+  while (stack.length) {
+    const id = stack.pop();
+    if (seen.has(id)) continue;
+    seen.add(id);
+    const ps = parentIdsOf(id);
+    if (ps.includes(ancId)) return true;
+    ps.forEach(p => stack.push(p));
+  }
+  return false;
+}
 
-  const timing = {};
-  for (const row of sortedRows) {
-    const { absStart, duration } = rowMeta[row];
-    const rowNodes = byRow[row];
+// Direct BOM children of nodeId.
+function directChildrenOf(nid) {
+  return nodes.filter(n => parentIdsOf(n.id).includes(nid)).map(n => n.id);
+}
 
-    for (const n of rowNodes) {
-      const cycle   = n.data.cycle_time_hrs || 0;
-      const assigns = simAssignments[n.data.id] || [];
+// ─── Sim queue management ───────────────────────────────────────────────────
+// Reconcile simQueues[] with simAssignments[] and the tech database.  Every
+// known tech gets a column (even with an empty queue); stale entries are
+// dropped; newly-assigned nodes are inserted respecting child-before-parent.
+function syncSimQueues() {
+  const allTechs = allDocTechNames();
+  // Ensure every known tech has a column; drop techs that no longer exist.
+  allTechs.forEach(t => { if (!simQueues[t]) simQueues[t] = []; });
+  Object.keys(simQueues).forEach(t => {
+    if (!allTechs.includes(t)) delete simQueues[t];
+  });
 
-      // Determine when within the row this specific node starts.
-      // If a tech assigned to it also works on earlier nodes in the same row,
-      // this node waits for those to finish first.
-      let nodeOffset = 0;
-      assigns.forEach(tName => {
-        const sharedNodes = rowNodes.filter(rn =>
-          (simAssignments[rn.data.id] || []).includes(tName)
-        );
-        if (sharedNodes.length > 1) {
-          const idx       = sharedNodes.findIndex(sn => sn.data.id === n.data.id);
-          const priorWork = sharedNodes
-            .slice(0, idx)
-            .reduce((s, sn) => s + (sn.data.cycle_time_hrs || 0), 0);
-          if (priorWork > nodeOffset) nodeOffset = priorWork;
-        }
-      });
+  // Desired membership per tech, derived from simAssignments.
+  const desired = {};
+  allTechs.forEach(t => { desired[t] = new Set(); });
+  Object.entries(simAssignments).forEach(([nid, techs]) => {
+    (techs || []).forEach(t => { if (desired[t]) desired[t].add(nid); });
+  });
 
-      const nodeAbsStart = absStart + nodeOffset;
-      timing[n.data.id] = {
-        rowStart:  absStart / totalTime,
-        rowEnd:    (absStart + duration) / totalTime,
-        nodeStart: nodeAbsStart / totalTime,
-        nodeEnd:   cycle > 0 ? (nodeAbsStart + cycle) / totalTime : (absStart + duration) / totalTime,
-        row,
-        nodeHrs:   cycle,
-        rowMaxHrs: duration,
-        totalHrs:  totalTime,
-      };
+  const depth = computeBomDepth();
+
+  allTechs.forEach(t => {
+    // Remove stale
+    simQueues[t] = simQueues[t].filter(id => desired[t].has(id));
+    // Insert missing, deepest-first, so each insert can settle right after
+    // its already-present descendants.
+    const missing = [...desired[t]].filter(id => !simQueues[t].includes(id));
+    missing.sort((a, b) => (depth[b] ?? 0) - (depth[a] ?? 0));
+    missing.forEach(id => insertQueueRespectingDeps(simQueues[t], id));
+  });
+}
+
+// Insert nodeId into queue at a position that keeps child-before-parent.
+// Falls back to end if no constraints apply.
+function insertQueueRespectingDeps(queue, nodeId) {
+  let descMax = -1;             // highest index of a descendant already in queue
+  let ancMin  = queue.length;   // lowest index of an ancestor already in queue
+  queue.forEach((other, i) => {
+    if (isBomAncestor(nodeId, other))      descMax = Math.max(descMax, i);
+    else if (isBomAncestor(other, nodeId)) ancMin  = Math.min(ancMin,  i);
+  });
+  const pos = Math.min(Math.max(descMax + 1, 0), ancMin);
+  queue.splice(pos, 0, nodeId);
+}
+
+// Validate a proposed full queue ordering: for every pair (i<j) ensure
+// queue[i] is NOT an ancestor of queue[j]. Returns true if legal.
+function isQueueOrderLegal(queue) {
+  for (let i = 0; i < queue.length; i++) {
+    for (let j = i + 1; j < queue.length; j++) {
+      if (isBomAncestor(queue[i], queue[j])) return false;
     }
   }
+  return true;
+}
+
+// ─── Queue-based simulate scheduling ─────────────────────────────────────────
+// Rules (per user spec):
+//  1. A tech works one node at a time, in their queue order.
+//  2. If a node is assigned to multiple techs, all of them must be free
+//     simultaneously for the node to start.
+//  3. A node cannot start until all its BOM children are finished
+//     (cross-tech dependency enforced automatically).
+// Lead time = max finish time across all scheduled nodes.
+//
+// Returns: { [nodeId]: { nodeStart, nodeEnd, nodeHrs, row, rowStart, rowEnd,
+//                        rowMaxHrs, totalHrs, absStart, absEnd, waitingFor[] } }
+// All *Start/*End are normalized 0..1; *Hrs are absolute hours.
+// "waitingFor" lists [{techName, sinceHrs}] — techs that were idle between
+//   their previous queue item's end and this node's start (co-assignee delay).
+function computeSimTiming(root) {
+  syncSimQueues();
+
+  // Build the set of scheduled node ids (anything in at least one queue).
+  const scheduled = new Set();
+  Object.values(simQueues).forEach(q => q.forEach(id => scheduled.add(id)));
+
+  // Cache planned cycle time per scheduled node.
+  const cycleOf = {};
+  scheduled.forEach(id => {
+    const nd = nodes.find(x => x.id === id);
+    cycleOf[id] = nd ? plannedCycleTime(nd) : 0;
+  });
+
+  // Previous queue entry for a given (tech, nodeId).  null if nodeId is first.
+  const prevInQueue = {};   // techName → nodeId → prevNodeId|null
+  Object.entries(simQueues).forEach(([t, q]) => {
+    prevInQueue[t] = {};
+    q.forEach((id, i) => { prevInQueue[t][id] = i > 0 ? q[i - 1] : null; });
+  });
+
+  // Children of each node that are themselves scheduled (cross-tech dep).
+  const schedChildrenOf = {};
+  scheduled.forEach(id => {
+    schedChildrenOf[id] = directChildrenOf(id).filter(c => scheduled.has(c));
+  });
+
+  // Iterated relaxation — graph is a DAG so this converges in ≤ N passes.
+  const S = {};  // start[id]
+  const E = {};  // end[id]
+  scheduled.forEach(id => { S[id] = 0; E[id] = cycleOf[id] || 0; });
+  const maxIters = Math.max(20, scheduled.size + 5);
+  let iter = 0, changed = true;
+  while (changed && iter++ < maxIters) {
+    changed = false;
+    scheduled.forEach(id => {
+      let start = 0;
+      // BOM children must finish first
+      schedChildrenOf[id].forEach(c => { if (E[c] > start) start = E[c]; });
+      // Tech predecessors: for every assigned tech, wait for the prior node in that tech's queue
+      const assigned = simAssignments[id] || [];
+      assigned.forEach(t => {
+        const prev = prevInQueue[t]?.[id];
+        if (prev != null && E[prev] > start) start = E[prev];
+      });
+      const end = start + (cycleOf[id] || 0);
+      if (start !== S[id] || end !== E[id]) {
+        S[id] = start; E[id] = end; changed = true;
+      }
+    });
+  }
+
+  // Compute "waiting for tech" diagnostics per scheduled node.
+  const waitingOf = {};
+  scheduled.forEach(id => {
+    const assigned = simAssignments[id] || [];
+    const waits = [];
+    assigned.forEach(t => {
+      const prev = prevInQueue[t]?.[id];
+      const techFree = prev != null ? E[prev] : 0;
+      const gap = S[id] - techFree;
+      if (gap > 0.0001) waits.push({ techName: t, gapHrs: +gap.toFixed(2) });
+    });
+    if (waits.length) waitingOf[id] = waits;
+  });
+
+  // Also keep the legacy "row" / "rowStart" / "rowEnd" fields populated so
+  // other view code (row bands, section borders, applyColors) still works.
+  // We derive "row" from BOM depth (deeper = earlier), and row bounds = min
+  // start / max end across nodes at that depth.
+  const depth = computeBomDepth();
+  const byDepth = {};
+  scheduled.forEach(id => {
+    const d = depth[id] ?? 0;
+    (byDepth[d] = byDepth[d] || []).push(id);
+  });
+
+  // Total lead time = max end over all scheduled nodes (≥ 1h placeholder).
+  let totalHrs = 0;
+  scheduled.forEach(id => { if (E[id] > totalHrs) totalHrs = E[id]; });
+  const safeTotal = totalHrs > 0 ? totalHrs : 1;
+
+  const timing = {};
+  Object.entries(byDepth).forEach(([d, ids]) => {
+    const rowStart = Math.min(...ids.map(id => S[id]));
+    const rowEnd   = Math.max(...ids.map(id => E[id]));
+    ids.forEach(id => {
+      timing[id] = {
+        absStart:  S[id],
+        absEnd:    E[id],
+        nodeStart: S[id] / safeTotal,
+        nodeEnd:   E[id] > S[id] ? E[id] / safeTotal : (S[id] / safeTotal),
+        nodeHrs:   cycleOf[id] || 0,
+        row:       +d,
+        rowStart:  rowStart / safeTotal,
+        rowEnd:    rowEnd   / safeTotal,
+        rowMaxHrs: rowEnd - rowStart,
+        totalHrs:  safeTotal,
+        waitingFor: waitingOf[id] || [],
+        assignedTechs: (simAssignments[id] || []).slice(),
+      };
+    });
+  });
+
+  // Nodes that exist in the BOM but are NOT assigned to any tech: surface
+  // them with zero-duration entries so the rest of the render code (node
+  // fills, row bands, etc.) has something to read.
+  nodes.forEach(n => {
+    if (timing[n.id]) return;
+    timing[n.id] = {
+      absStart: 0, absEnd: 0,
+      nodeStart: 0, nodeEnd: 0,
+      nodeHrs: plannedCycleTime(n) || 0,
+      row: depth[n.id] ?? 0,
+      rowStart: 0, rowEnd: 0,
+      rowMaxHrs: 0,
+      totalHrs: safeTotal,
+      waitingFor: [],
+      assignedTechs: [],
+      unscheduled: true,
+    };
+  });
+
+  // Plan-level totals, stamped on every entry for easy readout.
+  //   totalManHrs = Σ cycle × assignedTechCount  (scales with co-assignees)
+  //   totalWallHrs = critical-path lead time (== safeTotal)
+  let totalManHrs = 0;
+  scheduled.forEach(id => {
+    const techCount = (simAssignments[id] || []).length;
+    totalManHrs += (cycleOf[id] || 0) * techCount;
+  });
+  Object.values(timing).forEach(t => {
+    t.totalManHrs  = totalManHrs;
+    t.totalWallHrs = totalHrs;   // 0 if nothing scheduled
+  });
+
   return timing;
+}
+
+// Elapsed man-hours at wall-clock fraction t ∈ [0,1].  Each scheduled node
+// contributes (cycleHrs × techCount × progressFraction).  Used for the live
+// "man hours used so far" readout in the queue panel.
+function elapsedManHoursAt(t) {
+  if (!simTiming) return 0;
+  let sum = 0;
+  Object.values(simTiming).forEach(tm => {
+    if (tm.unscheduled) return;
+    const techCount = (tm.assignedTechs || []).length;
+    if (!techCount || !(tm.nodeHrs > 0)) return;
+    const dur = tm.nodeEnd - tm.nodeStart;
+    let progress;
+    if (t >= tm.nodeEnd)                    progress = 1;
+    else if (t > tm.nodeStart && dur > 0)   progress = (t - tm.nodeStart) / dur;
+    else                                    progress = 0;
+    sum += tm.nodeHrs * progress * techCount;
+  });
+  return sum;
 }
 
 // ─── Doc validation edge computation ──────────────────────────────────────────
 // Builds validation edges from doc node `validates` fields.
 // Source = doc's parent BOM node; Target = each validated BOM node.
 // Returns [{sourceId, targetId, score, lag, cycleWeight, docId, docLabel}]
+//
+// Multi-parent deduplication: a doc with bom_node_id "OA,AZ" expands to two
+// docNode instances (DOCX__OA and DOCX__AZ).  Without deduplication both emit
+// an arrow to the same target, crossing subtrees.  For each (base doc, target)
+// pair we keep only the edge whose source BOM shares the deepest LCA with the
+// target — i.e. the source that lives in the same subtree as the target.
 function computeDocValidationEdges(root) {
   if (!root) return [];
   const hNodeOf = {};
   root.each(n => { hNodeOf[n.data.id] = n; });
 
-  const edges = [];
+  // Depth of the LCA between two hierarchy nodes (-1 if none found).
+  function lcaDepth(a, b) {
+    const ancs = new Set();
+    let c = a;
+    while (c) { ancs.add(c.data.id); c = c.parent; }
+    c = b;
+    while (c) { if (ancs.has(c.data.id)) return c.depth; c = c.parent; }
+    return -1;
+  }
+
+  // Derive the original doc ID before any "__BOM" suffix applied during expansion.
+  function baseDocId(dn) {
+    const suffix = '__' + dn.bomNodeId;
+    return dn.id.endsWith(suffix) ? dn.id.slice(0, -suffix.length) : dn.id;
+  }
+
+  // Keyed by "baseDocId::targetId" — we keep the candidate with the deepest LCA.
+  const best = new Map();
 
   for (const dn of docNodes) {
     if (!dn.validates?.length) continue;
@@ -1916,8 +2599,8 @@ function computeDocValidationEdges(root) {
     if (!sourceHNode) continue;
 
     for (const entry of dn.validates) {
-      const { id: targetId, score } = typeof entry === 'string'
-        ? { id: entry, score: 2 }
+      const { id: targetId, score, note: entryNote = '' } = typeof entry === 'string'
+        ? { id: entry, score: 2, note: '' }
         : entry;
 
       const targetHNode = hNodeOf[targetId];
@@ -1928,7 +2611,6 @@ function computeDocValidationEdges(root) {
 
       // cycleWeight = cycle time of target BOM + doc node + BOM nodes on path between them
       let cycleWeight = effectiveCycleTime(targetHNode.data) + (dn.cycle_time_hrs || 0);
-      // Walk from target upward toward sourceHNode, summing intermediate cycle times
       let cur = targetHNode.parent;
       while (cur && cur.data.id !== sourceBomId && cur.data.id !== '__root__') {
         const nd = nodes.find(x => x.id === cur.data.id);
@@ -1936,10 +2618,24 @@ function computeDocValidationEdges(root) {
         cur = cur.parent;
       }
 
-      edges.push({ sourceId: sourceBomId, targetId, score, lag, cycleWeight, docId: dn.id, docLabel: dn.label });
+      const candidate = { sourceId: sourceBomId, targetId, score, lag, cycleWeight, docId: dn.id, docLabel: dn.label, note: entryNote };
+      const key = `${baseDocId(dn)}::${targetId}`;
+      const existing = best.get(key);
+
+      if (!existing) {
+        best.set(key, candidate);
+      } else {
+        // Keep whichever source is in the same subtree as the target.
+        // "Same subtree" = deepest LCA with the target wins.
+        const existSrc  = hNodeOf[existing.sourceId];
+        const candLca   = lcaDepth(sourceHNode, targetHNode);
+        const existLca  = existSrc ? lcaDepth(existSrc, targetHNode) : -1;
+        if (candLca > existLca) best.set(key, candidate);
+      }
     }
   }
-  return edges;
+
+  return [...best.values()];
 }
 
 // ─── Doc validation edge color ─────────────────────────────────────────────────
@@ -1971,6 +2667,49 @@ function normValidateEntry(v) {
   return typeof v === 'string' ? { id: v, score: 2 } : v;
 }
 
+function normalizeTechRegistry(entries = [], docs = []) {
+  const byId = new Map();
+  const add = (id, name) => {
+    id = String(id || '').trim();
+    name = String(name || '').trim() || id;
+    if (!id) return;
+    const prev = byId.get(id);
+    if (!prev || (!prev.name && name)) byId.set(id, { id, name: name || id });
+  };
+
+  (Array.isArray(entries) ? entries : []).forEach(t => {
+    if (!t) return;
+    if (typeof t === 'string') {
+      const name = t.trim();
+      if (name) add(_techInitialsBase(name), name);
+      return;
+    }
+    add(t.id || t.initials || (t.name ? _techInitialsBase(t.name) : ''), t.name || t.label || t.id);
+  });
+
+  (Array.isArray(docs) ? docs : []).forEach(d => {
+    (d.technicians || []).forEach(t => {
+      if (!t) return;
+      if (typeof t === 'string') add(_techInitialsBase(t), t);
+      else add(t.id || (t.name ? _techInitialsBase(t.name) : t.initials), t.name || t.id);
+    });
+  });
+
+  return Array.from(byId.values()).sort((a, b) =>
+    (a.name || a.id).localeCompare(b.name || b.id) || a.id.localeCompare(b.id)
+  );
+}
+
+function techRegistryNames(entries = []) {
+  return entries.map(t => t.name || t.id).filter(Boolean);
+}
+
+function techDisplayNameById(id, roster) {
+  const list = Array.isArray(roster) ? roster : techDirectory;
+  const hit = list.find(t => t.id === id);
+  return hit ? (hit.name || hit.id) : id;
+}
+
 // ─── Persistence ───────────────────────────────────────────────────────────────
 function loadAll() {
   try {
@@ -1978,22 +2717,30 @@ function loadAll() {
     if (s) {
       const d = JSON.parse(s);
       // Support old array-only format
+      const demoDirectory = normalizeTechRegistry([], DEMO_DOC_NODES);
       if (Array.isArray(d)) return {
         nodes: d, sections: [],
         docNodes:         DEMO_DOC_NODES.map(x => ({ ...x })),
         partNodes:        DEMO_PART_NODES.map(x => ({ ...x })),
-        techRegistry:     [],
+        techDirectory:    demoDirectory,
+        techRegistry:     techRegistryNames(demoDirectory),
         supplierRegistry: DEMO_SUPPLIERS.map(s => ({ ...s })),
         builds:           [],
+        batches:          [],
+        flowDivideRow:    null,
       };
+      const techDirectory = normalizeTechRegistry(d.techDirectory ?? d.techRegistry ?? [], d.docNodes ?? []);
       return {
         nodes:            d.nodes     || [],
         sections:         d.sections  || [],
         docNodes:         d.docNodes  ?? DEMO_DOC_NODES.map(x => ({ ...x })),
         partNodes:        d.partNodes ?? DEMO_PART_NODES.map(x => ({ ...x })),
-        techRegistry:     d.techRegistry     ?? [],
+        techDirectory,
+        techRegistry:     techRegistryNames(techDirectory),
         supplierRegistry: d.supplierRegistry ?? DEMO_SUPPLIERS.map(s => ({ ...s })),
         builds:           d.builds    ?? [],
+        batches:          d.batches   ?? [],
+        flowDivideRow:    d.flowDivideRow ?? null,
         collapsedIds:     d.collapsedIds ?? [],
       };
     }
@@ -2003,12 +2750,113 @@ function loadAll() {
     sections:         DEMO_SECTIONS.map(s => ({ ...s })),
     docNodes:         DEMO_DOC_NODES.map(d => ({ ...d })),
     partNodes:        DEMO_PART_NODES.map(p => ({ ...p })),
-    techRegistry:     [],
+    techDirectory:    normalizeTechRegistry([], DEMO_DOC_NODES),
+    techRegistry:     techRegistryNames(normalizeTechRegistry([], DEMO_DOC_NODES)),
     supplierRegistry: DEMO_SUPPLIERS.map(s => ({ ...s })),
     builds:           [],
+    batches:          [],
+    flowDivideRow:    null,
   };
 }
-function saveNodes() { localStorage.setItem(LS_KEY, JSON.stringify({ nodes, sections, docNodes, partNodes, techRegistry, supplierRegistry, builds, collapsedIds: [...collapsedIds] })); }
+function saveNodes() { localStorage.setItem(LS_KEY, JSON.stringify({ nodes, sections, docNodes, partNodes, techRegistry, techDirectory, supplierRegistry, builds, batches, flowDivideRow, collapsedIds: [...collapsedIds] })); }
+
+// ─── Overlay persistence ──────────────────────────────────────────────────────
+// Keeps dashboard-driven settings (per-node row overrides, sim tech assignments,
+// sim queue orderings, flow-divide row, collapsed state) in a SEPARATE localStorage
+// slot keyed on the BOM dataset.  Schema is ID+number only — no BOM data, no
+// secrets — so the overlay JSON is safe to export/import and safe for Claude
+// to read.
+//
+// The overlay is layered ON TOP of the imported dataset, so re-importing the
+// same sheet (or a refreshed version with the same node IDs) preserves all
+// the per-node customisations that were made from the dashboard.
+const OVERLAY_KEY = 'bom_v12_overlay';
+const OVERLAY_SCHEMA_VERSION = 1;
+
+function loadOverlay() {
+  try {
+    const s = localStorage.getItem(OVERLAY_KEY);
+    if (!s) return null;
+    const o = JSON.parse(s);
+    if (!o || typeof o !== 'object') return null;
+    return o;
+  } catch (_) { return null; }
+}
+
+function saveOverlay() {
+  try {
+    const overlay = buildOverlayFromState();
+    localStorage.setItem(OVERLAY_KEY, JSON.stringify(overlay));
+  } catch (_) {}
+}
+
+// Build an overlay object that captures every per-session setting we want to
+// survive a re-import of source data.  Row overrides are only recorded when
+// they DIFFER from the node's natural depth, so an untouched dataset stays
+// overlay-free.
+function buildOverlayFromState() {
+  const rowOverrides = {};
+  (nodes || []).forEach(n => {
+    if (typeof n.row === 'number') rowOverrides[n.id] = n.row;
+  });
+  return {
+    schemaVersion: OVERLAY_SCHEMA_VERSION,
+    savedAt:       new Date().toISOString(),
+    rowOverrides,
+    simAssignments: JSON.parse(JSON.stringify(simAssignments || {})),
+    simQueues:      JSON.parse(JSON.stringify(simQueues      || {})),
+    flowDivideRow:  (typeof flowDivideRow === 'number') ? flowDivideRow : null,
+    collapsedIds:   [...(collapsedIds || [])],
+  };
+}
+
+// Apply a previously-saved overlay onto the current in-memory state.  Safe to
+// call with overlay=null (no-op).  Unknown node IDs are silently dropped so a
+// dataset refresh that removes nodes doesn't leave orphan references.
+function applyOverlayToState(overlay) {
+  if (!overlay || typeof overlay !== 'object') return;
+  const idSet = new Set((nodes || []).map(n => n.id));
+
+  // 1. Per-node row overrides
+  if (overlay.rowOverrides && typeof overlay.rowOverrides === 'object') {
+    Object.entries(overlay.rowOverrides).forEach(([nid, r]) => {
+      if (!idSet.has(nid)) return;
+      if (typeof r !== 'number' || r < 0) return;
+      const n = nodes.find(x => x.id === nid);
+      if (n) n.row = r;
+    });
+  }
+
+  // 2. Sim tech assignments
+  if (overlay.simAssignments && typeof overlay.simAssignments === 'object') {
+    simAssignments = {};
+    Object.entries(overlay.simAssignments).forEach(([nid, techs]) => {
+      if (!idSet.has(nid)) return;
+      if (!Array.isArray(techs)) return;
+      simAssignments[nid] = techs.filter(t => typeof t === 'string' && t.length);
+    });
+  }
+
+  // 3. Sim queues (per-tech ordering of node IDs)
+  if (overlay.simQueues && typeof overlay.simQueues === 'object') {
+    simQueues = {};
+    Object.entries(overlay.simQueues).forEach(([tech, arr]) => {
+      if (typeof tech !== 'string' || !tech.length) return;
+      if (!Array.isArray(arr)) return;
+      simQueues[tech] = arr.filter(id => idSet.has(id));
+    });
+  }
+
+  // 4. Flow divide row
+  if (typeof overlay.flowDivideRow === 'number') {
+    flowDivideRow = overlay.flowDivideRow;
+  }
+
+  // 5. Collapsed IDs
+  if (Array.isArray(overlay.collapsedIds)) {
+    collapsedIds = new Set(overlay.collapsedIds.filter(id => idSet.has(id)));
+  }
+}
 
 // ─── Collapse helpers ──────────────────────────────────────────────────────────
 function hasChildren(nodeId) {
@@ -2137,8 +2985,9 @@ function parseGviz(data) {
   if (ci('label') < 0) throw new Error('Missing required column: "label"');
 
   const parseTechs = s => s.split(',').map(x => x.trim()).filter(Boolean).map(x => {
-    const [nm, sc] = x.split('=');
-    return { name: (nm || '').trim(), score: Math.min(3, parseInt(sc) || 0) };
+    const [id, sc] = x.split('=');
+    const techId = (id || '').trim();
+    return { id: techId, name: techId, score: Math.min(3, parseInt(sc) || 0) };
   });
 
   const parseValidates = s => s.split(',').map(x => x.trim()).filter(Boolean).map(x => {
@@ -2185,7 +3034,7 @@ function parseGviz(data) {
   const outNodes      = [];
   const outSuppliers  = [];
   const outDocNodes   = [];
-  const outTechNames  = [];   // technician type rows → registry
+  const outTechRegistry  = [];   // technician type rows → registry
   // Track which raw doc IDs got expanded to multiple parents, so we can fix references
   // rawDocId → Map<bomNodeId, suffixedId>
   const docIdMap = {};
@@ -2207,7 +3056,7 @@ function parseGviz(data) {
     // Technician rows → registry only, never shown as BOM nodes
     if (rawType === 'technician' || rawType === 'tech') {
       const name = str(row, 'label') || id;
-      if (name && !outTechNames.includes(name)) outTechNames.push(name);
+      if (id && !outTechRegistry.find(t => t.id === id)) outTechRegistry.push({ id, name: name || id });
       continue;
     }
 
@@ -2284,8 +3133,12 @@ function parseGviz(data) {
     }
   });
 
-  if (!outNodes.length && !outSuppliers.length && !outDocNodes.length && !outTechNames.length) throw new Error('Sheet has no data rows');
-  return { nodes: outNodes, supplierRegistry: outSuppliers, docNodes: outDocNodes, techRegistry: outTechNames.sort() };
+  const techNameById = Object.fromEntries(outTechRegistry.map(t => [t.id, t.name || t.id]));
+  outNodes.forEach(n => (n.technicians || []).forEach(t => { if (t && t.id && techNameById[t.id]) t.name = techNameById[t.id]; }));
+  outDocNodes.forEach(d => (d.technicians || []).forEach(t => { if (t && t.id && techNameById[t.id]) t.name = techNameById[t.id]; }));
+
+  if (!outNodes.length && !outSuppliers.length && !outDocNodes.length && !outTechRegistry.length) throw new Error('Sheet has no data rows');
+  return { nodes: outNodes, supplierRegistry: outSuppliers, docNodes: outDocNodes, techRegistry: outTechRegistry.sort((a, b) => (a.name || a.id).localeCompare(b.name || b.id)) };
 }
 
 // Robust RFC-4180 CSV parser (handles quoted fields with embedded commas/newlines).
@@ -2316,13 +3169,15 @@ function parseCsv(text) {
   const get = (row, name) => { const i = ci(name); return i >= 0 ? (row[i] ?? '').trim() : ''; };
 
   const parseTechsCsv = s => s.split(',').map(x => x.trim()).filter(Boolean).map(x => {
-    const [nm, sc] = x.split('='); return { name: (nm||'').trim(), score: parseInt(sc)||0 };
+    const [id, sc] = x.split('=');
+    const techId = (id || '').trim();
+    return { id: techId, name: techId, score: parseInt(sc)||0 };
   });
 
   const outNodes     = [];
   const outSuppliers = [];
   const outDocNodes  = [];
-  const outTechNamesCsv = [];
+  const outTechRegistryCsv = [];
   let csvDocIdMap_   = null; // rawDocId → { bomNodeId → suffixedId } for multi-parent docs
 
   for (const row of lines.slice(1)) {
@@ -2343,7 +3198,7 @@ function parseCsv(text) {
     // Technician rows → registry only, never shown as BOM nodes
     if (type === 'technician' || type === 'tech') {
       const name = get(row, 'label') || id;
-      if (name && !outTechNamesCsv.includes(name)) outTechNamesCsv.push(name);
+      if (id && !outTechRegistryCsv.find(t => t.id === id)) outTechRegistryCsv.push({ id, name: name || id });
       continue;
     }
 
@@ -2436,30 +3291,175 @@ function parseCsv(text) {
     outDocNodes.forEach(dn => delete dn._bomNodeId_for_ref);
   }
 
-  if (!outNodes.length && !outSuppliers.length && !outDocNodes.length && !outTechNamesCsv.length) throw new Error('Sheet has no data rows');
-  return { nodes: outNodes, supplierRegistry: outSuppliers, docNodes: outDocNodes, techRegistry: outTechNamesCsv.sort() };
+  const csvTechNameById = Object.fromEntries(outTechRegistryCsv.map(t => [t.id, t.name || t.id]));
+  outNodes.forEach(n => (n.technicians || []).forEach(t => { if (t && t.id && csvTechNameById[t.id]) t.name = csvTechNameById[t.id]; }));
+  outDocNodes.forEach(d => (d.technicians || []).forEach(t => { if (t && t.id && csvTechNameById[t.id]) t.name = csvTechNameById[t.id]; }));
+
+  if (!outNodes.length && !outSuppliers.length && !outDocNodes.length && !outTechRegistryCsv.length) throw new Error('Sheet has no data rows');
+  return { nodes: outNodes, supplierRegistry: outSuppliers, docNodes: outDocNodes, techRegistry: outTechRegistryCsv.sort((a, b) => (a.name || a.id).localeCompare(b.name || b.id)) };
+}
+
+// ─── Validation edge selection ─────────────────────────────────────────────────
+function selectValEdge(edge, ev) {
+  selectedEdge = edge;
+
+  // Highlight the two connected BOM node boxes
+  d3.selectAll('.node-rect').classed('edge-hi', function(d) {
+    return !!d && (d.data.id === edge.sourceId || d.data.id === edge.targetId);
+  });
+
+  // Dim all other visible edge paths
+  d3.selectAll('.val-edge-path').attr('opacity', function(d) {
+    return d === edge ? 1 : 0.12;
+  });
+
+  // Populate the info box
+  const tgtNode = nodes.find(n => n.id === edge.targetId);
+  const tgtLabel = tgtNode?.label || edge.targetId;
+
+  document.getElementById('ei-doc').textContent    = edge.docLabel || edge.docId;
+  document.getElementById('ei-target').textContent = tgtLabel;
+  document.getElementById('ei-lag').textContent    = edge.lag;
+  document.getElementById('ei-score').textContent  = edge.score;
+
+  const noteEl = document.getElementById('ei-note');
+  if (edge.note) {
+    noteEl.textContent = edge.note;
+    noteEl.style.display = '';
+  } else {
+    noteEl.style.display = 'none';
+  }
+
+  // Cross-divide warning: shown only when this edge actually spans the
+  // OPF/batch flow-divide line in the current layout.
+  const crossEl = document.getElementById('ei-cross-divide');
+  if (crossEl) {
+    const rowOfId = id => {
+      const hn = lastRoot && lastRoot.descendants().find(n => n.data.id === id);
+      return hn ? (hn._effectiveRow ?? hn.depth) : null;
+    };
+    const sr = rowOfId(edge.sourceId), tr = rowOfId(edge.targetId);
+    const crosses = flowDivideRow !== null && sr != null && tr != null &&
+                    ((sr <= flowDivideRow) !== (tr <= flowDivideRow));
+    crossEl.style.display = crosses ? '' : 'none';
+  }
+
+  // Position the box near the click, keeping it inside the viewport
+  const box = document.getElementById('edge-info');
+  box.classList.remove('hidden');
+  const bw = box.offsetWidth  || 300;
+  const bh = box.offsetHeight || 130;
+  let lx = ev.clientX + 14;
+  let ly = ev.clientY + 14;
+  if (lx + bw > window.innerWidth  - 8) lx = ev.clientX - bw - 14;
+  if (ly + bh > window.innerHeight - 8) ly = ev.clientY - bh - 14;
+  box.style.left = `${Math.max(8, lx)}px`;
+  box.style.top  = `${Math.max(8, ly)}px`;
+}
+
+function clearEdgeSelection() {
+  if (!selectedEdge) return;
+  selectedEdge = null;
+  d3.selectAll('.node-rect').classed('edge-hi', false);
+  d3.selectAll('.val-edge-path').attr('opacity', 0.8);
+  document.getElementById('edge-info').classList.add('hidden');
 }
 
 // ─── Hierarchy ─────────────────────────────────────────────────────────────────
 function buildHierarchy() {
   if (!nodes.length) return null;
-  const hasParent = n => n.parent && nodes.some(x => x.id === n.parent);
-  const roots = nodes.filter(n => !hasParent(n));
+
+  // ── BOM multi-parent expansion (mirrors appscript expandBomRows) ────────────
+  // When nodes arrive from the CSV-import path they may still have comma-
+  // separated parent fields.  The JSON-export path already expands them server-
+  // side, so this is a no-op in that case.
+  //
+  // We resolve each node into one or more concrete instances whose parent refs
+  // all land on instances that actually exist in the expanded dataset. For a
+  // multi-parent node with parent list "A,B", that's one instance per parent;
+  // for a node whose listed parent is itself multi-parent, that's one instance
+  // per expanded copy of that parent (otherwise the instance would dangle).
+  let dataset = nodes;
+  {
+    const anyMulti = dataset.some(n => n.parent && String(n.parent).includes(','));
+    if (anyMulti) {
+      const nodeMap = Object.fromEntries(dataset.map(n => [n.id, n]));
+      const instancesOf = {};            // origId → [{ id, parent }, …]
+      const inProgress  = new Set();     // cycle guard
+
+      function getInstances(origId) {
+        if (instancesOf[origId]) return instancesOf[origId];
+        if (inProgress.has(origId)) return [];
+        inProgress.add(origId);
+        const node = nodeMap[origId];
+        if (!node) { inProgress.delete(origId); return instancesOf[origId] = []; }
+        const parentStr = node.parent;
+        if (!parentStr) {
+          inProgress.delete(origId);
+          return instancesOf[origId] = [{ id: origId, parent: null }];
+        }
+        const parentIds = String(parentStr).split(',').map(s => s.trim()).filter(Boolean);
+        const result = [];
+        parentIds.forEach(pid => {
+          const parentInstances = getInstances(pid);
+          if (!parentInstances.length) {
+            // Parent isn't in the dataset — keep the dangling ref; the
+            // hasParent/roots logic below will treat it as an orphan.
+            const unique = parentIds.length === 1;
+            result.push({ id: unique ? origId : `${origId}__${pid}`, parent: pid });
+          } else {
+            parentInstances.forEach(pinst => {
+              const unique = parentIds.length === 1 && parentInstances.length === 1;
+              result.push({ id: unique ? origId : `${origId}__${pinst.id}`, parent: pinst.id });
+            });
+          }
+        });
+        inProgress.delete(origId);
+        return instancesOf[origId] = result;
+      }
+
+      dataset.forEach(n => getInstances(n.id));
+
+      const expanded = [];
+      dataset.forEach(n => {
+        (instancesOf[n.id] || []).forEach(inst => {
+          expanded.push({ ...n, id: inst.id, parent: inst.parent });
+        });
+      });
+      dataset = expanded;
+    }
+  }
+
+  const hasParent = n => n.parent && dataset.some(x => x.id === n.parent);
+  const roots = dataset.filter(n => !hasParent(n));
   if (!roots.length) return null;
 
-  let dataset = nodes;
   if (roots.length > 1) {
     dataset = [
       { id:'__root__', label:'BOM Root', sublabel:'', parent:null, type:'product',
         cycle_time_hrs:0, fpy_pct:0, technicians:[], validates:[], rework_risk:0 },
-      ...nodes.map(n => hasParent(n) ? n : { ...n, parent:'__root__' }),
+      ...dataset.map(n => hasParent(n) ? n : { ...n, parent:'__root__' }),
     ];
   }
 
-  // Remove descendants of collapsed nodes from the visible hierarchy
+  // Remove descendants of collapsed nodes from the visible hierarchy.
+  // Traverse the EXPANDED dataset (not raw `nodes`): after multi-parent expansion
+  // a node like Y with parent "X,Z" becomes Y__X and Y__Z with suffixed IDs,
+  // and its raw id no longer exists in dataset. Walking raw `nodes` would miss
+  // these expanded copies, leaving orphan parent refs that crash d3.stratify.
   if (collapsedIds.size) {
+    const childrenOfExpanded = {};
+    dataset.forEach(n => {
+      if (n.parent) (childrenOfExpanded[n.parent] = childrenOfExpanded[n.parent] || []).push(n.id);
+    });
     const hiddenByCollapse = new Set();
-    collapsedIds.forEach(cid => getDescendantIds(cid).forEach(d => hiddenByCollapse.add(d)));
+    const queue = [...collapsedIds];
+    while (queue.length) {
+      const cur = queue.shift();
+      (childrenOfExpanded[cur] || []).forEach(cid => {
+        if (!hiddenByCollapse.has(cid)) { hiddenByCollapse.add(cid); queue.push(cid); }
+      });
+    }
     dataset = dataset.filter(n => !hiddenByCollapse.has(n.id));
   }
 
@@ -2535,6 +3535,7 @@ function initChart() {
         hidePanel();
       } else {
         selectedId = null; selectedSecId = null; applyColors(); hidePanel();
+        clearEdgeSelection();
       }
     });
 
@@ -2572,7 +3573,7 @@ function render() {
   // ── Explode mode: view-specific ───────────────────────────────
   // Doc-related views explode BOM nodes into their child doc nodes.
   // Structure views explode BOM nodes into their child BOM nodes (original behaviour).
-  const DOC_EXPLODE_VIEWS  = ['docs', 'training', 'testing', 'cycle'];
+  const DOC_EXPLODE_VIEWS  = ['docs', 'training', 'testing', 'cycle', 'simulate'];
   const PART_EXPLODE_VIEWS = ['overview', 'supply'];
   const PART_NODE_TYPES    = new Set(['machined', 'stock', 'pcb']);
   const BOM_NODE_TYPES     = new Set(['product', 'assembly']);
@@ -2725,10 +3726,22 @@ function render() {
 
   // In part-explode, hide BOM→part edges (containment shown by sections).
   // All other modes keep the full hierarchy edges visible.
-  const visLinks = allLinks.filter(l =>
-    l.source.data.id !== '__root__' &&
-    !(isPartExplode && PART_NODE_TYPES.has(l.target.data.type))
-  );
+  // In builds/simulate view with a flow divide: only show OPF nodes (row ≤ flowDivideRow).
+  // In batch view with a flow divide: only show batch nodes (row > flowDivideRow).
+  const _opfVisible = (currentView === 'builds' || currentView === 'simulate') && flowDivideRow !== null
+    ? new Set(allNodes.filter(n => (n._effectiveRow ?? n.depth) <= flowDivideRow).map(n => n.data.id))
+    : null;
+  const _batchVisible = currentView === 'batch' && flowDivideRow !== null
+    ? new Set(allNodes.filter(n => (n._effectiveRow ?? n.depth) > flowDivideRow).map(n => n.data.id))
+    : null;
+
+  const visLinks = allLinks.filter(l => {
+    if (l.source.data.id === '__root__') return false;
+    if (isPartExplode && PART_NODE_TYPES.has(l.target.data.type)) return false;
+    if (_opfVisible   && (!_opfVisible.has(l.source.data.id)   || !_opfVisible.has(l.target.data.id)))   return false;
+    if (_batchVisible && (!_batchVisible.has(l.source.data.id) || !_batchVisible.has(l.target.data.id))) return false;
+    return true;
+  });
 
   // ── Section containers (drawn first, behind row bands + nodes) ──
   const secG = gSel.append('g').attr('class', 'section-groups');
@@ -2921,10 +3934,13 @@ function render() {
                   .attr('stroke-width', 1).attr('stroke-dasharray', '3,2');
               }
 
-              const isCycleRow  = currentView === 'cycle';
-              const docActual   = isCycleRow ? (d.cycle_time_hrs      || 0) : 0;
-              const docGoal     = isCycleRow ? (d.goal_cycle_time_hrs || 0) : 0;
-              const rowFillCol  = isCycleRow ? cycleOvershootColor(docActual, docGoal) : docCol;
+              const isCycleRow    = currentView === 'cycle';
+              const isTrainingRow = currentView === 'training';
+              const docActual     = isCycleRow ? (d.cycle_time_hrs      || 0) : 0;
+              const docGoal       = isCycleRow ? (d.goal_cycle_time_hrs || 0) : 0;
+              const rowFillCol    = isCycleRow    ? cycleOvershootColor(docActual, docGoal)
+                                  : isTrainingRow ? docTrainingColor(d)
+                                  : docCol;
 
               sg.append('rect')
                 .attr('x', rowX).attr('y', rowY)
@@ -2948,7 +3964,7 @@ function render() {
               } else {
                 sg.append('circle')
                   .attr('cx', rowX + rowW - 8).attr('cy', rowY + XS_ROW/2)
-                  .attr('r', 4).attr('fill', docCol);
+                  .attr('r', 4).attr('fill', isTrainingRow ? docTrainingColor(d) : docCol);
               }
 
               // ── Cycle view: goal / actual badge tabs below the row ──────────
@@ -3140,6 +4156,166 @@ function render() {
     }
   });
 
+  // ── Flow divide line (between row bands and section groups) ──
+  // Auto-initialize to the midpoint row if not yet set — the line is always visible.
+  if (flowDivideRow === null) {
+    const rows = [];
+    allNodes.forEach(n => {
+      if (n.data.id === '__root__') return;
+      rows.push(n._effectiveRow ?? n.depth);
+    });
+    if (rows.length) {
+      const sortedRows = [...new Set(rows)].sort((a,b)=>a-b);
+      const midIdx = Math.floor((sortedRows.length - 1) / 2);
+      flowDivideRow = sortedRows[midIdx];
+      saveNodes();
+      if (typeof saveOverlay === 'function') saveOverlay();
+    }
+  }
+  if (flowDivideRow !== null && currentView !== 'builds' && currentView !== 'simulate' && currentView !== 'batch') {
+    // Compute global X extents across all nodes for the line span
+    let fdMinX = Infinity, fdMaxX = -Infinity;
+    allNodes.forEach(n => {
+      if (n.data.id === '__root__') return;
+      fdMinX = Math.min(fdMinX, n.x);
+      fdMaxX = Math.max(fdMaxX, n.x);
+    });
+    if (fdMinX === Infinity) { fdMinX = 0; fdMaxX = 0; }
+
+    // Compute divider Y: midpoint between the bottom of OPF rows and the top of batch rows
+    const opfNodes   = allNodes.filter(n => n.data.id !== '__root__' && (n._effectiveRow ?? n.depth) <= flowDivideRow);
+    const batchNodes = allNodes.filter(n => n.data.id !== '__root__' && (n._effectiveRow ?? n.depth) >  flowDivideRow);
+    let fdY = 0;
+    if (opfNodes.length && batchNodes.length) {
+      const maxOpfExit   = Math.max(...opfNodes.map(n => nodeExitY(n)));
+      const minBatchEntry = Math.min(...batchNodes.map(n => nodeEntryY(n)));
+      fdY = (maxOpfExit + minBatchEntry) / 2;
+    } else if (opfNodes.length) {
+      fdY = Math.max(...opfNodes.map(n => nodeExitY(n))) + DY / 2;
+    } else {
+      fdY = Math.min(...batchNodes.map(n => nodeEntryY(n))) - DY / 2;
+    }
+
+    const fdLineX1 = fdMinX - NW/2 - 30;
+    const fdLineX2 = fdMaxX + NW/2 + 30;
+    const fdHandleX = fdMaxX + NW/2 + 10;
+    const FD_W = 56, FD_H = 20;
+
+    const fdG = gSel.append('g').attr('class', 'flow-divide-g');
+
+    // Dashed line
+    fdG.append('line')
+      .attr('class', 'flow-divide-line')
+      .attr('x1', fdLineX1).attr('y1', fdY)
+      .attr('x2', fdLineX2).attr('y2', fdY)
+      .attr('stroke', '#6366f1')
+      .attr('stroke-width', 1.5)
+      .attr('stroke-dasharray', '8,4')
+      .attr('opacity', 0.7);
+
+    // Labels
+    fdG.append('text')
+      .attr('class', 'flow-divide-label-opf')
+      .attr('x', fdLineX1).attr('y', fdY - 9)
+      .attr('text-anchor', 'start').attr('dominant-baseline', 'auto')
+      .attr('font-size', 10).attr('font-weight', 'bold').attr('fill', '#6366f1')
+      .attr('pointer-events', 'none')
+      .text('▲ ONE-PIECE FLOW');
+
+    fdG.append('text')
+      .attr('class', 'flow-divide-label-batch')
+      .attr('x', fdLineX1).attr('y', fdY + 13)
+      .attr('text-anchor', 'start').attr('dominant-baseline', 'auto')
+      .attr('font-size', 10).attr('font-weight', 'bold').attr('fill', '#94a3b8')
+      .attr('pointer-events', 'none')
+      .text('▼ BATCH');
+
+    // Pill drag handle
+    const fdHandleG = fdG.append('g')
+      .attr('class', 'flow-divide-handle')
+      .attr('transform', `translate(${fdHandleX - FD_W/2},${fdY - FD_H/2})`)
+      .attr('cursor', 'ns-resize');
+
+    fdHandleG.append('rect')
+      .attr('width', FD_W).attr('height', FD_H).attr('rx', 5)
+      .attr('fill', '#6366f1').attr('opacity', 0.85);
+
+    fdHandleG.append('text')
+      .attr('x', FD_W/2).attr('y', FD_H/2)
+      .attr('text-anchor', 'middle').attr('dominant-baseline', 'middle')
+      .attr('font-size', 11).attr('fill', '#fff').attr('pointer-events', 'none')
+      .attr('letter-spacing', 3)
+      .text('···');
+
+    // D3 drag on the entire fdG group
+    // Track drag start Y in tree-local coordinates; event.y is already in gSel space
+    // because fdG is a child of gSel.
+    let _fdStartY = fdY;
+    const fdDrag = d3.drag()
+      .on('start', function(event) {
+        _fdStartY = event.y;
+        d3.select(this).select('.flow-divide-handle rect').attr('opacity', 1);
+      })
+      .on('drag', function(event) {
+        const newY = fdY + (event.y - _fdStartY);
+        // Move line
+        d3.select(this).select('.flow-divide-line')
+          .attr('y1', newY).attr('y2', newY);
+        d3.select(this).select('.flow-divide-label-opf')
+          .attr('y', newY - 9);
+        d3.select(this).select('.flow-divide-label-batch')
+          .attr('y', newY + 13);
+        d3.select(this).select('.flow-divide-handle')
+          .attr('transform', `translate(${fdHandleX - FD_W/2},${newY - FD_H/2})`);
+      })
+      .on('end', function(event) {
+        const draggedY = fdY + (event.y - _fdStartY);
+
+        // Snap: find gap between rows whose midpoint is closest to draggedY
+        // Build rowExitY and rowEntryY maps
+        const rowExitYMap  = {};  // row → max nodeExitY in that row
+        const rowEntryYMap = {};  // row → min nodeEntryY in that row
+        allNodes.forEach(n => {
+          if (n.data.id === '__root__') return;
+          const r = n._effectiveRow ?? n.depth;
+          const ey = nodeExitY(n);
+          const ny = nodeEntryY(n);
+          if (rowExitYMap[r]  === undefined || ey > rowExitYMap[r])  rowExitYMap[r]  = ey;
+          if (rowEntryYMap[r] === undefined || ny < rowEntryYMap[r]) rowEntryYMap[r] = ny;
+        });
+        const sortedRowNums = Object.keys(rowExitYMap).map(Number).sort((a,b) => a-b);
+
+        // For each gap between row r and row r+1, compute midpoint Y
+        let bestRow = flowDivideRow;
+        let bestDist = Infinity;
+        for (let i = 0; i < sortedRowNums.length - 1; i++) {
+          const r    = sortedRowNums[i];
+          const rNext = sortedRowNums[i+1];
+          const exitY  = rowExitYMap[r]   ?? 0;
+          const entryY = rowEntryYMap[rNext] ?? 0;
+          const midY   = (exitY + entryY) / 2;
+          const dist   = Math.abs(draggedY - midY);
+          if (dist < bestDist) { bestDist = dist; bestRow = r; }
+        }
+        // Also consider placing before the first row (no OPF) or after the last row (all OPF)
+        // Snap to "before first" if draggedY is above first row entry
+        const firstRow = sortedRowNums[0];
+        const lastRow  = sortedRowNums[sortedRowNums.length - 1];
+        if (firstRow !== undefined && draggedY < (rowEntryYMap[firstRow] ?? 0)) {
+          bestRow = firstRow - 1;
+        } else if (lastRow !== undefined && draggedY > (rowExitYMap[lastRow] ?? 0)) {
+          bestRow = lastRow;
+        }
+
+        flowDivideRow = bestRow;
+        saveNodes();
+        saveOverlay();
+        render();
+      });
+
+    fdG.call(fdDrag);
+  }
+
   // ── Links ────────────────────────────────────────────────────
   const linkG = gSel.append('g').attr('class', 'links');
 
@@ -3176,61 +4352,140 @@ function render() {
   }
 
   // ── Doc validation overlay edges (testing view only) ──────────
+  // Uses Hierarchical Edge Bundling (HEB): each arrow follows the
+  // tree path src → LCA → tgt as control points, so edges that
+  // share a common ancestor travel together along the tree skeleton
+  // before fanning out to their individual targets.  Node boxes are
+  // drawn on top of this layer, naturally hiding any bundle segments
+  // that pass through intermediate node positions.
   if (currentView === 'testing') {
     const docValEdges = computeDocValidationEdges(root);
     if (docValEdges.length) {
       const valG = gSel.append('g').attr('class', 'val-edges');
 
+      // O(1) hierarchy-node lookup (also used by path builder below)
+      const _hNodeOfRisk = {};
+      root.each(n => { _hNodeOfRisk[n.data.id] = n; });
+      const rowOf = id => {
+        const hn = _hNodeOfRisk[id];
+        if (!hn) return null;
+        return hn._effectiveRow ?? hn.depth;
+      };
+      // Arrow crosses the OPF/batch divide when source and target sit on
+      // opposite sides of flowDivideRow.  Batch-built BOMs are an
+      // independent build process and should have their own testing — any
+      // validation procedure that spans the divide is a design smell and
+      // gets flagged red regardless of its lag/cycle risk score.
+      const crossesFlowDivide = e => {
+        if (flowDivideRow === null) return false;
+        const sr = rowOf(e.sourceId), tr = rowOf(e.targetId);
+        if (sr == null || tr == null) return false;
+        return (sr <= flowDivideRow) !== (tr <= flowDivideRow);
+      };
+
       const riskOf  = e => Math.min(1, e.lag/4)*0.5 + Math.min(1, e.cycleWeight/40)*0.5;
-      const riskCat = e => { const r = riskOf(e); return r < 0.33 ? 'green' : r < 0.67 ? 'amber' : 'red'; };
+      const riskCat = e => {
+        if (crossesFlowDivide(e)) return 'red';
+        const r = riskOf(e); return r < 0.33 ? 'green' : r < 0.67 ? 'amber' : 'red';
+      };
       const markerId = cat => cat === 'green' ? 'val-arr-green' : cat === 'amber' ? 'val-arr-amber' : 'val-arr-red';
 
-      // Apply filter
       const visible = valRiskFilter
         ? docValEdges.filter(e => riskCat(e) === valRiskFilter)
         : docValEdges;
 
-      // Group by source so we can fan multiple exits from the same node
-      const bySource = {};
-      visible.forEach(e => { (bySource[e.sourceId] = bySource[e.sourceId] || []).push(e); });
+      // O(1) hierarchy-node lookup
+      const hNodeOf = {};
+      root.each(n => { hNodeOf[n.data.id] = n; });
 
-      // Group by target for staggered entries
-      const byTarget = {};
-      visible.forEach(e => { (byTarget[e.targetId] = byTarget[e.targetId] || []).push(e); });
+      // Returns the ordered list of D3 hierarchy nodes from a → LCA → b,
+      // excluding the virtual __root__ sentinel.
+      function hierarchyPath(a, b) {
+        const toRoot = n => { const p = []; let c = n; while (c) { p.push(c); c = c.parent; } return p; };
+        const ap = toRoot(a);
+        const bp = toRoot(b);
+        const am = new Map(ap.map((n, i) => [n.data.id, i]));
+        let ai = -1, bi = -1;
+        for (let i = 0; i < bp.length; i++) {
+          if (am.has(bp[i].data.id)) { ai = am.get(bp[i].data.id); bi = i; break; }
+        }
+        if (ai === -1) return [a, b]; // no common ancestor — straight fallback
+        const up   = ap.slice(0, ai + 1);
+        const down = bp.slice(0, bi + 1).reverse();
+        return [...up, ...down.slice(1)]; // remove duplicate LCA
+      }
 
-      const STAGGER = 10; // px between staggered arrows at same source/target
+      // D3 bundle curve: beta=0.85 strongly pulls edges toward the
+      // control-point polygon (the tree path), creating visible bundles
+      // along shared hierarchy segments.
+      const bundleLine = d3.line()
+        .x(p => p[0]).y(p => p[1])
+        .curve(d3.curveBundle.beta(0.85));
+
+      const bySource = {}, byTarget = {};
+      visible.forEach(e => {
+        (bySource[e.sourceId] = bySource[e.sourceId] || []).push(e);
+        (byTarget[e.targetId] = byTarget[e.targetId] || []).push(e);
+      });
+      const STAGGER = 8; // px between staggered exits/entries at same node
 
       visible.forEach(edge => {
-        const src = allNodes.find(n => n.data.id === edge.sourceId);
-        const tgt = allNodes.find(n => n.data.id === edge.targetId);
+        const src = hNodeOf[edge.sourceId];
+        const tgt = hNodeOf[edge.targetId];
         if (!src || !tgt || src === tgt) return;
 
-        const col = docValidationEdgeColor(edge.lag, edge.cycleWeight);
         const cat = riskCat(edge);
+        // Cross-divide arrows are always red, regardless of their lag/cycle score.
+        const col = cat === 'red' && crossesFlowDivide(edge)
+          ? '#ef4444'
+          : docValidationEdgeColor(edge.lag, edge.cycleWeight);
+        const isCrossDivide = crossesFlowDivide(edge);
 
-        // Stagger exit x within the source's group; stagger entry x within target's group
-        const srcGrp   = bySource[edge.sourceId];
-        const tgtGrp   = byTarget[edge.targetId];
-        const srcOff   = (srcGrp.indexOf(edge) - (srcGrp.length - 1) / 2) * STAGGER;
-        const tgtOff   = (tgtGrp.indexOf(edge) - (tgtGrp.length - 1) / 2) * STAGGER;
+        const srcGrp = bySource[edge.sourceId];
+        const tgtGrp = byTarget[edge.targetId];
+        const srcOff = (srcGrp.indexOf(edge) - (srcGrp.length - 1) / 2) * STAGGER;
+        const tgtOff = (tgtGrp.indexOf(edge) - (tgtGrp.length - 1) / 2) * STAGGER;
 
-        // Exit bottom of source section (staggered), enter top of target section (staggered)
-        // nodeExitY/nodeEntryY account for expanded doc sections in explode mode
-        const x1 = src.x + srcOff;
-        const y1 = nodeExitY(src);
-        const x2 = tgt.x + tgtOff;
-        const y2 = nodeEntryY(tgt);
-        const mid = (y1 + y2) / 2;
+        const x1 = src.x + srcOff, y1 = nodeExitY(src);
+        const x2 = tgt.x + tgtOff, y2 = nodeEntryY(tgt);
 
+        // Build control points along the tree path, pinning endpoints to the
+        // actual exit/entry positions and placing intermediate nodes at their
+        // vertical centres (the node boxes hide those portions anyway).
+        const path = hierarchyPath(src, tgt)
+          .filter(n => n.data.id !== '__root__');
+
+        const pts = path.map((n, i) => {
+          if (i === 0)             return [x1, y1];
+          if (i === path.length-1) return [x2, y2];
+          return [n.x, n.y + NH / 2]; // tree node centre
+        });
+
+        // Visible path — bound to edge data so dimming/highlighting can target it
+        const dPath = bundleLine(pts);
+        const edgeKey = e => `${e.sourceId}::${e.targetId}::${e.docId}`;
+        const isSelected = selectedEdge && edgeKey(selectedEdge) === edgeKey(edge);
         valG.append('path')
-          .attr('d', `M${x1},${y1} C${x1},${mid} ${x2},${mid} ${x2},${y2}`)
+          .datum(edge)
+          .attr('class', 'val-edge-path' + (isCrossDivide ? ' cross-divide' : ''))
+          .attr('d', dPath)
           .attr('fill', 'none')
           .attr('stroke', col)
-          .attr('stroke-width', 2.5)
-          .attr('stroke-dasharray', '6,3')
+          .attr('stroke-width', isCrossDivide ? 2.5 : 1.5)
+          .attr('stroke-dasharray', isCrossDivide ? '8,3' : '5,3')
           .attr('marker-end', `url(#${markerId(cat)})`)
-          .attr('opacity', 0.85);
+          .attr('opacity', isSelected ? 1 : (selectedEdge ? 0.12 : (isCrossDivide ? 0.95 : 0.8)));
 
+        // Wide transparent hit area — easier to click than the 1.5px line
+        valG.append('path')
+          .datum(edge)
+          .attr('class', 'val-edge-hit')
+          .attr('d', dPath)
+          .attr('fill', 'none')
+          .attr('stroke', 'transparent')
+          .attr('stroke-width', 14)
+          .attr('cursor', 'pointer')
+          .on('click', (ev) => { ev.stopPropagation(); selectValEdge(edge, ev); });
       });
     }
   }
@@ -3238,16 +4493,22 @@ function render() {
   // ── Nodes ─────────────────────────────────────────────────────
   const nodeG = gSel.append('g').attr('class', 'nodes');
 
-  // In part-explode, don't render part-type nodes — they appear inside sections
+  // In part-explode, don't render part-type nodes — they appear inside sections.
+  // In builds/simulate view with flow divide: only OPF nodes (row ≤ flowDivideRow).
+  // In batch view with flow divide: only batch nodes (row > flowDivideRow).
   const renderNodes = isPartExplode
     ? allNodes.filter(n => !PART_NODE_TYPES.has(n.data.type))
+    : ((currentView === 'builds' || currentView === 'simulate') && flowDivideRow !== null)
+      ? allNodes.filter(n => (n._effectiveRow ?? n.depth) <= flowDivideRow)
+    : (currentView === 'batch' && flowDivideRow !== null)
+      ? allNodes.filter(n => (n._effectiveRow ?? n.depth) > flowDivideRow)
     : allNodes;
   const nGroups = nodeG.selectAll('.node-g')
     .data(renderNodes, d => d.data.id)
     .join('g')
     .attr('class', 'node-g')
     .attr('transform', d => `translate(${d.x - NW/2},${d.y})`)
-    .on('click', (ev, d) => { ev.stopPropagation(); selectNode(d.data.id); });
+    .on('click', (ev, d) => { ev.stopPropagation(); clearEdgeSelection(); selectNode(d.data.id); });
 
   nGroups.append('rect')
     .attr('class', d => 'node-rect' + (d.data.id === selectedId ? ' sel' : ''))
@@ -3295,6 +4556,8 @@ function render() {
     const nid = hNode.data.id;
     if (!hasChildren(nid)) return;
     if (explodedParentIds.has(nid)) return;
+    // Don't allow collapsing the virtual __root__ sentinel (it has no visual node).
+    if (!hNode.parent) return;
 
     const isCollapsed = collapsedIds.has(nid);
     const ng = d3.select(this);
@@ -3309,6 +4572,7 @@ function render() {
         if (isCollapsed) collapsedIds.delete(nid);
         else collapsedIds.add(nid);
         saveNodes();
+        saveOverlay();
         render();
       });
 
@@ -3463,10 +4727,44 @@ function render() {
   if (currentView === 'simulate') {
     simCtrl.classList.add('active');
     simTiming = computeSimTiming(root);
+    rebuildSimTickMarks();
     document.getElementById('sim-slider').value = Math.round(simTime * 1000);
     applySimProgress(simTime);
+    openSimQueuePanel();
+
+    // Cycle-time badges: one per BOM node, below the node (or below section in explode).
+    const simBadgeG = gSel.append('g').attr('class', 'sim-cycle-badges');
+    allNodes.forEach(n => {
+      if (n.data.id === '__root__') return;
+      // Skip invisible container nodes in doc-explode mode (their cycles are shown
+      // per-doc inside the section).
+      if (explodedParentIds.has(n.data.id)) return;
+      let hrs;
+      if (collapsedIds.has(n.data.id)) {
+        const subtreeIds = [n.data.id, ...getDescendantIds(n.data.id)];
+        const subtree    = nodes.filter(x => subtreeIds.includes(x.id));
+        hrs = subtree.reduce((s, x) => s + plannedCycleTime(x), 0);
+      } else {
+        hrs = plannedCycleTime(n.data);
+      }
+      if (!(hrs > 0)) return;
+
+      const bw = 70;
+      const bx = n.x - bw/2;
+      const by = nodeExitY(n) + 2;
+      const g  = simBadgeG.append('g').attr('transform', `translate(${bx},${by})`);
+      g.append('rect')
+        .attr('x', 0).attr('y', 0).attr('width', bw).attr('height', 14).attr('rx', 3)
+        .attr('fill', '#1e3a5f').attr('opacity', .9);
+      g.append('text')
+        .attr('x', bw/2).attr('y', 7)
+        .attr('text-anchor', 'middle').attr('dominant-baseline', 'middle')
+        .attr('font-size', 8).attr('fill', '#93c5fd').attr('pointer-events', 'none')
+        .text(`Cyc: ${hrs.toFixed(1)}h`);
+    });
   } else {
     simCtrl.classList.remove('active');
+    closeSimQueuePanel();
   }
 
   // ── Builds view setup ─────────────────────────────────────────────────────
@@ -3488,6 +4786,13 @@ function render() {
   } else {
     document.getElementById('build-controls').classList.remove('active');
     document.getElementById('build-toolbar').classList.remove('active');
+  }
+
+  // ── Batch view setup ──────────────────────────────────────────────────────
+  if (currentView === 'batch') {
+    refreshBatchToolbar();
+  } else {
+    document.getElementById('batch-toolbar').classList.remove('active');
   }
 }
 
@@ -3515,6 +4820,19 @@ function applyColors() {
         .classed('sel', d.data.id === selectedId);
     });
     applyBuildProgress(buildTime);
+    updateLegend();
+    return;
+  }
+  // Batch view: recolor nodes using batch view color function
+  if (currentView === 'batch') {
+    const batchView = VIEWS.batch;
+    gSel.selectAll('.node-g').each(function(d) {
+      if (explodedParentIds.has(d.data.id)) return;
+      d3.select(this).select('.node-rect')
+        .attr('fill',   batchView.nodeColor(d))
+        .attr('stroke', d.data.id === selectedId ? '#fff' : 'rgba(255,255,255,.18)')
+        .classed('sel', d.data.id === selectedId);
+    });
     updateLegend();
     return;
   }
@@ -3582,6 +4900,13 @@ function updateLegend() {
   if (currentView === 'builds') {
     el.style.pointerEvents = 'none';
     updateBuildLegend(buildTime);
+    return;
+  }
+  // Batch view shows batch summary
+  if (currentView === 'batch') {
+    el.style.pointerEvents = 'none';
+    el.style.maxWidth      = '210px';
+    updateBatchLegend();
     return;
   }
   el.style.display  = '';
@@ -3664,11 +4989,11 @@ function selectNode(id) {
     if (n) showSimPanel(n);
     return;
   }
-  // In builds view: show build data entry panel
-  if (currentView === 'builds') {
+  // In builds or batch view: show assign popover (routes to live queue)
+  if (currentView === 'builds' || currentView === 'batch') {
     applyColors();
     const n = nodes.find(x => x.id === id);
-    if (n) showBuildPanel(n);
+    if (n) showAssignPopover(n);
     return;
   }
   showNodeActs();
@@ -4120,6 +5445,7 @@ function changeRow(nodeId, delta) {
   });
 
   saveNodes();
+  saveOverlay();
   render();
   const updated = nodes.find(x => x.id === nodeId);
   if (updated) showPanel(updated);
@@ -5472,7 +6798,7 @@ function trainingDocColor(dn) {
   }
   if (!effTechs.length) return '#1e293b';
   const total = effTechs.reduce((s, t) => s + (t.score || 0), 0);
-  return total >= 10 ? '#10b981' : total >= 6 ? '#f59e0b' : '#ef4444';
+  return trainingScoreColor(total);
 }
 
 function enterTrainingDocFlow(bomNodeId) {
@@ -5715,7 +7041,7 @@ function showTrainingDocNodePanel(dn) {
   const col      = trainingDocColor(dn);
   const effTechs = effectiveTechsOnDoc(dn);
   const total    = effTechs.reduce((s, t) => s + (t.score || 0), 0);
-  const totalCls = total >= 10 ? 'g' : total >= 6 ? 'a' : 'r';
+  const totalCls = total >= 8 ? 'g' : total >= 5 ? 'a' : 'r';
   const tLabel   = DOC_TYPE_LABELS[dn.type] ?? dn.type;
   const inheritedCount = effTechs.filter(t => t.inherited).length;
 
@@ -6372,6 +7698,17 @@ function applySimProgress(t) {
     const tm = simTiming[id];
     if (!tm) return;
 
+    const hasAssign  = (simAssignments[id] || []).length > 0;
+
+    // Unscheduled (no tech) nodes never progress — just paint a neutral rect.
+    if (tm.unscheduled) {
+      d3.select(this).select('.sim-fill').attr('width', 0);
+      d3.select(this).select('.node-rect')
+        .attr('fill', '#1e293b')
+        .attr('stroke', id === selectedId ? '#fff' : 'rgba(255,255,255,.18)');
+      return;
+    }
+
     // pct is relative to this node's own start/end, not the row start
     let pct = 0;
     if (t >= tm.nodeEnd) {
@@ -6386,7 +7723,6 @@ function applySimProgress(t) {
 
     const isComplete = pct >= 1;
     const isStarted  = t > tm.nodeStart && pct > 0;
-    const hasAssign  = (simAssignments[id] || []).length > 0;
     const fill = isComplete ? '#14532d'
                : isStarted  ? (TYPE_COLORS[d.data.type] || '#334155')
                : hasAssign  ? (TYPE_COLORS[d.data.type] || '#64748b')
@@ -6397,21 +7733,26 @@ function applySimProgress(t) {
       .attr('stroke', id === selectedId ? '#fff' : 'rgba(255,255,255,.18)');
   });
 
-  // Row bands: green when every node in the row is done
+  // Row bands: green when every *scheduled* node in the row is done (ignore
+  // unscheduled nodes — they never complete but shouldn't block the band).
   gSel.selectAll('.row-band-rect').each(function() {
     const row      = +d3.select(this).attr('data-row');
-    const rowNodes = Object.entries(simTiming).filter(([, tm]) => tm.row === row);
+    const rowNodes = Object.entries(simTiming)
+      .filter(([, tm]) => tm.row === row && !tm.unscheduled);
     const allDone  = rowNodes.length > 0 && rowNodes.every(([, tm]) => t >= tm.nodeEnd);
     d3.select(this)
       .attr('fill',   allDone ? 'rgba(16,185,129,.12)'  : 'rgba(255,255,255,.025)')
       .attr('stroke', allDone ? 'rgba(16,185,129,.40)'  : 'rgba(255,255,255,.055)');
   });
 
-  // Section borders: green when every member node is done
+  // Section borders: green when every scheduled member node is done
   sections.forEach(sec => {
     const sg = document.getElementById('sec-grp-' + sec.id);
     if (!sg) return;
-    const ids     = sec.nodeIds || [];
+    const ids     = (sec.nodeIds || []).filter(id => {
+      const tm = simTiming[id];
+      return tm && !tm.unscheduled;
+    });
     const allDone = ids.length > 0 && ids.every(id => {
       const tm = simTiming[id];
       return tm && t >= tm.nodeEnd;
@@ -6425,16 +7766,98 @@ function applySimProgress(t) {
     }
   });
 
-  // Time readout
-  const anyTm = Object.values(simTiming)[0];
-  if (anyTm) {
-    const totalHrs   = anyTm.totalHrs;
-    const currentHrs = t * totalHrs;
-    document.getElementById('sim-time-label').textContent =
-      `${currentHrs.toFixed(1)} h / ${totalHrs.toFixed(1)} h`;
-  }
+  // Slider readouts — wall-clock (controllable) and man-hours (passive follower).
+  updateSimSliderReadouts(t);
 
   updateSimStatus(t);
+  applySqpPlayhead(t);
+}
+
+// Drive the wall-clock slider, the man-hours follower slider, and their
+// numeric labels from a single normalized slider position t ∈ [0,1].
+// Does NOT rebuild tick marks — that's a heavier op done by rebuildSimTickMarks
+// whenever totals change.
+function updateSimSliderReadouts(t) {
+  const anyTm = Object.values(simTiming || {}).find(x => !x.unscheduled) ||
+                Object.values(simTiming || {})[0];
+  const totalWall = anyTm?.totalWallHrs || 0;
+  const totalMan  = anyTm?.totalManHrs  || 0;
+
+  const curWall = Math.max(0, Math.min(1, t)) * totalWall;
+  const curMan  = elapsedManHoursAt(t);
+
+  // Wall slider position (don't overwrite while the user is dragging — the
+  // input event already set it).  Only update if caller is not the slider
+  // itself; we detect that via the "_simSliderDragging" flag.
+  const wallSlider = document.getElementById('sim-slider');
+  if (wallSlider && !_simSliderDragging) {
+    wallSlider.value = Math.round(t * 1000);
+  }
+
+  // Man slider is always driven (it's disabled so it can never be dragging).
+  const manSlider = document.getElementById('sim-man-slider');
+  if (manSlider && totalMan > 0) {
+    manSlider.value = Math.round((curMan / totalMan) * 1000);
+  } else if (manSlider) {
+    manSlider.value = 0;
+  }
+
+  const wallLbl = document.getElementById('sim-wall-label');
+  const manLbl  = document.getElementById('sim-man-label');
+  if (wallLbl) {
+    wallLbl.textContent = totalWall > 0
+      ? `${curWall.toFixed(1)} / ${totalWall.toFixed(1)} h`
+      : '— / — h';
+  }
+  if (manLbl) {
+    manLbl.textContent  = totalMan > 0
+      ? `${curMan.toFixed(1)} / ${totalMan.toFixed(1)} h`
+      : '— / — h';
+  }
+}
+
+// ── Slider tick marks ────────────────────────────────────────────────────────
+// Rebuilt whenever the simulate plan changes (computeSimTiming runs).
+// Places one mark every 8h (one work day) on both sliders; every 40h (work
+// week) gets a thicker mark.  The ticks sit below the native slider track;
+// `left` percentage maps directly to the slider value range, so the ticks
+// align tightly for the vast majority of the thumb's travel.
+function rebuildSimTickMarks() {
+  if (!simTiming) return;
+  const anyTm = Object.values(simTiming).find(x => !x.unscheduled);
+  const totalWall = anyTm?.totalWallHrs || 0;
+  const totalMan  = anyTm?.totalManHrs  || 0;
+  renderTickStrip(document.getElementById('sim-ticks-wall'), totalWall);
+  renderTickStrip(document.getElementById('sim-ticks-man'),  totalMan);
+}
+function renderTickStrip(container, totalHrs) {
+  if (!container) return;
+  container.innerHTML = '';
+  if (!(totalHrs > 0)) return;
+  const step = 8;                       // one work day
+  const weekStep = 40;                  // one work week — bolder mark
+  const maxLabelCount = 8;              // avoid label spam on huge totals
+  const tickCount = Math.floor(totalHrs / step);
+  const labelEvery = Math.max(1, Math.ceil(tickCount / maxLabelCount));
+
+  for (let h = step; h <= totalHrs + 0.001; h += step) {
+    const pct = Math.min(100, (h / totalHrs) * 100);
+    const isWeek = Math.abs(h % weekStep) < 0.001;
+    const mark = document.createElement('div');
+    mark.className = 'sim-tick' + (isWeek ? ' week' : '');
+    mark.style.left = pct + '%';
+    container.appendChild(mark);
+
+    // Sparse labels so they don't collide on long timelines
+    const idx = Math.round(h / step);
+    if (idx % labelEvery === 0 || isWeek) {
+      const lbl = document.createElement('div');
+      lbl.className = 'sim-tick-lbl';
+      lbl.style.left = pct + '%';
+      lbl.textContent = h + 'h';
+      container.appendChild(lbl);
+    }
+  }
 }
 
 function buildTechStatusAt(t) {
@@ -6521,11 +7944,329 @@ function toggleSimAssignment(techName, nodeId) {
   } else {
     simAssignments[nodeId].push(techName);
   }
-  // Recompute timing — assignments affect tech-conflict serialisation within rows
+  // Recompute timing — assignments affect queue scheduling
   if (lastRoot) simTiming = computeSimTiming(lastRoot);
+  rebuildSimTickMarks();
   const n = nodes.find(x => x.id === nodeId);
   if (n) showSimPanel(n);
+  renderSimQueuePanel();
   applySimProgress(simTime);
+  saveOverlay();
+}
+
+// ─── Sim Queue Panel (right-docked, drag-to-reorder) ─────────────────────────
+//
+// Renders one column per tech in the database plus an "Unassigned" column for
+// nodes that exist but aren't assigned to anyone. Tiles are draggable:
+//   - Within a queue: reorder, subject to child-before-parent.
+//   - Across queues: remove from source tech, add to target tech (updates
+//     simAssignments). The node still participates in its OTHER assigned
+//     techs' queues.
+//   - From "Unassigned" to a tech: assigns that tech (node appears in every
+//     tech's queue it's assigned to).
+//   - From a tech to "Unassigned": removes that single tech assignment.
+//
+function openSimQueuePanel() {
+  const el = document.getElementById('sim-queue-panel');
+  if (el) el.classList.add('active');
+  renderSimQueuePanel();
+}
+function closeSimQueuePanel() {
+  const el = document.getElementById('sim-queue-panel');
+  if (el) el.classList.remove('active');
+}
+
+function renderSimQueuePanel() {
+  const panel = document.getElementById('sim-queue-panel');
+  if (!panel || !panel.classList.contains('active')) return;
+  if (!simTiming && lastRoot) simTiming = computeSimTiming(lastRoot);
+  syncSimQueues();
+
+  const body = document.getElementById('sqp-body');
+  const allTechs = allDocTechNames();
+
+  // Plan totals: wall-clock lead time and man-hours.  Stamped on simTiming
+  // entries by computeSimTiming; pull from any non-unscheduled entry.
+  const anyTm = simTiming
+    ? Object.values(simTiming).find(x => !x.unscheduled)
+    : null;
+  updateSimTotalsReadout(simTime, anyTm);
+
+  // Unassigned nodes: in the BOM but not in any simAssignments[]
+  const unassigned = nodes
+    .filter(n => !(simAssignments[n.id] && simAssignments[n.id].length))
+    .map(n => n.id);
+
+  const cols = [
+    ...allTechs.map(t => ({ tech: t, ids: simQueues[t] || [] })),
+    { tech: null, ids: unassigned, label: 'Unassigned' },
+  ];
+
+  body.innerHTML = cols.map(({ tech, ids, label }) => {
+    const name = label ?? tech;
+    const isUnassigned = tech === null;
+    const hoursTotal = isUnassigned
+      ? 0
+      : ids.reduce((s, id) => {
+          const nd = nodes.find(x => x.id === id);
+          return s + (nd ? plannedCycleTime(nd) : 0);
+        }, 0);
+    const queueEnd = isUnassigned
+      ? 0
+      : Math.max(0, ...ids.map(id => simTiming?.[id]?.absEnd || 0));
+    const meta = isUnassigned
+      ? `${ids.length} node${ids.length === 1 ? '' : 's'}`
+      : `${ids.length} · ${hoursTotal.toFixed(1)} h work` +
+        (queueEnd > 0 ? ` · ends ${queueEnd.toFixed(1)} h` : '');
+
+    const tilesHtml = ids.length
+      ? ids.map(id => renderSqpTile(id, tech)).join('')
+      : `<div class="sqp-empty">— empty —</div>`;
+
+    return `<div class="sqp-col${isUnassigned ? ' unassigned' : ''}"
+                 data-tech="${tech === null ? '__unassigned__' : escapeHtmlAttr(tech)}">
+      <div class="sqp-col-head">
+        <div class="sqp-col-name">${escapeHtml(name)}</div>
+        <div class="sqp-col-meta">${meta}</div>
+      </div>
+      <div class="sqp-tiles" data-tech="${tech === null ? '__unassigned__' : escapeHtmlAttr(tech)}">
+        ${tilesHtml}
+      </div>
+    </div>`;
+  }).join('');
+
+  wireSqpDragAndClick();
+  applySqpPlayhead(simTime);
+}
+
+function renderSqpTile(nodeId, techName) {
+  const nd = nodes.find(x => x.id === nodeId);
+  if (!nd) return '';
+  const tm = simTiming?.[nodeId];
+  const cyc = plannedCycleTime(nd);
+  const waitsForThisTech = (tm?.waitingFor || []).filter(w => w.techName !== techName);
+  const assignedBadges = (tm?.assignedTechs || []).length > 1
+    ? `<span class="sqp-tile-cyc" title="Co-assigned techs">+${tm.assignedTechs.length - 1}</span>`
+    : '';
+  const timeStr = tm && !tm.unscheduled
+    ? `${tm.absStart.toFixed(1)}–${tm.absEnd.toFixed(1)} h`
+    : 'unscheduled';
+  const waitStr = waitsForThisTech.length
+    ? `<div class="sqp-tile-wait" title="Idle while waiting for co-assignee">
+         ⧗ wait ${waitsForThisTech.map(w => `${escapeHtml(w.techName)} (+${w.gapHrs}h)`).join(', ')}
+       </div>`
+    : '';
+
+  const selClass = nodeId === selectedId ? ' is-selected' : '';
+  return `<div class="sqp-tile${selClass}"
+               draggable="true"
+               data-id="${escapeHtmlAttr(nodeId)}"
+               data-tech="${techName === null ? '__unassigned__' : escapeHtmlAttr(techName)}">
+    <div class="sqp-tile-top">
+      <div class="sqp-tile-label" title="${escapeHtmlAttr(nd.label || nodeId)}">${escapeHtml(nd.label || nodeId)}</div>
+      <div style="display:flex;gap:3px;align-items:center">
+        <span class="sqp-tile-cyc">${cyc.toFixed(1)} h</span>
+        ${assignedBadges}
+      </div>
+    </div>
+    <div class="sqp-tile-top">
+      <div class="sqp-tile-time">${timeStr}</div>
+    </div>
+    ${waitStr}
+  </div>`;
+}
+
+// Tiny safe-HTML helpers scoped to this panel.
+function escapeHtml(s)     { return String(s ?? '').replace(/[&<>]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[c])); }
+function escapeHtmlAttr(s) { return String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+// ─── Drag state + wiring ─────────────────────────────────────────────────────
+let _sqpDrag = null;   // { nodeId, sourceTech }
+
+function wireSqpDragAndClick() {
+  const body = document.getElementById('sqp-body');
+  if (!body) return;
+
+  // Click → select node in canvas
+  body.querySelectorAll('.sqp-tile').forEach(tile => {
+    tile.addEventListener('click', e => {
+      if (e.defaultPrevented) return;
+      const id = tile.dataset.id;
+      const n  = nodes.find(x => x.id === id);
+      if (n) {
+        selectedId = id;
+        if (typeof showSimPanel === 'function') showSimPanel(n);
+        applyColors();
+      }
+    });
+
+    tile.addEventListener('dragstart', e => {
+      _sqpDrag = { nodeId: tile.dataset.id, sourceTech: tile.dataset.tech };
+      tile.classList.add('dragging');
+      e.dataTransfer.effectAllowed = 'move';
+      // Required in Firefox for drag to initiate.
+      try { e.dataTransfer.setData('text/plain', tile.dataset.id); } catch {}
+    });
+    tile.addEventListener('dragend', () => {
+      tile.classList.remove('dragging');
+      clearSqpDropMarkers();
+      _sqpDrag = null;
+    });
+  });
+
+  body.querySelectorAll('.sqp-tiles').forEach(list => {
+    list.addEventListener('dragover', e => {
+      if (!_sqpDrag) return;
+      e.preventDefault();
+      e.dataTransfer.dropEffect = 'move';
+      const targetTech = list.dataset.tech;
+      const dropInfo   = computeDropIndex(list, e.clientY);
+      const isLegal    = isSqpDropLegal(_sqpDrag.nodeId, _sqpDrag.sourceTech, targetTech, dropInfo.index);
+      clearSqpDropMarkers();
+      paintSqpDropMarker(list, dropInfo, isLegal);
+    });
+    list.addEventListener('dragleave', e => {
+      // Only clear if truly leaving the list (not entering a child)
+      if (!list.contains(e.relatedTarget)) clearSqpDropMarkers();
+    });
+    list.addEventListener('drop', e => {
+      if (!_sqpDrag) return;
+      e.preventDefault();
+      const targetTech = list.dataset.tech;
+      const dropInfo   = computeDropIndex(list, e.clientY);
+      if (!isSqpDropLegal(_sqpDrag.nodeId, _sqpDrag.sourceTech, targetTech, dropInfo.index)) {
+        clearSqpDropMarkers();
+        return;
+      }
+      applySqpDrop(_sqpDrag.nodeId, _sqpDrag.sourceTech, targetTech, dropInfo.index);
+    });
+  });
+}
+
+// Where would a drop at clientY land?  Returns { index, refTile } — index is
+// the position in the queue the dragged item would occupy (0..queue.length).
+function computeDropIndex(list, clientY) {
+  const tiles = [...list.querySelectorAll('.sqp-tile')];
+  if (!tiles.length) return { index: 0, refTile: null };
+  for (let i = 0; i < tiles.length; i++) {
+    const rect = tiles[i].getBoundingClientRect();
+    if (clientY < rect.top + rect.height / 2) return { index: i, refTile: tiles[i], side: 'before' };
+  }
+  return { index: tiles.length, refTile: tiles[tiles.length - 1], side: 'after' };
+}
+
+function clearSqpDropMarkers() {
+  document.querySelectorAll('.sqp-tile.drop-before, .sqp-tile.drop-after, .sqp-tile.invalid-drop')
+    .forEach(el => el.classList.remove('drop-before', 'drop-after', 'invalid-drop'));
+}
+function paintSqpDropMarker(list, dropInfo, legal) {
+  if (!dropInfo.refTile) return;
+  const cls = legal
+    ? (dropInfo.side === 'before' ? 'drop-before' : 'drop-after')
+    : 'invalid-drop';
+  dropInfo.refTile.classList.add(cls);
+}
+
+// Is placing nodeId in targetTech's queue at index `dropIndex` legal?
+// Rules:
+//  - Unassigned column always accepts (means "remove from sourceTech").
+//  - Within the target queue, child-before-parent must hold.
+function isSqpDropLegal(nodeId, sourceTech, targetTech, dropIndex) {
+  if (targetTech === '__unassigned__') return sourceTech !== '__unassigned__';
+  if (!simQueues[targetTech]) return false;
+
+  // Simulate the post-drop queue and check ordering.
+  let sim;
+  if (sourceTech === targetTech) {
+    sim = simQueues[targetTech].filter(id => id !== nodeId);
+    const idx = Math.min(dropIndex, sim.length);
+    sim.splice(idx, 0, nodeId);
+  } else {
+    sim = simQueues[targetTech].slice();
+    // If nodeId was already assigned to targetTech (shouldn't normally happen
+    // since then the tile exists in targetTech already), dedupe.
+    sim = sim.filter(id => id !== nodeId);
+    const idx = Math.min(dropIndex, sim.length);
+    sim.splice(idx, 0, nodeId);
+  }
+  return isQueueOrderLegal(sim);
+}
+
+function applySqpDrop(nodeId, sourceTech, targetTech, dropIndex) {
+  if (targetTech === '__unassigned__') {
+    // Remove sourceTech from this node's assignments (keep others intact).
+    if (sourceTech !== '__unassigned__' && simAssignments[nodeId]) {
+      simAssignments[nodeId] = simAssignments[nodeId].filter(t => t !== sourceTech);
+    }
+  } else if (sourceTech === targetTech) {
+    // Pure reorder within one tech.
+    const q = simQueues[targetTech];
+    const cur = q.indexOf(nodeId);
+    if (cur >= 0) q.splice(cur, 1);
+    const idx = Math.min(dropIndex, q.length);
+    q.splice(idx, 0, nodeId);
+  } else {
+    // Cross-queue: remove from sourceTech (if a real tech), add to targetTech.
+    if (sourceTech !== '__unassigned__' && simAssignments[nodeId]) {
+      simAssignments[nodeId] = simAssignments[nodeId].filter(t => t !== sourceTech);
+    }
+    simAssignments[nodeId] = simAssignments[nodeId] || [];
+    if (!simAssignments[nodeId].includes(targetTech)) simAssignments[nodeId].push(targetTech);
+    // Sync first, then place at dropIndex (sync inserts at end by default).
+    syncSimQueues();
+    const q = simQueues[targetTech];
+    const cur = q.indexOf(nodeId);
+    if (cur >= 0) q.splice(cur, 1);
+    const idx = Math.min(dropIndex, q.length);
+    q.splice(idx, 0, nodeId);
+  }
+
+  // Recompute and refresh.
+  if (lastRoot) simTiming = computeSimTiming(lastRoot);
+  rebuildSimTickMarks();
+  renderSimQueuePanel();
+  applySimProgress(simTime);
+  saveOverlay();
+}
+
+// Walk tiles once and apply working/done/idle state classes based on current
+// simTime playhead.  Separate pass so the slider can update quickly without
+// re-rendering the full HTML.
+function applySqpPlayhead(t) {
+  const panel = document.getElementById('sim-queue-panel');
+  if (!panel || !panel.classList.contains('active')) return;
+  if (!simTiming) return;
+  panel.querySelectorAll('.sqp-tile').forEach(tile => {
+    const id = tile.dataset.id;
+    const tm = simTiming[id];
+    tile.classList.remove('working', 'done', 'waiting');
+    if (!tm || tm.unscheduled) return;
+    if (t >= tm.nodeEnd && tm.nodeEnd > 0)   tile.classList.add('done');
+    else if (t >= tm.nodeStart)              tile.classList.add('working');
+    else if (tm.waitingFor && tm.waitingFor.length) tile.classList.add('waiting');
+  });
+  const anyTm = Object.values(simTiming).find(x => !x.unscheduled);
+  updateSimTotalsReadout(t, anyTm);
+}
+
+// Paint the wall-clock and man-hours readouts in the queue panel header.
+// Called by renderSimQueuePanel() (static metrics) and applySqpPlayhead()
+// (live elapsed values) — both pass a normalized slider position t.
+function updateSimTotalsReadout(t, anyTm) {
+  const wallEl = document.getElementById('sqp-wallclock');
+  const manEl  = document.getElementById('sqp-manhrs');
+  if (!wallEl || !manEl) return;
+  const totalWall = anyTm?.totalWallHrs || 0;
+  const totalMan  = anyTm?.totalManHrs  || 0;
+  if (!totalWall && !totalMan) {
+    wallEl.textContent = '—';
+    manEl.textContent  = '—';
+    return;
+  }
+  const curWall = Math.max(0, Math.min(1, t)) * totalWall;
+  const curMan  = elapsedManHoursAt(t);
+  wallEl.textContent = `${curWall.toFixed(1)} / ${totalWall.toFixed(1)} h`;
+  manEl.textContent  = `${curMan.toFixed(1)} / ${totalMan.toFixed(1)} h`;
 }
 
 function showSimActs() {
@@ -7569,6 +9310,234 @@ function refreshBuildToolbar() {
   }
 }
 
+// ── Batch management ──────────────────────────────────────────────────────────
+
+function refreshBatchToolbar() {
+  const tb = document.getElementById('batch-toolbar');
+  if (currentView !== 'batch') {
+    tb.classList.remove('active');
+    return;
+  }
+  tb.classList.add('active');
+
+  const sel = document.getElementById('batch-select');
+  sel.innerHTML = `<option value="">— Select lot —</option>` +
+    batches.map(b =>
+      `<option value="${b.id}"${b.id === activeBatchId ? ' selected' : ''}>
+        ${(b.lotNumber || 'Untitled').replace(/</g,'&lt;')} (qty: ${b.qty || 0})${b.status === 'archived' ? ' [archived]' : ''}
+      </option>`
+    ).join('');
+
+  const activeBatch = batches.find(b => b.id === activeBatchId);
+  document.getElementById('btn-batch-archive').style.display   = (activeBatch?.status === 'active')   ? '' : 'none';
+  document.getElementById('btn-batch-unarchive').style.display = (activeBatch?.status === 'archived') ? '' : 'none';
+}
+
+function updateBatchLegend() {
+  const el = document.getElementById('legend');
+  el.style.display       = '';
+  el.style.pointerEvents = 'none';
+  el.style.maxWidth      = '210px';
+
+  const batch = batches.find(b => b.id === activeBatchId);
+  if (!batch) {
+    el.innerHTML = `<div class="leg-title">Batch Tracker</div>
+      <div style="font-size:0.72rem;color:var(--muted);margin-top:5px;line-height:1.6">
+        No active batch.<br>Use <strong>+ New Lot</strong> or<br>select one from the dropdown.
+      </div>`;
+    return;
+  }
+
+  const items = VIEWS.batch.legend();
+  el.innerHTML = `<div class="leg-title">${(batch.lotNumber || 'Lot').replace(/</g,'&lt;')}</div>
+    <div style="font-size:0.65rem;color:var(--muted);margin-bottom:6px">
+      Qty: ${batch.qty || '—'} ·
+      <span style="color:${batch.status === 'archived' ? 'var(--muted)' : 'var(--green)'}">
+        ${batch.status === 'archived' ? '&#128230; archived' : '&#128296; active'}
+      </span>
+    </div>` +
+    items.map(i =>
+      `<div class="leg-item"><div class="leg-dot" style="background:${i.color}"></div>${i.label}</div>`
+    ).join('');
+}
+
+function showBatchActs() {
+  document.getElementById('node-acts').style.display           = 'none';
+  document.getElementById('section-acts').style.display        = 'none';
+  document.getElementById('doc-node-acts').style.display       = 'none';
+  document.getElementById('part-node-acts').style.display      = 'none';
+  document.getElementById('tech-flow-node-acts').style.display = 'none';
+  document.getElementById('sim-node-acts').style.display       = 'none';
+  document.getElementById('stock-node-acts').style.display     = 'none';
+  document.getElementById('build-node-acts').style.display     = 'none';
+  document.getElementById('batch-node-acts').style.display     = '';
+}
+
+function showBatchPanel(n) {
+  const batch      = batches.find(b => b.id === activeBatchId);
+  const bnd        = batch ? ((batch.nodeData || {})[n.id] || {}) : {};
+  const isReadOnly = !batch || batch.status === 'archived';
+
+  document.getElementById('p-title').textContent = n.label;
+  document.getElementById('p-sub').textContent   = `Batch · ${n.sublabel || n.type}`;
+
+  const qty  = bnd.qty  || 0;
+  const pass = bnd.pass || 0;
+  const fail = bnd.fail || 0;
+  const rate = qty > 0 ? (pass / qty * 100).toFixed(1) : '—';
+
+  document.getElementById('panel-body').innerHTML = `
+    <div style="padding:12px;display:flex;flex-direction:column;gap:10px">
+      ${!batch ? `<div class="note-card" style="border-left:3px solid var(--accent)">
+        No active batch lot selected. Create or pick one from the Lot dropdown.</div>` : ''}
+      ${isReadOnly && batch ? `<div class="note-card" style="border-left:3px solid var(--muted)">
+        <strong>Archived batch — read only</strong></div>` : ''}
+      <div>
+        <div class="section-label">Batch</div>
+        <div class="stat-grid">
+          <div class="form-group">
+            <label>Lot qty</label>
+            <input type="number" id="batch-qty-input" min="0" step="1"
+              value="${qty}" ${isReadOnly ? 'disabled' : ''}
+              style="width:100%;box-sizing:border-box" />
+          </div>
+          <div class="form-group">
+            <label>Passed</label>
+            <input type="number" id="batch-pass-input" min="0" step="1"
+              value="${pass}" ${isReadOnly ? 'disabled' : ''}
+              style="width:100%;box-sizing:border-box" />
+          </div>
+          <div class="form-group">
+            <label>Failed</label>
+            <input type="number" id="batch-fail-input" min="0" step="1"
+              value="${fail}" ${isReadOnly ? 'disabled' : ''}
+              style="width:100%;box-sizing:border-box" />
+          </div>
+          <div class="form-group">
+            <label>Pass rate</label>
+            <div class="stat-card ${qty > 0 && (pass/qty) >= 0.98 ? 'g' : qty > 0 && (pass/qty) >= 0.90 ? 'a' : 'r'}"
+              style="margin-top:0;padding:6px 9px">
+              <div class="stat-val" id="batch-rate-display">${rate}%</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      ${!isReadOnly && batch ? `
+      <button class="btn primary sm" onclick="saveBatchNodeData('${n.id}')">Save</button>
+      ` : ''}
+    </div>
+  `;
+
+  // Wire up live pass-rate recalculation
+  const qEl = document.getElementById('batch-qty-input');
+  const pEl = document.getElementById('batch-pass-input');
+  const fEl = document.getElementById('batch-fail-input');
+  const rEl = document.getElementById('batch-rate-display');
+  const recalc = () => {
+    const q = parseFloat(qEl?.value) || 0;
+    const p = parseFloat(pEl?.value) || 0;
+    if (rEl) rEl.textContent = q > 0 ? (p / q * 100).toFixed(1) + '%' : '—';
+  };
+  if (qEl) qEl.addEventListener('input', recalc);
+  if (pEl) pEl.addEventListener('input', recalc);
+
+  showBatchActs();
+  document.getElementById('panel').classList.remove('hidden');
+}
+
+function saveBatchNodeData(nodeId) {
+  const batch = batches.find(b => b.id === activeBatchId);
+  if (!batch || batch.status === 'archived') return;
+  if (!batch.nodeData) batch.nodeData = {};
+  const qty  = parseFloat(document.getElementById('batch-qty-input')?.value)  || 0;
+  const pass = parseFloat(document.getElementById('batch-pass-input')?.value) || 0;
+  const fail = parseFloat(document.getElementById('batch-fail-input')?.value) || 0;
+  batch.nodeData[nodeId] = { qty, pass, fail };
+  saveNodes();
+  applyColors();
+  updateBatchLegend();
+  toast('Batch data saved', 'success');
+}
+
+function openNewBatchModal() {
+  const lotNumber = prompt('Lot number / identifier:');
+  if (lotNumber === null) return; // cancelled
+  const qtyStr = prompt('Lot quantity (total units):');
+  if (qtyStr === null) return;
+  const qty = parseInt(qtyStr) || 0;
+  const id  = 'bat_' + Date.now();
+  batches.push({ id, lotNumber: lotNumber.trim() || 'Lot', qty, status: 'active', nodeData: {} });
+  activeBatchId = id;
+  saveNodes();
+  refreshBatchToolbar();
+  render();
+  toast(`Batch lot "${lotNumber}" created`, 'success');
+}
+
+function archiveBatch(id) {
+  const b = batches.find(x => x.id === id);
+  if (!b) return;
+  b.status = 'archived';
+  saveNodes();
+  refreshBatchToolbar();
+  if (currentView === 'batch') render();
+  toast(`"${b.lotNumber}" archived`, 'success');
+}
+
+function unarchiveBatch(id) {
+  const b = batches.find(x => x.id === id);
+  if (!b) return;
+  b.status = 'active';
+  saveNodes();
+  refreshBatchToolbar();
+  if (currentView === 'batch') render();
+  toast(`"${b.lotNumber}" restored to active`, 'success');
+}
+
+function openBatchLog() {
+  const batch = batches.find(b => b.id === activeBatchId);
+  if (!batch) { toast('No active batch lot selected', 'error'); return; }
+  // Re-use the build log modal for a simple batch summary
+  const list = document.getElementById('bl-list');
+  list.innerHTML = batches.map(b => {
+    const entered  = Object.keys(b.nodeData || {}).length;
+    const isActive = b.id === activeBatchId;
+    const statusCol = b.status === 'archived' ? '#64748b' : '#10b981';
+    const statusLbl = b.status === 'archived' ? '&#128230; Archived' : '&#128296; Active';
+    return `
+      <div style="display:flex;align-items:flex-start;gap:8px;padding:8px 10px;margin-bottom:5px;
+        background:${isActive ? 'var(--surface2)' : 'var(--bg)'};
+        border:1px solid ${isActive ? 'var(--accent)' : 'var(--border)'};
+        border-radius:var(--r)">
+        <div style="flex:1;min-width:0">
+          <div style="font-size:0.83rem;font-weight:700">${(b.lotNumber || 'Untitled').replace(/</g,'&lt;')}</div>
+          <div style="font-size:0.69rem;color:var(--muted);margin-top:2px">
+            Qty: ${b.qty || 0} · ${entered} node${entered !== 1 ? 's' : ''} entered ·
+            <span style="color:${statusCol}">${statusLbl}</span>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:4px;flex-shrink:0">
+          ${!isActive
+            ? `<button class="btn sm primary" onclick="selectBatch('${b.id}')">Select</button>`
+            : `<span style="font-size:0.71rem;color:var(--accent);font-weight:700;padding:3px 0">Active</span>`}
+          ${b.status === 'active'
+            ? `<button class="btn sm" onclick="archiveBatch('${b.id}')">Archive</button>`
+            : `<button class="btn sm" onclick="unarchiveBatch('${b.id}')">Restore</button>`}
+        </div>
+      </div>`;
+  }).join('') || `<div style="font-size:0.78rem;color:var(--muted);padding:8px 0">No batch lots yet.</div>`;
+  document.getElementById('build-log-overlay').classList.remove('hidden');
+}
+
+function selectBatch(id) {
+  activeBatchId = id;
+  refreshBatchToolbar();
+  if (currentView === 'batch') render();
+  document.getElementById('build-log-overlay').classList.add('hidden');
+  const b = batches.find(x => x.id === id);
+  toast(`Batch "${b?.lotNumber || id}" selected`, 'success');
+}
+
 // Open / close build log modal
 function openBuildLog() {
   renderBuildLog();
@@ -7662,6 +9631,7 @@ function addTechToRegistry() {
   }
   techRegistry.push(name);
   techRegistry.sort();
+  techDirectory = normalizeTechRegistry(techRegistry, docNodes);
   saveNodes();
   input.value = '';
   renderTechRegistryList();
@@ -7670,6 +9640,7 @@ function addTechToRegistry() {
 
 function removeTechFromRegistry(name) {
   techRegistry = techRegistry.filter(n => n !== name);
+  techDirectory = normalizeTechRegistry(techRegistry, docNodes);
   saveNodes();
   renderTechRegistryList();
   toast(`Removed: ${name}`, 'success');
@@ -7710,7 +9681,7 @@ document.querySelectorAll('.vbtn').forEach(b => b.addEventListener('click', () =
   if (techFlowBomId)        exitTechFlow();
   if (trainingDocFlowBomId) exitTrainingDocFlow();
   techFilterName = null;   // clear tech highlight when switching views
-  if (['docs','builds','simulate'].includes(b.dataset.view)) {
+  if (['docs','builds','simulate','batch'].includes(b.dataset.view)) {
     explodeActive = false;
     const eb = document.getElementById('btn-explode');
     if (eb) { eb.classList.remove('primary'); eb.textContent = '⊞ Explode'; }
@@ -7729,6 +9700,8 @@ document.querySelectorAll('.vbtn').forEach(b => b.addEventListener('click', () =
   document.querySelectorAll('.vbtn').forEach(x => x.classList.remove('active'));
   b.classList.add('active');
   currentView = b.dataset.view;
+  if (typeof ensureQueuePanelForView === 'function') ensureQueuePanelForView();
+  if (typeof renderQueuePanel === 'function') renderQueuePanel();
   render();
 }));
 
@@ -7742,6 +9715,8 @@ document.getElementById('btn-explode').addEventListener('click', () => {
   render();
   setTimeout(fitScreen, 80);
 });
+
+document.getElementById('btn-sqp-close').addEventListener('click', closeSimQueuePanel);
 
 document.getElementById('btn-panel-close').addEventListener('click', () => {
   if (docFlowBomId) {
@@ -7768,7 +9743,7 @@ document.getElementById('btn-panel-del').addEventListener('click', () => {
   if (selectedId) deleteNode(selectedId);
 });
 
-document.getElementById('btn-add').addEventListener('click', () => showModal(null));
+// (btn-add removed — BOM authoring done via sheet/JSON import)
 
 document.getElementById('btn-modal-close').addEventListener('click', hideModal);
 
@@ -7796,11 +9771,20 @@ document.getElementById('btn-reset').addEventListener('click', () => {
     docNodes      = DEMO_DOC_NODES.map(d => ({ ...d }));
     partNodes     = DEMO_PART_NODES.map(p => ({ ...p }));
     supplierRegistry  = DEMO_SUPPLIERS.map(s => ({ ...s }));
+    techDirectory = normalizeTechRegistry([], docNodes);
+    techRegistry  = techRegistryNames(techDirectory);
     builds        = [];
     activeBuildId = null;
     buildTime     = 0;
     buildTiming   = null;
+    batches       = [];
+    activeBatchId = null;
+    flowDivideRow = null;
+    collapsedIds  = new Set();
+    simAssignments = {};
+    simQueues      = {};
     saveNodes();
+    try { localStorage.removeItem(OVERLAY_KEY); } catch (_) {}
     selectedId = null; selectedSecId = null; selectedDocId = null; selectedPartId = null;
     selectedStockNodeId = null;
     hidePanel();
@@ -7810,30 +9794,53 @@ document.getElementById('btn-reset').addEventListener('click', () => {
   });
 });
 
-document.getElementById('btn-load-sheets').addEventListener('click', async () => {
-  const url = document.getElementById('sheets-url').value.trim();
-  if (!url) { toast('Paste a Google Sheets URL first', 'error'); return; }
-  toast('Loading from Google Sheets…');
+// (btn-load-sheets removed — use "Import JSON" paste dialog instead)
+
+// ── Overlay export/import (settings only — no BOM source data) ───────────────
+document.getElementById('btn-export-overlay').addEventListener('click', () => {
   try {
-    const loaded = await loadFromSheets(url);
-    nodes = loaded.nodes;
-    if (loaded.supplierRegistry?.length) supplierRegistry = loaded.supplierRegistry;
-    if (loaded.docNodes?.length)         docNodes         = loaded.docNodes;
-    if (loaded.techRegistry?.length) {
-      // Merge: keep any existing registry entries, add new ones from sheet
-      loaded.techRegistry.forEach(n => { if (!techRegistry.includes(n)) techRegistry.push(n); });
-      techRegistry.sort();
-    }
-    saveNodes();
-    selectedId = null;
-    hidePanel();
-    render();
-    setTimeout(fitScreen, 80);
-    const docCount = loaded.docNodes?.length ?? 0;
-    toast(`Loaded ${nodes.length} nodes${docCount ? `, ${docCount} doc nodes` : ''}`, 'success');
+    const overlay = buildOverlayFromState();
+    const blob = new Blob([JSON.stringify(overlay, null, 2)], { type: 'application/json' });
+    const url  = URL.createObjectURL(blob);
+    const a    = document.createElement('a');
+    const stamp = new Date().toISOString().slice(0,19).replace(/[:T]/g,'-');
+    a.href = url; a.download = `bom-overlay-${stamp}.json`;
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(() => { URL.revokeObjectURL(url); a.remove(); }, 100);
+    toast('Settings exported', 'success');
   } catch (e) {
-    toast(e.message, 'error');
+    toast('Export failed: ' + e.message, 'error');
   }
+});
+
+document.getElementById('btn-import-overlay').addEventListener('click', () => {
+  document.getElementById('overlay-file-input').click();
+});
+
+document.getElementById('overlay-file-input').addEventListener('change', ev => {
+  const file = ev.target.files && ev.target.files[0];
+  ev.target.value = ''; // allow re-selecting the same file later
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    try {
+      const overlay = JSON.parse(e.target.result);
+      if (!overlay || typeof overlay !== 'object') throw new Error('not a JSON object');
+      applyOverlayToState(overlay);
+      saveNodes();
+      saveOverlay();
+      if (lastRoot) simTiming = computeSimTiming(lastRoot);
+      render();
+      if (typeof rebuildSimTickMarks === 'function') rebuildSimTickMarks();
+      if (typeof renderSimQueuePanel === 'function') renderSimQueuePanel();
+      toast('Settings imported', 'success');
+    } catch (err) {
+      toast('Import failed: ' + err.message, 'error');
+    }
+  };
+  reader.onerror = () => toast('Could not read file', 'error');
+  reader.readAsText(file);
 });
 
 // ── JSON Import dialog ───────────────────────────────────────────────────────
@@ -7854,20 +9861,29 @@ document.getElementById('json-import-overlay').addEventListener('click', e => {
 });
 
 document.getElementById('btn-ji-apply').addEventListener('click', () => {
-  let raw     = document.getElementById('ji-input').value.trim();
+  const raw   = document.getElementById('ji-input').value.trim();
   const errEl = document.getElementById('ji-error');
   errEl.style.display = 'none';
 
-  // Google Sheets wraps multiline cell values in double-quotes when copied to
-  // clipboard, with internal double-quotes doubled (CSV escaping).
-  // e.g. "{\n  ""nodes"": [...]}" → strip outer quotes + unescape "" → "
-  if (raw.startsWith('"') && raw.endsWith('"')) {
-    raw = raw.slice(1, -1).replace(/""/g, '"');
-  }
+  // The export writes one {"key":value} JSON object per row.
+  // When a multi-row range is copied from Google Sheets each cell arrives on
+  // its own line, CSV-escaped (outer quotes + internal "" → ").
+  // We split by line, unescape each chunk, parse it, and merge the keys.
+  const csvUnescape = s => {
+    s = s.trim();
+    if (s.startsWith('"') && s.endsWith('"')) s = s.slice(1, -1).replace(/""/g, '"');
+    return s;
+  };
 
-  let parsed;
-  try { parsed = JSON.parse(raw); }
-  catch (e) {
+  const lines = raw.split('\n').map(csvUnescape).filter(Boolean);
+
+  let parsed = {};
+  try {
+    for (const line of lines) {
+      const chunk = JSON.parse(line);
+      Object.assign(parsed, chunk);
+    }
+  } catch (e) {
     errEl.textContent = 'Invalid JSON: ' + e.message;
     errEl.style.display = 'block';
     return;
@@ -7879,19 +9895,25 @@ document.getElementById('btn-ji-apply').addEventListener('click', () => {
     return;
   }
 
-  nodes = parsed.nodes;
+  nodes            = parsed.nodes;
+  sections         = Array.isArray(parsed.sections) ? parsed.sections : [];
   if (Array.isArray(parsed.docNodes)         && parsed.docNodes.length)         docNodes         = parsed.docNodes;
   if (Array.isArray(parsed.supplierRegistry) && parsed.supplierRegistry.length) supplierRegistry = parsed.supplierRegistry;
+  techDirectory    = normalizeTechRegistry(parsed.techRegistry ?? [], parsed.docNodes ?? []);
+  techRegistry     = techRegistryNames(techDirectory);
 
-  // Merge technician names from docNodes into techRegistry
-  const techSet = new Set(techRegistry);
-  (parsed.docNodes ?? []).forEach(d => {
-    (d.technicians ?? []).forEach(t => { if (t.name) techSet.add(t.name); });
-  });
-  techRegistry = [...techSet].sort();
+  // Always start with a clean collapse state when loading new data —
+  // stale IDs from a previous dataset can silently hide entire subtrees.
+  collapsedIds = new Set();
+
+  // Layer dashboard-driven overlay on top of the freshly imported dataset so
+  // tech assignments, queue orderings, row overrides, flow divide, and
+  // collapsed state all survive the re-import.
+  applyOverlayToState(loadOverlay());
 
   closeJsonImport();
   saveNodes();
+  saveOverlay();
   selectedId = null; selectedDocId = null;
   hidePanel();
   render();
@@ -7899,14 +9921,40 @@ document.getElementById('btn-ji-apply').addEventListener('click', () => {
 
   const docCount = parsed.docNodes?.length ?? 0;
   toast(`Imported ${nodes.length} nodes${docCount ? `, ${docCount} doc nodes` : ''}`, 'success');
+  syncDataToServer('import');
 });
+
+// Push current dashboard dataset to the server so BOM assignments can resolve
+// docs. Fire-and-forget: silent no-op when offline, quiet warning on failure.
+// Called after JSON import and on bootstrap (so a refresh re-syncs from
+// localStorage without manual steps).
+let _lastSyncedHash = null;
+function syncDataToServer(reason) {
+  if (!(window.MDS && MDS.isAvailable())) return;
+  const payload = {
+    nodes:            Array.isArray(nodes)            ? nodes            : [],
+    sections:         Array.isArray(sections)         ? sections         : [],
+    docNodes:         Array.isArray(docNodes)         ? docNodes         : [],
+    partNodes:        Array.isArray(partNodes)        ? partNodes        : [],
+    supplierRegistry: Array.isArray(supplierRegistry) ? supplierRegistry : [],
+    techRegistry:     Array.isArray(techDirectory)    ? techDirectory    : [],
+    techs:            Array.isArray(techDirectory)    ? techDirectory.map(t => t.id) : []
+  };
+  if (!payload.nodes.length) return;
+  const hash = `${payload.nodes.length}|${payload.docNodes.length}|${payload.sections.length}|${payload.partNodes.length}|${payload.techs.length}`;
+  if (reason !== 'import' && hash === _lastSyncedHash) return;
+  _lastSyncedHash = hash;
+  MDS.api.data(payload)
+    .then(() => console.log(`[mds] server synced (${reason}): ${payload.nodes.length} nodes, ${payload.docNodes.length} docs`))
+    .catch(err => { _lastSyncedHash = null; console.warn('[mds] server sync failed:', err); });
+}
 
 // Allow pressing Enter in node modal
 document.getElementById('btn-modal-save').closest('.modal')
   .addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); saveModal(); } });
 
-// ── Section toolbar & modal ───────────────────────────────────────────────────
-document.getElementById('btn-add-section').addEventListener('click', () => showSectionModal(null));
+// ── Section modal ─────────────────────────────────────────────────────────────
+// (btn-add-section removed — sections come from sheet import)
 
 document.getElementById('btn-sec-modal-close').addEventListener('click',  hideSectionModal);
 document.getElementById('btn-sec-modal-cancel').addEventListener('click', hideSectionModal);
@@ -8002,13 +10050,22 @@ document.getElementById('btn-part-del').addEventListener('click', () => {
 });
 
 // ── Simulate controls ─────────────────────────────────────────────────────────
-document.getElementById('sim-slider').addEventListener('input', e => {
+// While the user is dragging the wall slider, applySimProgress shouldn't
+// overwrite its .value — that would fight the drag.  _simSliderDragging is
+// the module-level flag (declared near simTime et al.).
+const _simSlider = document.getElementById('sim-slider');
+_simSlider.addEventListener('pointerdown', () => { _simSliderDragging = true; });
+_simSlider.addEventListener('pointerup',   () => { _simSliderDragging = false; });
+_simSlider.addEventListener('touchstart',  () => { _simSliderDragging = true; }, { passive: true });
+_simSlider.addEventListener('touchend',    () => { _simSliderDragging = false; });
+_simSlider.addEventListener('input', e => {
   applySimProgress(e.target.value / 1000);
 });
 
 document.getElementById('sim-reset').addEventListener('click', () => {
   simTime = 0;
   document.getElementById('sim-slider').value = 0;
+  document.getElementById('sim-man-slider').value = 0;
   applySimProgress(0);
 });
 
@@ -8017,12 +10074,18 @@ document.getElementById('sim-clear-assign').addEventListener('click', () => {
   simAssignments[selectedId] = [];
   const n = nodes.find(x => x.id === selectedId);
   if (n) showSimPanel(n);
+  if (lastRoot) simTiming = computeSimTiming(lastRoot);
+  rebuildSimTickMarks();
+  renderSimQueuePanel();
   applySimProgress(simTime);
+  saveOverlay();
   toast('Assignment cleared', 'success');
 });
 
+// (btn-flow-divide removed — flow divide line always visible; drag its handle to move)
+
 // ── Tech Registry ─────────────────────────────────────────────────────────────
-document.getElementById('btn-manage-techs').addEventListener('click', openTechRegistry);
+// (btn-manage-techs removed — technicians come from sheet's doc assignments)
 document.getElementById('btn-tr-close').addEventListener('click',    closeTechRegistry);
 document.getElementById('btn-tr-done').addEventListener('click',     closeTechRegistry);
 document.getElementById('tech-registry-overlay').addEventListener('click', e => {
@@ -8091,6 +10154,21 @@ document.getElementById('build-clear-node').addEventListener('click', () => {
   if (selectedId && currentView === 'builds') clearBuildNode(selectedId);
 });
 
+// ── Batch toolbar controls ────────────────────────────────────────────────────
+document.getElementById('batch-select').addEventListener('change', e => {
+  activeBatchId = e.target.value || null;
+  refreshBatchToolbar();
+  render();
+});
+document.getElementById('btn-batch-archive').addEventListener('click', () => {
+  if (activeBatchId) archiveBatch(activeBatchId);
+});
+document.getElementById('btn-batch-unarchive').addEventListener('click', () => {
+  if (activeBatchId) unarchiveBatch(activeBatchId);
+});
+document.getElementById('btn-new-batch').addEventListener('click', openNewBatchModal);
+document.getElementById('btn-batch-log').addEventListener('click', openBatchLog);
+
 // ── Stock flow bar ─────────────────────────────────────────────────────────────
 document.getElementById('skf-back').addEventListener('click', exitStockFlow);
 document.getElementById('btn-manage-suppliers').addEventListener('click', openSupplierRegistry);
@@ -8125,12 +10203,592 @@ document.getElementById('sksup-entry-list').addEventListener('click', e => {
   if (e.target.classList.contains('btn-rm')) e.target.closest('.sup-entry-row').remove();
 });
 
+/* =========================================================================
+ * Live queue panel + assign popover (Builds + Batch views)
+ *
+ * The two views share a sidebar (#queue-panel) driven by integration.js
+ * (window.MDS). Assignments are pushed to the server via /api/assign, which
+ * fans a BOM out into one (tech × doc) record per doc in the leads_to chain.
+ * The sidebar groups those records back together by (tech, bom, context) so
+ * one assign click = one visible tile.
+ *
+ * Technician identity on the server is the canonical tech id from the sheet
+ * (typically initials like AC, BS, …). Display names come from the exported
+ * technician registry and are only used for UI labels.
+ * ========================================================================= */
+
+// --- Technician directory helpers ------------------------------------------
+function _techInitialsBase(name) {
+  if (!name) return '';
+  const parts = String(name).trim().split(/\s+/).filter(Boolean);
+  if (!parts.length) return '';
+  if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+  return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+}
+
+function currentTechDirectory() {
+  const stateRoster = (window.MDS && MDS.state && Array.isArray(MDS.state.techRegistry))
+    ? MDS.state.techRegistry
+    : [];
+  return normalizeTechRegistry([...(techDirectory || []), ...stateRoster], docNodes);
+}
+
+// --- Context helpers -------------------------------------------------------
+// One per view. Used both when posting /api/assign and when filtering the
+// sidebar to show only the current view's assignments.
+function currentBuildContext() {
+  const b = builds.find(x => x.id === activeBuildId);
+  if (!b) return null;
+  return { kind: 'build', buildId: b.id, sn: b.sn || '' };
+}
+function isBuildContext(ctx, buildId) {
+  if (!ctx || ctx.kind !== 'build') return false;
+  return !buildId || ctx.buildId === buildId;
+}
+function isBatchContext(ctx) {
+  return !!(ctx && ctx.kind === 'batch');
+}
+
+// Last-qty-per-node memory for Batch assigns (+1 from previous, fallback 1).
+const BATCH_QTY_LS_KEY = 'mds:batch_last_qty_v1';
+function batchLastQtyHistory() {
+  try { return JSON.parse(localStorage.getItem(BATCH_QTY_LS_KEY) || '{}') || {}; }
+  catch { return {}; }
+}
+function batchSuggestedQty(nodeId) {
+  const h = batchLastQtyHistory()[nodeId];
+  if (!h || !Number.isFinite(h.qty)) return 1;
+  return Math.max(1, h.qty + 1);
+}
+function batchRememberQty(nodeId, qty) {
+  const h = batchLastQtyHistory();
+  h[nodeId] = { qty: Math.max(1, parseInt(qty) || 1), ts: new Date().toISOString() };
+  localStorage.setItem(BATCH_QTY_LS_KEY, JSON.stringify(h));
+}
+
+// --- MDS availability / connection status ---------------------------------
+function mdsReady() { return !!(window.MDS && MDS.isAvailable()); }
+
+function updateQueuePanelConnBadge() {
+  const wrap  = document.getElementById('qp-conn');
+  const label = document.getElementById('qp-conn-label');
+  if (!wrap || !label) return;
+  if (!mdsReady()) {
+    wrap.className = 'qp-conn off';
+    label.textContent = 'offline (open via server)';
+    return;
+  }
+  const st = MDS.connectionStatus();
+  wrap.className = 'qp-conn ' + (st === 'connected' ? 'ok' : 'off');
+  label.textContent = st;
+}
+
+// --- Panel open/close ------------------------------------------------------
+function openQueuePanel()  { document.getElementById('queue-panel')?.classList.add('active'); }
+function closeQueuePanel() { document.getElementById('queue-panel')?.classList.remove('active'); }
+
+function ensureQueuePanelForView() {
+  // Sidebar visibility is a function of the current view only.
+  if (currentView === 'builds' || currentView === 'batch') openQueuePanel();
+  else closeQueuePanel();
+}
+
+// --- Render: sidebar -------------------------------------------------------
+function renderQueuePanel() {
+  updateQueuePanelConnBadge();
+  const body = document.getElementById('qp-body');
+  const sub  = document.getElementById('qp-sub');
+  if (!body || !sub) return;
+
+  if (!mdsReady()) {
+    sub.textContent = '—';
+    body.innerHTML = `<div class="assign-offline-banner">
+      The live queue panel requires loading the dashboard from the server
+      (<code>http://localhost:3737/bom-viewer.html</code>). When opened as a
+      file the dashboard still works but can't push to technicians.</div>`;
+    return;
+  }
+
+  // What the sidebar shows depends on which view is active.
+  let filter = null;
+  let subText = '';
+  if (currentView === 'builds') {
+    const b = builds.find(x => x.id === activeBuildId);
+    if (!b) {
+      sub.textContent = 'No active build';
+      body.innerHTML = `<div class="qp-empty">Pick or create a build to see its queues.</div>`;
+      return;
+    }
+    filter = (ctx) => isBuildContext(ctx, b.id);
+    subText = `Build · ${b.sn || b.id}`;
+  } else if (currentView === 'batch') {
+    filter = (ctx) => isBatchContext(ctx);
+    subText = `Batch · shared queue`;
+  } else {
+    // Defensive — shouldn't render when invisible
+    return;
+  }
+  sub.textContent = subText;
+
+  const roster = currentTechDirectory();
+  const nameById = new Map(roster.map(t => [t.id, t.name || t.id]));
+
+  // Union: dashboard roster ∪ any tech the server has queued work for.
+  // Server is the source of truth for live queues — if the dashboard's roster
+  // is empty or stale, we still want the sidebar to show whatever the server
+  // is tracking.
+  const techSet = new Set(roster.map(t => t.id));
+  for (const init of Object.keys(MDS.state.queues || {})) techSet.add(init);
+  const techs = Array.from(techSet).sort();
+  const sections = techs.map(init => {
+    const groups = MDS.queueGroupsFor(init).filter(g => filter(g.context));
+    return { init, name: nameById.get(init) || init, groups };
+  }).filter(s => s.groups.length);   // drop idle techs from the view
+
+  // Empty state — no live assignments at all for this view.
+  const anyTiles = sections.some(s => s.groups.length);
+  if (!anyTiles) {
+    body.innerHTML = `<div class="qp-empty">No work assigned yet.<br>
+      Click a BOM node to assign technicians.</div>`;
+    return;
+  }
+
+  const nodeById_ = new Map(nodes.map(n => [n.id, n]));
+
+  body.innerHTML = sections.map(s => renderQueueColumn(s, nodeById_)).join('');
+}
+
+function renderQueueColumn(section, nodeById_) {
+  const activeOrPaused = section.groups.filter(g =>
+    g.headState === 'active' || g.headState === 'paused' || g.headState === 'downtime'
+  ).length;
+  const queued = section.groups.filter(g => g.headState === 'queued').length;
+  const metaBits = [];
+  if (activeOrPaused) metaBits.push(`${activeOrPaused} live`);
+  if (queued)         metaBits.push(`${queued} queued`);
+  if (!metaBits.length && section.groups.length) metaBits.push('all complete');
+  const metaStr = metaBits.join(' · ') || 'idle';
+
+  const tiles = section.groups.length
+    ? section.groups.map(g => renderQueueTile(g, nodeById_)).join('')
+    : `<div class="qp-tech-empty">No assignments</div>`;
+
+  return `<div class="qp-col" data-tech="${section.init}">
+    <div class="qp-col-head">
+      <div class="qp-col-name">${section.init}<small>${section.name === section.init ? '' : section.name}</small></div>
+      <div class="qp-col-meta">${metaStr}</div>
+    </div>
+    <div class="qp-tiles">${tiles}</div>
+  </div>`;
+}
+
+// Localised HH:MM:SS for live timer display.
+function _fmtMsHMS(ms) {
+  const s = Math.max(0, Math.floor(ms / 1000));
+  const hh = Math.floor(s / 3600);
+  const mm = Math.floor((s % 3600) / 60);
+  const ss = s % 60;
+  return `${String(hh).padStart(2,'0')}:${String(mm).padStart(2,'0')}:${String(ss).padStart(2,'0')}`;
+}
+
+function renderQueueTile(group, nodeById_) {
+  const bomNode = nodeById_.get(group.bomNodeId);
+  const bomLabel = bomNode ? (bomNode.label || bomNode.id) : group.bomNodeId;
+  const ctx = group.context || {};
+  const chipHtml = ctx.kind === 'build'
+    ? `<span class="qp-tile-chip sn" title="Build SN">${(ctx.sn || ctx.buildId || '?').toString()}</span>`
+    : ctx.kind === 'batch'
+      ? `<span class="qp-tile-chip qty" title="Batch qty">× ${ctx.qty || 1}</span>`
+      : '';
+
+  // Headline assignment (first non-complete) drives state color + timer.
+  const head = group.assignments.find(a => a.state !== 'complete') || group.assignments[0];
+  const headLive = MDS.liveElapsed(head);
+  const stateCls = head.state;   // 'queued' | 'active' | 'paused' | 'downtime' | 'complete'
+  const tileCls  = ['qp-tile', stateCls === 'queued' ? '' : stateCls].filter(Boolean).join(' ');
+
+  // Group-wide metrics.
+  const totalDocs   = group.assignments.length;
+  const doneDocs    = group.assignments.filter(a => a.state === 'complete').length;
+  const totalProdMs = group.assignments.reduce((s, a) => s + MDS.liveElapsed(a).productiveMs, 0);
+  const totalDownMs = group.assignments.reduce((s, a) => s + MDS.liveElapsed(a).downtimeMs,   0);
+
+  // Pills for the doc chain within this group (queue order).
+  const docPills = group.assignments.map(a => {
+    const pillCls = 'qp-doc-pill ' + (a.state === 'queued' ? '' : a.state);
+    const docLabel = (() => {
+      const src = (typeof docNodes !== 'undefined' && Array.isArray(docNodes)) ? docNodes : [];
+      const d = src.find(x => x.id === a.docId);
+      return d ? (d.sublabel || d.label || a.docId) : a.docId;
+    })();
+    return `<span class="${pillCls.trim()}" title="${a.docId}">${docLabel}</span>`;
+  }).join('');
+
+  const stateLabel = {
+    queued:   'queued',
+    active:   'running',
+    paused:   'paused',
+    downtime: 'downtime',
+    complete: 'complete'
+  }[head.state] || head.state;
+
+  const liveTimerMs = stateCls === 'downtime' ? headLive.downtimeMs : headLive.productiveMs;
+  const liveTimerCls = 'qp-tile-timer' + (stateCls === 'downtime' ? ' downtime' : '');
+
+  const removableCount = group.assignments.filter(a => a.state === 'queued').length;
+  const removeBtn = removableCount > 0
+    ? `<button class="btn sm danger" data-qp-act="remove" data-key="${group.key}">Remove queued (${removableCount})</button>`
+    : (head.state !== 'complete'
+       ? `<span class="qp-tile-meta" style="font-style:italic">Stop from tech view</span>`
+       : '');
+
+  return `<div class="${tileCls}" data-key="${group.key}">
+    <div class="qp-tile-top">
+      <div class="qp-tile-label" title="${bomLabel}">${bomLabel}</div>
+      ${chipHtml}
+    </div>
+    <div class="qp-tile-meta">
+      <span class="qp-tile-state ${stateCls}">${stateLabel}</span>
+      <span class="${liveTimerCls}" data-qp-live="${head.id}">${_fmtMsHMS(liveTimerMs)}</span>
+      <span>·</span>
+      <span>${doneDocs}/${totalDocs} docs</span>
+      ${totalProdMs > 0 ? `<span>· ${_fmtMsHMS(totalProdMs)} prod</span>` : ''}
+      ${totalDownMs > 0 ? `<span>· ${_fmtMsHMS(totalDownMs)} down</span>` : ''}
+    </div>
+    ${totalDocs > 1 ? `<div class="qp-tile-docs">${docPills}</div>` : ''}
+    <div class="qp-tile-actions">${removeBtn}</div>
+  </div>`;
+}
+
+// --- Live tick -------------------------------------------------------------
+// Updates only the timer span on tiles so typing in other UI doesn't lose focus
+// and we don't pay a full re-render per second.
+let _qpTickHandle = null;
+function startQueuePanelTick() {
+  if (_qpTickHandle) return;
+  _qpTickHandle = setInterval(() => {
+    const panel = document.getElementById('queue-panel');
+    if (!panel || !panel.classList.contains('active')) return;
+    if (!mdsReady()) return;
+    panel.querySelectorAll('[data-qp-live]').forEach(el => {
+      const aid = el.dataset.qpLive;
+      const a = MDS.state.assignments[aid];
+      if (!a) return;
+      const live = MDS.liveElapsed(a);
+      const isDowntime = a.state === 'downtime';
+      el.textContent = _fmtMsHMS(isDowntime ? live.downtimeMs : live.productiveMs);
+      el.classList.toggle('downtime', isDowntime);
+    });
+  }, 1000);
+}
+function stopQueuePanelTick() {
+  if (_qpTickHandle) { clearInterval(_qpTickHandle); _qpTickHandle = null; }
+}
+
+// --- Remove-queued action --------------------------------------------------
+async function queuePanelRemoveGroup(groupKey) {
+  if (!mdsReady()) return;
+  // Find all queued assignments in this group across the cache.
+  const toUnassign = Object.values(MDS.state.assignments).filter(a => {
+    if (a.state !== 'queued') return false;
+    return MDS.groupKey(a) === groupKey;
+  });
+  if (!toUnassign.length) { toast('Nothing to remove (head in progress)', 'error'); return; }
+  for (const a of toUnassign) {
+    try { await MDS.api.unassign({ assignmentId: a.id }); }
+    catch (err) { console.warn('[queue-panel] unassign failed:', err); }
+  }
+  toast(`Removed ${toUnassign.length} queued doc${toUnassign.length === 1 ? '' : 's'}`, 'success');
+}
+
+// Event delegation for tile action buttons.
+document.addEventListener('click', (ev) => {
+  const btn = ev.target.closest('[data-qp-act]');
+  if (!btn) return;
+  const act = btn.dataset.qpAct;
+  if (act === 'remove') queuePanelRemoveGroup(btn.dataset.key);
+});
+
+// --- Assign popover (replaces legacy showBuildPanel / showBatchPanel) ------
+// Invoked from selectNode() when currentView is 'builds' or 'batch'.
+function showAssignPopover(n) {
+  const isBuild = currentView === 'builds';
+  const isBatch = currentView === 'batch';
+  if (!isBuild && !isBatch) return;
+
+  document.getElementById('p-title').textContent = n.label;
+  document.getElementById('p-sub').textContent =
+    `${isBuild ? 'Build' : 'Batch'} · ${n.sublabel || n.type}`;
+  hideAllAssignActs();
+  const body = document.getElementById('panel-body');
+
+  // Offline / missing server — just explain.
+  if (!mdsReady()) {
+    body.innerHTML = `<div class="assign-wrap">
+      <div class="assign-offline-banner">Live assignments need the dashboard served from the Node server.
+        Open <code>http://localhost:3737/bom-viewer.html</code> and try again.</div>
+    </div>`;
+    document.getElementById('panel').classList.remove('hidden');
+    return;
+  }
+
+  // Build-view-specific: need an active build.
+  if (isBuild) {
+    const ctx = currentBuildContext();
+    if (!ctx) {
+      body.innerHTML = `<div class="assign-wrap">
+        <div class="assign-offline-banner">No active build selected. Pick one from the Build dropdown
+          or <a href="#" id="assign-new-build">create a new build</a>.</div>
+      </div>`;
+      document.getElementById('assign-new-build')?.addEventListener('click', (e) => {
+        e.preventDefault(); openNewBuildModal();
+      });
+      document.getElementById('panel').classList.remove('hidden');
+      return;
+    }
+  }
+
+  renderAssignPopoverBody(n);
+  document.getElementById('panel').classList.remove('hidden');
+}
+
+function hideAllAssignActs() {
+  ['node-acts','section-acts','doc-node-acts','part-node-acts',
+   'tech-flow-node-acts','sim-node-acts','stock-node-acts',
+   'build-node-acts','batch-node-acts']
+    .forEach(id => { const el = document.getElementById(id); if (el) el.style.display = 'none'; });
+}
+
+function renderAssignPopoverBody(n) {
+  const body = document.getElementById('panel-body');
+  const isBuild = currentView === 'builds';
+  const ctx = isBuild ? currentBuildContext() : null;
+  const roster = currentTechDirectory();
+
+  // Which techs already have an open assignment for this node in this context?
+  const liveAssigns = MDS.assignmentsForNode(n.id, (c) =>
+    isBuild ? isBuildContext(c, ctx.buildId) : isBatchContext(c)
+  );
+  const openTechs = new Set(liveAssigns.filter(a => a.state !== 'complete').map(a => a.techInitials));
+  const stateByTech = new Map();   // tech → worst-case active state (active > paused > downtime > queued > complete)
+  const STATE_RANK = { active: 5, paused: 4, downtime: 3, queued: 2, complete: 1 };
+  for (const a of liveAssigns) {
+    const prev = stateByTech.get(a.techInitials);
+    if (!prev || STATE_RANK[a.state] > STATE_RANK[prev]) stateByTech.set(a.techInitials, a.state);
+  }
+
+  const techGridHtml = roster.length ? roster.map(t => {
+    const init = t.id;
+    const name = t.name || t.id;
+    const isOn = openTechs.has(init);
+    const escN = name.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+    return `<button class="assign-tech-chip ${isOn ? 'active' : ''}"
+        data-assign-tech="${init}" data-assign-name="${escN}" title="${name}">
+      <span class="assign-tech-initials">${init}</span>${name}</button>`;
+  }).join('') : `<span class="assign-note">No technicians in roster. Add some in Sheets and re-import.</span>`;
+
+  const statusPills = liveAssigns.length
+    ? Array.from(stateByTech.entries()).map(([init, st]) => {
+        const name = techDisplayNameById(init, roster);
+        return `<span class="assign-status-pill ${st}">${name === init ? init : `${name} (${init})`}: ${st}</span>`;
+      }).join('')
+    : '';
+
+  let ctxHtml = '';
+  if (isBuild) {
+    ctxHtml = `<div class="assign-ctx">
+      <span class="assign-ctx-label">Build SN</span>
+      <span class="assign-ctx-val">${(ctx.sn || ctx.buildId).toString()}</span>
+    </div>`;
+  } else {
+    const qty = batchSuggestedQty(n.id);
+    ctxHtml = `<div class="assign-ctx">
+      <span class="assign-ctx-label">Batch qty</span>
+      <input type="number" class="assign-qty-input" id="assign-qty-input" min="1" step="1" value="${qty}">
+      <span class="assign-ctx-label" style="margin-left:auto">history remembered per node</span>
+    </div>`;
+  }
+
+  body.innerHTML = `<div class="assign-wrap">
+    ${ctxHtml}
+    <div>
+      <div class="section-label">Technicians</div>
+      <div class="assign-tech-grid" id="assign-tech-grid">${techGridHtml}</div>
+    </div>
+    ${statusPills ? `<div>
+      <div class="section-label">Live status</div>
+      <div class="assign-status-row">${statusPills}</div>
+    </div>` : ''}
+    <div class="assign-note">
+      Toggling a technician pushes the whole doc chain under this BOM node to their queue
+      (or removes the queued portion if un-toggled). Assignments that are already running or
+      paused stay — they need to be stopped from the tech view.
+    </div>
+  </div>`;
+
+  // Wire tech-chip toggles.
+  body.querySelectorAll('[data-assign-tech]').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const init = btn.dataset.assignTech;
+      const want = !btn.classList.contains('active');
+      btn.setAttribute('disabled', 'disabled');
+      try {
+        await toggleAssignmentForTech(n, init, want);
+      } catch (err) {
+        console.error('[assign] toggle failed:', err);
+        toast('Assign failed — see console', 'error');
+      } finally {
+        btn.removeAttribute('disabled');
+        // Full re-render keeps statuses in sync with whatever server broadcast.
+        renderAssignPopoverBody(n);
+      }
+    });
+  });
+}
+
+// Core assign/unassign flow used by chip toggles.
+async function toggleAssignmentForTech(n, techInitials, wantOn) {
+  const isBuild = currentView === 'builds';
+  if (wantOn) {
+    // Context: build or batch
+    let context;
+    if (isBuild) {
+      context = currentBuildContext();
+      if (!context) { toast('No active build', 'error'); return; }
+    } else {
+      const qtyEl = document.getElementById('assign-qty-input');
+      const qty = Math.max(1, parseInt(qtyEl?.value) || 1);
+      batchRememberQty(n.id, qty);
+      // Each batch assign gets its own batchId so one node can have
+      // multiple concurrent batch rows with separate histories.
+      context = {
+        kind: 'batch',
+        batchId: `bat_${n.id}_${Date.now().toString(36)}`,
+        qty
+      };
+    }
+    const res = await MDS.api.assign({
+      techInitials,
+      kind: 'bom',
+      nodeId: n.id,
+      context
+    });
+    const count = (res && res.assignments && res.assignments.length) || 0;
+    toast(`Queued ${count} doc${count === 1 ? '' : 's'} for ${techInitials}`, 'success');
+  } else {
+    // Un-toggle: remove only the queued assignments for this tech+node+context
+    const ctxMatch = isBuild
+      ? (c) => isBuildContext(c, (currentBuildContext() || {}).buildId)
+      : (c) => isBatchContext(c);
+    const toRm = Object.values(MDS.state.assignments).filter(a =>
+      a.techInitials === techInitials &&
+      a.bomNodeId === n.id &&
+      a.state === 'queued' &&
+      ctxMatch(a.context)
+    );
+    if (!toRm.length) {
+      toast(`${techInitials} has running work — stop from tech view first`, 'error');
+      return;
+    }
+    for (const a of toRm) {
+      try { await MDS.api.unassign({ assignmentId: a.id }); }
+      catch (err) { console.warn('[unassign] failed:', err); }
+    }
+    toast(`Un-queued ${toRm.length} doc${toRm.length === 1 ? '' : 's'} for ${techInitials}`, 'success');
+  }
+}
+
+// --- Live-state-derived color + decoration for builds/batch views ---------
+// Overrides the legacy VIEWS.builds.nodeColor / VIEWS.batch.nodeColor once
+// MDS is reporting.  Falls back to the original function when offline.
+const _LIVE_COLORS = {
+  queued:   '#334155',
+  active:   '#10b981',
+  paused:   '#f59e0b',
+  downtime: '#ef4444',
+  complete: '#14532d'
+};
+
+function liveNodeStateForBuild(nodeId, buildId) {
+  if (!mdsReady()) return null;
+  const assigns = MDS.assignmentsForNode(nodeId, (c) => isBuildContext(c, buildId));
+  if (!assigns.length) return null;
+  // Worst-case wins: active > downtime > paused > queued; if all complete → complete
+  const ranks = { active: 5, downtime: 4, paused: 3, queued: 2, complete: 1 };
+  let winner = null;
+  for (const a of assigns) {
+    if (!winner || ranks[a.state] > ranks[winner.state]) winner = a;
+  }
+  return winner ? winner.state : null;
+}
+function liveNodeStateForBatch(nodeId) {
+  if (!mdsReady()) return null;
+  const assigns = MDS.assignmentsForNode(nodeId, (c) => isBatchContext(c));
+  if (!assigns.length) return null;
+  const ranks = { active: 5, downtime: 4, paused: 3, queued: 2, complete: 1 };
+  let winner = null;
+  for (const a of assigns) {
+    if (!winner || ranks[a.state] > ranks[winner.state]) winner = a;
+  }
+  return winner ? winner.state : null;
+}
+
+// Hook: called after the VIEWS registry is referenced. Monkey-patch the
+// existing entries with live-state-aware colorers (keeping originals as fallback).
+(function wireLiveNodeColors() {
+  if (typeof VIEWS !== 'object' || !VIEWS.builds || !VIEWS.batch) return;
+  const origBuildColor = VIEWS.builds.nodeColor;
+  VIEWS.builds.nodeColor = (n) => {
+    const nd = n.data ?? n;
+    const build = builds.find(b => b.id === activeBuildId);
+    if (build) {
+      const st = liveNodeStateForBuild(nd.id, build.id);
+      if (st) return _LIVE_COLORS[st] || _LIVE_COLORS.queued;
+    }
+    return origBuildColor(n);
+  };
+  const origBatchColor = VIEWS.batch.nodeColor;
+  VIEWS.batch.nodeColor = (n) => {
+    const nd = n.data ?? n;
+    const st = liveNodeStateForBatch(nd.id);
+    if (st) return _LIVE_COLORS[st] || _LIVE_COLORS.queued;
+    return origBatchColor(n);
+  };
+})();
+
+// Re-render the sidebar + repaint BOM colors whenever the server pushes new state.
+if (window.MDS) {
+  MDS.onStateChange(() => {
+    if (currentView === 'builds' || currentView === 'batch') {
+      renderQueuePanel();
+      applyColors();
+    }
+  });
+  MDS.onStatusChange(updateQueuePanelConnBadge);
+}
+
 // ─── Bootstrap ─────────────────────────────────────────────────────────────────
 window.addEventListener('DOMContentLoaded', () => {
   ensureOrder();
   initChart();
   render();
   setTimeout(fitScreen, 120);
+  // Wire queue-panel close + initial state
+  document.getElementById('btn-qp-close')?.addEventListener('click', closeQueuePanel);
+  renderQueuePanel();
+  ensureQueuePanelForView();
+  startQueuePanelTick();
+  // Push whatever the dashboard has in memory to the server so BOM assignments
+  // resolve without a manual MDS.api.data(...) call. MDS may not be ready
+  // yet at DOMContentLoaded — listen for the first 'connected' status.
+  if (window.MDS) {
+    if (MDS.connectionStatus() === 'connected') syncDataToServer('bootstrap');
+    else {
+      const off = MDS.onStatusChange((s) => {
+        if (s === 'connected') { syncDataToServer('bootstrap'); off(); }
+      });
+    }
+  }
 });
 </script>
 </body>
